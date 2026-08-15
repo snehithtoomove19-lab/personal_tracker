@@ -16,11 +16,11 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 | Home | Expenses | Reports |
 |---|---|---|
-| ![Home screen](screenshots/home.png) | ![Expenses screen](screenshots/expenses.png) | ![Reports screen](screenshots/reports.png) |
+| ![Home screen](screenshots/home.png) | ![Expenses screen](screenshots/expenses.png) | ![Reports screen](screenshots/report.png) |
 
 | Mood Tracker | Tasks | Goals |
 |---|---|---|
-| ![Mood tracker screen](screenshots/mood.png) | ![Tasks screen](screenshots/tasks.png) | ![Goals screen](screenshots/goals.png) |
+| ![Mood tracker screen](screenshots/mood%20tracker%20screen.png) | ![Tasks screen](screenshots/tasks.png) | ![Goals screen](screenshots/goals.png) |
 
 | Calendar | Ask AI | Settings |
 |---|---|---|
