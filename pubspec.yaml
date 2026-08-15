@@ -1,0 +1,32 @@
+name: personal_tracker
+description: A personal expense, mood, task, note & goal tracker built with Flutter.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: 1.0.6
+  # Pinned to exact, older, well-established versions (no ^caret) rather
+  # than ranges. This project hit a Gradle failure ("Could not find method
+  # kotlin()") caused by pub resolving a newer transitive Android
+  # implementation package that depends on `package:jni`, which needs a
+  # Kotlin Gradle Plugin setup this project doesn't have configured. Exact
+  # pins here prevent pub from drifting onto that newer transitive chain.
+  shared_preferences: 2.2.2
+  intl: 0.19.0
+  uuid: 4.3.3
+  path_provider: 2.1.2
+  http: 1.2.2
+  url_launcher: ^6.1.12
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
