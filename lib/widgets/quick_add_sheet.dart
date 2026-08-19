@@ -4,6 +4,7 @@ import '../screens/add_task_screen.dart';
 import '../screens/add_note_screen.dart';
 import '../screens/add_goal_screen.dart';
 import '../models/transaction.dart';
+import '../services/app_scope.dart';
 
 void showQuickAddSheet(BuildContext context) {
   showModalBottomSheet(
@@ -12,6 +13,8 @@ void showQuickAddSheet(BuildContext context) {
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (ctx) {
+      final app = AppScope.of(ctx);
+
       Widget option(IconData icon, String label, Color color, VoidCallback onTap) {
         return ListTile(
           leading: CircleAvatar(backgroundColor: color.withValues(alpha: 0.15), child: Icon(icon, color: color)),
@@ -54,6 +57,13 @@ void showQuickAddSheet(BuildContext context) {
               option(Icons.flag_outlined, 'Add Goal', Colors.purple, () {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => const AddGoalScreen()));
               }),
+              const Divider(height: 20),
+              SwitchListTile(
+                secondary: Icon(app.darkMode ? Icons.dark_mode : Icons.light_mode, color: Colors.indigo),
+                title: const Text('Dark Mode'),
+                value: app.darkMode,
+                onChanged: (v) => app.setDarkMode(v),
+              ),
             ],
           ),
         ),
