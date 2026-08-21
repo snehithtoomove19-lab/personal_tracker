@@ -5,6 +5,7 @@ import '../screens/add_transaction_screen.dart';
 import '../screens/add_task_screen.dart';
 import '../screens/add_note_screen.dart';
 import '../screens/add_goal_screen.dart';
+import '../screens/settings_screen.dart';
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
 
@@ -156,7 +157,7 @@ void showQuickAddSheet(BuildContext context) {
                 Colors.black,
                 () async {
                   final url = Uri.parse(
-                    'https://github.com/YOUR_USERNAME',
+                    'https://github.com/snehithtoomove19-lab',
                   );
 
                   if (await canLaunchUrl(url)) {
@@ -165,6 +166,21 @@ void showQuickAddSheet(BuildContext context) {
                       mode: LaunchMode.externalApplication,
                     );
                   }
+                },
+              ),
+
+              // Settings
+              option(
+                Icons.settings_outlined,
+                'Settings',
+                Colors.grey,
+                () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const SettingsScreen(),
+                    ),
+                  );
                 },
               ),
 
