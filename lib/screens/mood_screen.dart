@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../services/app_scope.dart';
 import '../models/mood_entry.dart';
+import '../services/app_scope.dart';
 import '../utils/formatters.dart';
 
 class MoodScreen extends StatefulWidget {
@@ -12,13 +12,52 @@ class MoodScreen extends StatefulWidget {
 }
 
 class _MoodScreenState extends State<MoodScreen> {
-  DateTime _visibleMonth =
-      DateTime(DateTime.now().year, DateTime.now().month);
+  DateTime _visibleMonth = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+  );
 
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year &&
         a.month == b.month &&
         a.day == b.day;
+  }
+
+  DateTime _dateOnly(DateTime date) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+  }
+
+  bool _isCurrentMonth(DateTime month) {
+    final now = DateTime.now();
+
+    return month.year == now.year &&
+        month.month == now.month;
+  }
+
+  void _goToPreviousMonth() {
+    setState(() {
+      _visibleMonth = DateTime(
+        _visibleMonth.year,
+        _visibleMonth.month - 1,
+      );
+    });
+  }
+
+  void _goToNextMonth() {
+    if (_isCurrentMonth(_visibleMonth)) {
+      return;
+    }
+
+    setState(() {
+      _visibleMonth = DateTime(
+        _visibleMonth.year,
+        _visibleMonth.month + 1,
+      );
+    });
   }
 
   @override
@@ -28,22 +67,23 @@ class _MoodScreenState extends State<MoodScreen> {
     final app = AppScope.of(context);
 
     final todayMood = app.todayMood;
+
     final summary = app.monthMoodSummary(
       month: _visibleMonth,
     );
 
-    final totalLogged = summary.values.fold(
+    final totalLogged = summary.values.fold<int>(
       0,
       (previous, value) => previous + value,
     );
 
-    final missedDays = app.missedMoodDaysThisMonth;
+    final isCurrentMonth = _isCurrentMonth(
+      _visibleMonth,
+    );
 
-    final now = DateTime.now();
-
-    final isCurrentMonth =
-        _visibleMonth.year == now.year &&
-        _visibleMonth.month == now.month;
+    // Only show missed days for the current month.
+    final missedDays =
+        isCurrentMonth ? app.missedMoodDaysThisMonth : [];
 
     final bottomInset =
         MediaQuery.of(context).padding.bottom;
@@ -108,14 +148,12 @@ class _MoodScreenState extends State<MoodScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final option =
-        todayMood != null
-            ? moodOptionFor(todayMood.mood)
-            : null;
+    final option = todayMood != null
+        ? moodOptionFor(todayMood.mood)
+        : null;
 
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Column(
@@ -124,20 +162,18 @@ class _MoodScreenState extends State<MoodScreen> {
             children: [
               Text(
                 'Mood',
-                style: theme
-                    .textTheme
-                    .headlineSmall
+                style: theme.textTheme.headlineSmall
                     ?.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.5,
                 ),
               ),
+
               const SizedBox(height: 4),
+
               Text(
                 'Understand how you feel over time.',
-                style: theme
-                    .textTheme
-                    .bodyMedium
+                style: theme.textTheme.bodyMedium
                     ?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -148,8 +184,7 @@ class _MoodScreenState extends State<MoodScreen> {
 
         if (option != null)
           Container(
-            padding:
-                const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: option.color.withValues(
                 alpha: 0.12,
@@ -178,18 +213,12 @@ class _MoodScreenState extends State<MoodScreen> {
     const color = Colors.orange;
 
     return Container(
-      padding:
-          const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(
-          alpha: 0.08,
-        ),
-        borderRadius:
-            BorderRadius.circular(18),
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: color.withValues(
-            alpha: 0.18,
-          ),
+          color: color.withValues(alpha: 0.18),
         ),
       ),
       child: Row(
@@ -197,12 +226,9 @@ class _MoodScreenState extends State<MoodScreen> {
             CrossAxisAlignment.start,
         children: [
           Container(
-            padding:
-                const EdgeInsets.all(9),
+            padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: color.withValues(
-                alpha: 0.14,
-              ),
+              color: color.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -221,14 +247,10 @@ class _MoodScreenState extends State<MoodScreen> {
               children: [
                 Text(
                   '$missedCount day${missedCount == 1 ? '' : 's'} not logged',
-                  style: theme
-                      .textTheme
-                      .titleSmall
+                  style: theme.textTheme.titleSmall
                       ?.copyWith(
-                    fontWeight:
-                        FontWeight.w700,
-                    color:
-                        Colors.orange.shade800,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.orange.shade800,
                   ),
                 ),
 
@@ -236,14 +258,10 @@ class _MoodScreenState extends State<MoodScreen> {
 
                 Text(
                   'Tap a day in the calendar below to record how you felt.',
-                  style: theme
-                      .textTheme
-                      .bodySmall
+                  style: theme.textTheme.bodySmall
                       ?.copyWith(
                     color: Colors.orange.shade900
-                        .withValues(
-                      alpha: 0.75,
-                    ),
+                        .withValues(alpha: 0.75),
                     height: 1.35,
                   ),
                 ),
@@ -267,19 +285,13 @@ class _MoodScreenState extends State<MoodScreen> {
     final colors = theme.colorScheme;
 
     return Container(
-      padding:
-          const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius:
-            BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
           colors: [
-            colors.primary.withValues(
-              alpha: 0.10,
-            ),
-            colors.secondary.withValues(
-              alpha: 0.05,
-            ),
+            colors.primary.withValues(alpha: 0.10),
+            colors.secondary.withValues(alpha: 0.05),
           ],
         ),
         border: Border.all(
@@ -295,11 +307,9 @@ class _MoodScreenState extends State<MoodScreen> {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.all(9),
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color:
-                      colors.primary.withValues(
+                  color: colors.primary.withValues(
                     alpha: 0.12,
                   ),
                   borderRadius:
@@ -321,12 +331,9 @@ class _MoodScreenState extends State<MoodScreen> {
                   children: [
                     Text(
                       'How are you feeling today?',
-                      style: theme
-                          .textTheme
-                          .titleMedium
+                      style: theme.textTheme.titleMedium
                           ?.copyWith(
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
 
@@ -336,12 +343,9 @@ class _MoodScreenState extends State<MoodScreen> {
                       todayMood == null
                           ? 'Choose a mood to start your day'
                           : 'Your mood has been recorded',
-                      style: theme
-                          .textTheme
-                          .bodySmall
+                      style: theme.textTheme.bodySmall
                           ?.copyWith(
-                        color:
-                            colors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -355,111 +359,96 @@ class _MoodScreenState extends State<MoodScreen> {
           Wrap(
             spacing: 9,
             runSpacing: 10,
-            children:
-                kMoodOptions.map((mood) {
+            children: kMoodOptions.map((mood) {
               final selected =
-                  todayMood?.mood ==
-                      mood.key;
+                  todayMood?.mood == mood.key;
 
-              return GestureDetector(
-                onTap: () {
-                  _logMood(
-                    context,
-                    mood.key,
-                    DateTime.now(),
-                  );
-                },
-                child:
-                    AnimatedContainer(
-                  duration:
-                      const Duration(
-                    milliseconds: 220,
-                  ),
-                  curve:
-                      Curves.easeOut,
-                  padding:
-                      const EdgeInsets
-                          .symmetric(
-                    horizontal: 12,
-                    vertical: 11,
-                  ),
-                  decoration:
-                      BoxDecoration(
-                    color: selected
-                        ? mood.color
-                            .withValues(
-                            alpha: 0.15,
-                          )
-                        : colors.surface
-                            .withValues(
-                            alpha: 0.5,
-                          ),
-                    borderRadius:
-                        BorderRadius.circular(
-                      15,
+              return Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius:
+                      BorderRadius.circular(15),
+                  onTap: () {
+                    _logMood(
+                      context,
+                      mood.key,
+                      DateTime.now(),
+                    );
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(
+                      milliseconds: 220,
                     ),
-                    border:
-                        Border.all(
+                    curve: Curves.easeOut,
+                    padding:
+                        const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 11,
+                    ),
+                    decoration: BoxDecoration(
                       color: selected
-                          ? mood.color
-                          : colors
-                              .outlineVariant,
-                      width: selected
-                          ? 1.5
-                          : 1,
-                    ),
-                    boxShadow: selected
-                        ? [
-                            BoxShadow(
-                              color: mood
-                                  .color
-                                  .withValues(
-                                alpha: 0.12,
-                              ),
-                              blurRadius: 10,
-                              offset:
-                                  const Offset(
-                                0,
-                                4,
-                              ),
+                          ? mood.color.withValues(
+                              alpha: 0.15,
+                            )
+                          : colors.surface.withValues(
+                              alpha: 0.5,
                             ),
-                          ]
-                        : null,
-                  ),
-                  child: Column(
-                    mainAxisSize:
-                        MainAxisSize.min,
-                    children: [
-                      AnimatedScale(
-                        scale: selected
-                            ? 1.12
-                            : 1,
-                        duration:
-                            const Duration(
-                          milliseconds: 220,
-                        ),
-                        child: Icon(
-                          mood.icon,
-                          size: 29,
-                          color: mood.color,
-                        ),
+                      borderRadius:
+                          BorderRadius.circular(15),
+                      border: Border.all(
+                        color: selected
+                            ? mood.color
+                            : colors.outlineVariant,
+                        width: selected ? 1.5 : 1,
                       ),
+                      boxShadow: selected
+                          ? [
+                              BoxShadow(
+                                color: mood.color
+                                    .withValues(
+                                  alpha: 0.12,
+                                ),
+                                blurRadius: 10,
+                                offset:
+                                    const Offset(
+                                  0,
+                                  4,
+                                ),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Column(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        AnimatedScale(
+                          scale: selected ? 1.12 : 1,
+                          duration:
+                              const Duration(
+                            milliseconds: 220,
+                          ),
+                          child: Icon(
+                            mood.icon,
+                            size: 29,
+                            color: mood.color,
+                          ),
+                        ),
 
-                      const SizedBox(
-                        height: 5,
-                      ),
+                        const SizedBox(height: 5),
 
-                      Text(
-                        mood.label,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: selected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: mood.color,
+                        Text(
+                          mood.label,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: selected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: mood.color,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -483,8 +472,7 @@ class _MoodScreenState extends State<MoodScreen> {
     final colors = theme.colorScheme;
 
     return Container(
-      padding:
-          const EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         16,
         16,
         16,
@@ -492,23 +480,19 @@ class _MoodScreenState extends State<MoodScreen> {
       ),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius:
-            BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colors.outlineVariant
-              .withValues(
+          color: colors.outlineVariant.withValues(
             alpha: 0.7,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black
-                .withValues(
+            color: Colors.black.withValues(
               alpha: 0.035,
             ),
             blurRadius: 16,
-            offset:
-                const Offset(0, 6),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -519,19 +503,15 @@ class _MoodScreenState extends State<MoodScreen> {
               Expanded(
                 child: Column(
                   crossAxisAlignment:
-                      CrossAxisAlignment
-                          .start,
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       formatMonthYear(
                         _visibleMonth,
                       ),
-                      style: theme
-                          .textTheme
-                          .titleLarge
+                      style: theme.textTheme.titleLarge
                           ?.copyWith(
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
 
@@ -539,9 +519,7 @@ class _MoodScreenState extends State<MoodScreen> {
 
                     Text(
                       'Tap a day to log or edit your mood',
-                      style: theme
-                          .textTheme
-                          .bodySmall
+                      style: theme.textTheme.bodySmall
                           ?.copyWith(
                         color:
                             colors.onSurfaceVariant,
@@ -552,38 +530,20 @@ class _MoodScreenState extends State<MoodScreen> {
               ),
 
               IconButton(
-                tooltip:
-                    'Previous month',
-                onPressed: () {
-                  setState(() {
-                    _visibleMonth =
-                        DateTime(
-                      _visibleMonth.year,
-                      _visibleMonth.month -
-                          1,
-                    );
-                  });
-                },
+                tooltip: 'Previous month',
+                onPressed: _goToPreviousMonth,
                 icon: const Icon(
                   Icons.chevron_left_rounded,
                 ),
               ),
 
               IconButton(
-                tooltip:
-                    'Next month',
+                tooltip: isCurrentMonth
+                    ? 'Current month'
+                    : 'Next month',
                 onPressed: isCurrentMonth
                     ? null
-                    : () {
-                        setState(() {
-                          _visibleMonth =
-                              DateTime(
-                            _visibleMonth.year,
-                            _visibleMonth.month +
-                                1,
-                          );
-                        });
-                      },
+                    : _goToNextMonth,
                 icon: const Icon(
                   Icons.chevron_right_rounded,
                 ),
@@ -621,15 +581,12 @@ class _MoodScreenState extends State<MoodScreen> {
     final theme = Theme.of(context);
 
     return Container(
-      padding:
-          const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius:
-            BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colors.outlineVariant
-              .withValues(
+          color: colors.outlineVariant.withValues(
             alpha: 0.7,
           ),
         ),
@@ -641,17 +598,13 @@ class _MoodScreenState extends State<MoodScreen> {
           Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.all(9),
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: colors.primary
-                      .withValues(
+                  color: colors.primary.withValues(
                     alpha: 0.10,
                   ),
                   borderRadius:
-                      BorderRadius.circular(
-                    12,
-                  ),
+                      BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.bar_chart_rounded,
@@ -665,25 +618,19 @@ class _MoodScreenState extends State<MoodScreen> {
               Expanded(
                 child: Column(
                   crossAxisAlignment:
-                      CrossAxisAlignment
-                          .start,
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Monthly Summary',
-                      style: theme
-                          .textTheme
-                          .titleMedium
+                      style: theme.textTheme.titleMedium
                           ?.copyWith(
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
 
                     Text(
                       '$totalLogged mood${totalLogged == 1 ? '' : 's'} logged',
-                      style: theme
-                          .textTheme
-                          .bodySmall
+                      style: theme.textTheme.bodySmall
                           ?.copyWith(
                         color:
                             colors.onSurfaceVariant,
@@ -700,123 +647,103 @@ class _MoodScreenState extends State<MoodScreen> {
           if (totalLogged == 0)
             _buildEmptySummary(context)
           else
-            ...summary.entries.map(
-              (entry) {
-                final mood =
-                    moodOptionFor(
-                  entry.key,
-                );
+            ...summary.entries.map((entry) {
+              final mood = moodOptionFor(
+                entry.key,
+              );
 
-                final percentage =
-                    entry.value /
-                        totalLogged;
+              final percentage =
+                  entry.value / totalLogged;
 
-                return Padding(
-                  padding:
-                      const EdgeInsets.only(
-                    bottom: 14,
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding:
-                                const EdgeInsets
-                                    .all(7),
-                            decoration:
-                                BoxDecoration(
-                              color: mood
-                                  .color
-                                  .withValues(
-                                alpha: 0.12,
-                              ),
-                              shape:
-                                  BoxShape.circle,
+              return Padding(
+                padding:
+                    const EdgeInsets.only(
+                  bottom: 14,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding:
+                              const EdgeInsets.all(7),
+                          decoration:
+                              BoxDecoration(
+                            color: mood.color
+                                .withValues(
+                              alpha: 0.12,
                             ),
-                            child: Icon(
-                              mood.icon,
-                              size: 17,
-                              color:
-                                  mood.color,
-                            ),
+                            shape: BoxShape.circle,
                           ),
-
-                          const SizedBox(
-                            width: 10,
+                          child: Icon(
+                            mood.icon,
+                            size: 17,
+                            color: mood.color,
                           ),
+                        ),
 
-                          Expanded(
-                            child: Text(
-                              mood.label,
-                              style: theme
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                fontWeight:
-                                    FontWeight
-                                        .w600,
-                              ),
-                            ),
-                          ),
+                        const SizedBox(width: 10),
 
-                          Text(
-                            '${entry.value}',
+                        Expanded(
+                          child: Text(
+                            mood.label,
                             style: theme
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(
                               fontWeight:
-                                  FontWeight
-                                      .w800,
-                              color:
-                                  mood.color,
+                                  FontWeight.w600,
                             ),
-                          ),
-
-                          const SizedBox(
-                            width: 8,
-                          ),
-
-                          Text(
-                            '${(percentage * 100).round()}%',
-                            style: theme
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                              color: colors
-                                  .onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(
-                        height: 8,
-                      ),
-
-                      ClipRRect(
-                        borderRadius:
-                            BorderRadius
-                                .circular(10),
-                        child:
-                            LinearProgressIndicator(
-                          value: percentage,
-                          minHeight: 8,
-                          color:
-                              mood.color,
-                          backgroundColor:
-                              mood.color
-                                  .withValues(
-                            alpha: 0.10,
                           ),
                         ),
+
+                        Text(
+                          '${entry.value}',
+                          style: theme
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                            fontWeight:
+                                FontWeight.w800,
+                            color: mood.color,
+                          ),
+                        ),
+
+                        const SizedBox(width: 8),
+
+                        Text(
+                          '${(percentage * 100).round()}%',
+                          style: theme
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(
+                            color: colors
+                                .onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    ClipRRect(
+                      borderRadius:
+                          BorderRadius.circular(10),
+                      child:
+                          LinearProgressIndicator(
+                        value: percentage,
+                        minHeight: 8,
+                        color: mood.color,
+                        backgroundColor:
+                            mood.color.withValues(
+                          alpha: 0.10,
+                        ),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }),
         ],
       ),
     );
@@ -830,39 +757,30 @@ class _MoodScreenState extends State<MoodScreen> {
 
     return Container(
       width: double.infinity,
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 26,
         horizontal: 16,
       ),
       decoration: BoxDecoration(
-        color: colors
-            .surfaceContainerHighest
-            .withValues(
-          alpha: 0.45,
-        ),
-        borderRadius:
-            BorderRadius.circular(16),
+        color: colors.surfaceContainerHighest
+            .withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
           Icon(
             Icons.insights_outlined,
             size: 38,
-            color:
-                colors.onSurfaceVariant,
+            color: colors.onSurfaceVariant,
           ),
 
           const SizedBox(height: 10),
 
           Text(
             'No moods logged yet',
-            style: theme
-                .textTheme
-                .titleSmall
+            style: theme.textTheme.titleSmall
                 ?.copyWith(
-              fontWeight:
-                  FontWeight.w700,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
@@ -870,14 +788,10 @@ class _MoodScreenState extends State<MoodScreen> {
 
           Text(
             'Start logging your mood to see your monthly pattern.',
-            textAlign:
-                TextAlign.center,
-            style: theme
-                .textTheme
-                .bodySmall
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall
                 ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
+              color: colors.onSurfaceVariant,
             ),
           ),
         ],
@@ -894,28 +808,26 @@ class _MoodScreenState extends State<MoodScreen> {
     DateTime date,
   ) {
     final now = DateTime.now();
+    final todayOnly = _dateOnly(now);
+    final selectedDate = _dateOnly(date);
 
-    final todayOnly = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
-
-    if (date.isAfter(todayOnly)) {
+    // Never allow future dates.
+    if (selectedDate.isAfter(todayOnly)) {
       return;
     }
 
     final app = AppScope.of(context);
-    final existing = app.moodForDay(date);
+    final existing = app.moodForDay(
+      selectedDate,
+    );
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      shape:
-          const RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
         ),
       ),
@@ -925,37 +837,38 @@ class _MoodScreenState extends State<MoodScreen> {
 
         return SafeArea(
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.fromLTRB(
+            padding: const EdgeInsets.fromLTRB(
               18,
               4,
               18,
               18,
             ),
             child: Column(
-              mainAxisSize:
-                  MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment:
-                  CrossAxisAlignment
-                      .start,
+                  CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isSameDay(date, now)
+                  _isSameDay(
+                    selectedDate,
+                    now,
+                  )
                       ? 'Today'
-                      : formatDate(date),
+                      : formatDate(selectedDate),
                   style: Theme.of(ctx)
                       .textTheme
                       .titleLarge
                       ?.copyWith(
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
 
                 const SizedBox(height: 5),
 
                 Text(
-                  'How were you feeling?',
+                  existing == null
+                      ? 'How were you feeling?'
+                      : 'Choose a mood to edit this entry',
                   style: Theme.of(ctx)
                       .textTheme
                       .bodyMedium
@@ -970,93 +883,87 @@ class _MoodScreenState extends State<MoodScreen> {
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children:
-                      kMoodOptions.map(
+                  children: kMoodOptions.map(
                     (mood) {
                       final selected =
                           existing?.mood ==
                               mood.key;
 
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.pop(
-                            ctx,
-                          );
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius:
+                              BorderRadius.circular(
+                            15,
+                          ),
+                          onTap: () {
+                            Navigator.pop(ctx);
 
-                          _logMood(
-                            context,
-                            mood.key,
-                            date,
-                          );
-                        },
-                        child:
-                            AnimatedContainer(
-                          duration:
-                              const Duration(
-                            milliseconds: 180,
-                          ),
-                          padding:
-                              const EdgeInsets
-                                  .symmetric(
-                            horizontal: 13,
-                            vertical: 10,
-                          ),
-                          decoration:
-                              BoxDecoration(
-                            color: selected
-                                ? mood.color
-                                    .withValues(
-                                    alpha:
-                                        0.14,
-                                  )
-                                : colors
-                                    .surface,
-                            borderRadius:
-                                BorderRadius
-                                    .circular(
-                              15,
+                            _logMood(
+                              context,
+                              mood.key,
+                              selectedDate,
+                            );
+                          },
+                          child:
+                              AnimatedContainer(
+                            duration:
+                                const Duration(
+                              milliseconds: 180,
                             ),
-                            border:
-                                Border.all(
+                            padding:
+                                const EdgeInsets
+                                    .symmetric(
+                              horizontal: 13,
+                              vertical: 10,
+                            ),
+                            decoration:
+                                BoxDecoration(
                               color: selected
                                   ? mood.color
-                                  : colors
-                                      .outlineVariant,
-                              width: selected
-                                  ? 1.5
-                                  : 1,
+                                      .withValues(
+                                      alpha: 0.14,
+                                    )
+                                  : colors.surface,
+                              borderRadius:
+                                  BorderRadius.circular(
+                                15,
+                              ),
+                              border: Border.all(
+                                color: selected
+                                    ? mood.color
+                                    : colors
+                                        .outlineVariant,
+                                width:
+                                    selected ? 1.5 : 1,
+                              ),
                             ),
-                          ),
-                          child: Column(
-                            mainAxisSize:
-                                MainAxisSize
-                                    .min,
-                            children: [
-                              Icon(
-                                mood.icon,
-                                size: 27,
-                                color:
-                                    mood.color,
-                              ),
-
-                              const SizedBox(
-                                height: 4,
-                              ),
-
-                              Text(
-                                mood.label,
-                                style:
-                                    TextStyle(
-                                  fontSize:
-                                      10,
-                                  fontWeight:
-                                      FontWeight
-                                          .w600,
-                                  color:
-                                      mood.color,
+                            child: Column(
+                              mainAxisSize:
+                                  MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  mood.icon,
+                                  size: 27,
+                                  color: mood.color,
                                 ),
-                              ),
-                            ],
+
+                                const SizedBox(
+                                  height: 4,
+                                ),
+
+                                Text(
+                                  mood.label,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight:
+                                        FontWeight.w600,
+                                    color:
+                                        mood.color,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -1081,31 +988,33 @@ class _MoodScreenState extends State<MoodScreen> {
     DateTime date,
   ) {
     final app = AppScope.of(context);
-    final existing =
-        app.moodForDay(date);
 
-    final noteCtrl =
-        TextEditingController(
+    final selectedDate = _dateOnly(date);
+
+    final existing = app.moodForDay(
+      selectedDate,
+    );
+
+    final noteCtrl = TextEditingController(
       text: existing?.note ?? '',
     );
 
-    final option =
-        moodOptionFor(key);
+    final option = moodOptionFor(key);
 
     final isToday = _isSameDay(
-      date,
+      selectedDate,
       DateTime.now(),
     );
 
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
-      shape:
-          const RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.vertical(
+      backgroundColor:
+          Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
         ),
       ),
@@ -1114,8 +1023,7 @@ class _MoodScreenState extends State<MoodScreen> {
             Theme.of(ctx).colorScheme;
 
         return AnimatedPadding(
-          duration:
-              const Duration(
+          duration: const Duration(
             milliseconds: 180,
           ),
           curve: Curves.easeOut,
@@ -1128,85 +1036,67 @@ class _MoodScreenState extends State<MoodScreen> {
             keyboardDismissBehavior:
                 ScrollViewKeyboardDismissBehavior
                     .onDrag,
-            padding:
-                const EdgeInsets.fromLTRB(
+            padding: const EdgeInsets.fromLTRB(
               18,
               4,
               18,
               18,
             ),
             child: Column(
-              mainAxisSize:
-                  MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment:
-                  CrossAxisAlignment
-                      .start,
+                  CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
                       padding:
-                          const EdgeInsets
-                              .all(10),
-                      decoration:
-                          BoxDecoration(
-                        color: option
-                            .color
+                          const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: option.color
                             .withValues(
                           alpha: 0.13,
                         ),
-                        shape:
-                            BoxShape.circle,
+                        shape: BoxShape.circle,
                       ),
                       child: Icon(
                         option.icon,
-                        color:
-                            option.color,
+                        color: option.color,
                         size: 24,
                       ),
                     ),
 
-                    const SizedBox(
-                      width: 11,
-                    ),
+                    const SizedBox(width: 11),
 
                     Expanded(
                       child: Column(
                         crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                            CrossAxisAlignment.start,
                         children: [
                           Text(
                             isToday
                                 ? 'Today'
                                 : formatDate(
-                                    date,
+                                    selectedDate,
                                   ),
-                            style: Theme.of(
-                              ctx,
-                            )
+                            style: Theme.of(ctx)
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
                               fontWeight:
-                                  FontWeight
-                                      .w800,
+                                  FontWeight.w800,
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 2,
-                          ),
+                          const SizedBox(height: 2),
 
                           Text(
                             option.label,
-                            style:
-                                TextStyle(
-                              color: option
-                                  .color,
+                            style: TextStyle(
+                              color:
+                                  option.color,
                               fontWeight:
-                                  FontWeight
-                                      .w700,
+                                  FontWeight.w700,
                             ),
                           ),
                         ],
@@ -1215,88 +1105,71 @@ class _MoodScreenState extends State<MoodScreen> {
                   ],
                 ),
 
-                const SizedBox(
-                  height: 14,
-                ),
+                const SizedBox(height: 14),
 
                 TextField(
                   controller: noteCtrl,
                   maxLines: 3,
                   minLines: 2,
                   textCapitalization:
-                      TextCapitalization
-                          .sentences,
-                  decoration:
-                      InputDecoration(
-                    labelText:
-                        'Mood note',
+                      TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelText: 'Mood note',
                     hintText:
                         'What made you feel this way?',
-                    prefixIcon:
-                        const Icon(
-                      Icons
-                          .edit_note_rounded,
+                    prefixIcon: const Icon(
+                      Icons.edit_note_rounded,
                     ),
-                    alignLabelWithHint:
-                        true,
+                    alignLabelWithHint: true,
                     filled: true,
                     fillColor: colors
                         .surfaceContainerHighest
                         .withValues(
                       alpha: 0.45,
                     ),
-                    border:
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder:
                         OutlineInputBorder(
                       borderRadius:
-                          BorderRadius
-                              .circular(
-                        16,
-                      ),
-                      borderSide:
-                          BorderSide.none,
+                          BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
                     ),
                     focusedBorder:
                         OutlineInputBorder(
                       borderRadius:
-                          BorderRadius
-                              .circular(
-                        16,
-                      ),
-                      borderSide:
-                          BorderSide(
-                        color:
-                            colors.primary,
+                          BorderRadius.circular(16),
+                      borderSide: BorderSide(
+                        color: colors.primary,
                         width: 1.2,
                       ),
                     ),
                   ),
                 ),
 
-                const SizedBox(
-                  height: 14,
-                ),
+                const SizedBox(height: 14),
 
                 SizedBox(
-                  width:
-                      double.infinity,
-                  child:
-                      FilledButton.icon(
+                  width: double.infinity,
+                  child: FilledButton.icon(
                     onPressed: () {
+                      final note =
+                          noteCtrl.text.trim();
+
                       app.upsertMood(
                         MoodEntry(
                           id: existing?.id ??
                               app.newId(),
-                          date: date,
+                          date: selectedDate,
                           mood: key,
-                          note: noteCtrl
-                              .text
-                              .trim(),
+                          note: note,
                         ),
                       );
 
-                      Navigator.pop(
-                        ctx,
-                      );
+                      Navigator.pop(ctx);
                     },
                     icon: const Icon(
                       Icons.check_rounded,
@@ -1310,8 +1183,7 @@ class _MoodScreenState extends State<MoodScreen> {
                         'Save Mood',
                         style: TextStyle(
                           fontWeight:
-                              FontWeight
-                                  .w700,
+                              FontWeight.w700,
                         ),
                       ),
                     ),
@@ -1336,8 +1208,7 @@ class _MoodCalendarGrid
     extends StatelessWidget {
   final DateTime month;
   final dynamic app;
-  final void Function(DateTime date)
-      onDayTap;
+  final void Function(DateTime date) onDayTap;
 
   const _MoodCalendarGrid({
     required this.month,
@@ -1350,29 +1221,25 @@ class _MoodCalendarGrid
     final colors =
         Theme.of(context).colorScheme;
 
-    final firstDay =
-        DateTime(
+    final firstDay = DateTime(
       month.year,
       month.month,
       1,
     );
 
-    final daysInMonth =
-        DateTime(
+    final daysInMonth = DateTime(
       month.year,
       month.month + 1,
       0,
     ).day;
 
-    // Sunday = 0, Monday = 1, etc.
+    // Sunday = 0, Monday = 1, ..., Saturday = 6.
     final leadingBlanks =
         firstDay.weekday % 7;
 
-    final today =
-        DateTime.now();
+    final today = DateTime.now();
 
-    final todayOnly =
-        DateTime(
+    final todayOnly = DateTime(
       today.year,
       today.month,
       today.day,
@@ -1380,8 +1247,6 @@ class _MoodCalendarGrid
 
     // =============================================================
     // WEEKDAY HEADER
-    //
-    // This is intentionally NOT inside the date GridView.
     // =============================================================
 
     const weekdays = [
@@ -1394,49 +1259,37 @@ class _MoodCalendarGrid
       'S',
     ];
 
-    final weekdayHeader =
-        Row(
-      children:
-          weekdays.map(
-        (day) {
-          return Expanded(
-            child: SizedBox(
-              height: 30,
-              child: Center(
-                child: Text(
-                  day,
-                  style:
-                      TextStyle(
-                    fontSize: 11,
-                    fontWeight:
-                        FontWeight
-                            .w700,
-                    color: colors
-                        .onSurfaceVariant,
-                  ),
+    final weekdayHeader = Row(
+      children: weekdays.map((day) {
+        return Expanded(
+          child: SizedBox(
+            height: 30,
+            child: Center(
+              child: Text(
+                day,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color:
+                      colors.onSurfaceVariant,
                 ),
               ),
             ),
-          );
-        },
-      ).toList(),
+          ),
+        );
+      }).toList(),
     );
 
     // =============================================================
     // DATE CELLS
     // =============================================================
 
-    final dayCells =
-        <Widget>[];
+    final dayCells = <Widget>[];
 
     // Empty cells before day 1.
-    for (
-      int i = 0;
-      i < leadingBlanks;
-      i++
-    ) {
+    for (int i = 0; i < leadingBlanks; i++) {
       dayCells.add(
-        const SizedBox(),
+        const SizedBox.shrink(),
       );
     }
 
@@ -1446,206 +1299,182 @@ class _MoodCalendarGrid
       day <= daysInMonth;
       day++
     ) {
-      final date =
-          DateTime(
+      final date = DateTime(
         month.year,
         month.month,
         day,
       );
 
-      final mood =
-          app.moodForDay(date);
+      final mood = app.moodForDay(date);
 
-      final moodOption =
-          mood != null
-              ? moodOptionFor(
-                  mood.mood,
-                )
-              : null;
+      final moodOption = mood != null
+          ? moodOptionFor(mood.mood)
+          : null;
 
       final isFuture =
-          date.isAfter(
-        todayOnly,
-      );
+          date.isAfter(todayOnly);
 
       final isToday =
-          date.year ==
-                  todayOnly.year &&
-              date.month ==
-                  todayOnly.month &&
-              date.day ==
-                  todayOnly.day;
+          date.year == todayOnly.year &&
+          date.month == todayOnly.month &&
+          date.day == todayOnly.day;
 
       dayCells.add(
-        GestureDetector(
-          behavior:
-              HitTestBehavior.opaque,
+        _MoodDayCell(
+          day: day,
+          moodOption: moodOption,
+          isToday: isToday,
+          isFuture: isFuture,
+          colors: colors,
           onTap: isFuture
               ? null
-              : () => onDayTap(
-                    date,
-                  ),
-          child:
-              AnimatedContainer(
-            duration:
-                const Duration(
-              milliseconds: 180,
-            ),
-            margin:
-                const EdgeInsets.all(
-              2,
-            ),
-
-            // -------------------------------------------------------
-            // IMPORTANT:
-            // No vertical padding that can cause overflow.
-            // The grid gives this cell a fixed 52px height.
-            // -------------------------------------------------------
-
-            decoration:
-                BoxDecoration(
-              color:
-                  moodOption != null
-                      ? moodOption
-                          .color
-                          .withValues(
-                          alpha: 0.08,
-                        )
-                      : colors
-                          .surfaceContainerHighest
-                          .withValues(
-                          alpha: 0.25,
-                        ),
-              borderRadius:
-                  BorderRadius.circular(
-                10,
-              ),
-              border:
-                  Border.all(
-                color: isToday
-                    ? colors.primary
-                    : moodOption != null
-                        ? moodOption
-                            .color
-                            .withValues(
-                            alpha: 0.18,
-                          )
-                        : Colors
-                            .transparent,
-                width: isToday
-                    ? 1.5
-                    : 1,
-              ),
-            ),
-
-            child: Column(
-              mainAxisAlignment:
-                  MainAxisAlignment
-                      .center,
-              mainAxisSize:
-                  MainAxisSize.min,
-              children: [
-                Text(
-                  '$day',
-                  style:
-                      TextStyle(
-                    fontSize: 11,
-                    height: 1.0,
-                    fontWeight:
-                        isToday
-                            ? FontWeight
-                                .w800
-                            : FontWeight
-                                .w500,
-                    color: isFuture
-                        ? colors
-                            .onSurface
-                            .withValues(
-                            alpha: 0.18,
-                          )
-                        : isToday
-                            ? colors
-                                .primary
-                            : colors
-                                .onSurfaceVariant,
-                  ),
-                ),
-
-                const SizedBox(
-                  height: 3,
-                ),
-
-                if (moodOption !=
-                    null)
-                  Icon(
-                    moodOption.icon,
-                    size: 17,
-                    color:
-                        moodOption
-                            .color,
-                  )
-                else
-                  Icon(
-                    Icons
-                        .circle_outlined,
-                    size: 10,
-                    color: isFuture
-                        ? colors
-                            .onSurface
-                            .withValues(
-                            alpha: 0.10,
-                          )
-                        : colors
-                            .onSurfaceVariant
-                            .withValues(
-                            alpha: 0.45,
-                          ),
-                  ),
-              ],
-            ),
-          ),
+              : () => onDayTap(date),
         ),
       );
     }
 
     return Column(
       children: [
-        // Weekday names.
         weekdayHeader,
 
-        const SizedBox(
-          height: 4,
-        ),
+        const SizedBox(height: 4),
 
-        // Actual calendar.
         GridView.builder(
           shrinkWrap: true,
           physics:
               const NeverScrollableScrollPhysics(),
-          itemCount:
-              dayCells.length,
+          itemCount: dayCells.length,
           gridDelegate:
               const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
 
-            // -------------------------------------------------------
-            // THIS FIXES THE OVERFLOW.
-            //
-            // Every date cell gets exactly 52 logical pixels
-            // of vertical space instead of being forced into
-            // a too-short aspect ratio.
-            // -------------------------------------------------------
+            // Fixed height prevents calendar overflow.
             mainAxisExtent: 52,
 
             crossAxisSpacing: 1,
             mainAxisSpacing: 2,
           ),
-          itemBuilder:
-              (context, index) {
+          itemBuilder: (context, index) {
             return dayCells[index];
           },
         ),
       ],
+    );
+  }
+}
+
+// =================================================================
+// CALENDAR DAY CELL
+// =================================================================
+
+class _MoodDayCell extends StatelessWidget {
+  final int day;
+  final dynamic moodOption;
+  final bool isToday;
+  final bool isFuture;
+  final ColorScheme colors;
+  final VoidCallback? onTap;
+
+  const _MoodDayCell({
+    required this.day,
+    required this.moodOption,
+    required this.isToday,
+    required this.isFuture,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasMood = moodOption != null;
+
+    final backgroundColor = hasMood
+        ? moodOption.color.withValues(
+            alpha: 0.08,
+          )
+        : colors.surfaceContainerHighest
+            .withValues(
+            alpha: 0.25,
+          );
+
+    final borderColor = isToday
+        ? colors.primary
+        : hasMood
+            ? moodOption.color.withValues(
+                alpha: 0.18,
+              )
+            : Colors.transparent;
+
+    final textColor = isFuture
+        ? colors.onSurface.withValues(
+            alpha: 0.18,
+          )
+        : isToday
+            ? colors.primary
+            : colors.onSurfaceVariant;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: AnimatedContainer(
+          duration: const Duration(
+            milliseconds: 180,
+          ),
+          margin: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius:
+                BorderRadius.circular(10),
+            border: Border.all(
+              color: borderColor,
+              width: isToday ? 1.5 : 1,
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment:
+                MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '$day',
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1,
+                  fontWeight: isToday
+                      ? FontWeight.w800
+                      : FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+
+              const SizedBox(height: 3),
+
+              if (hasMood)
+                Icon(
+                  moodOption.icon,
+                  size: 17,
+                  color: moodOption.color,
+                )
+              else
+                Icon(
+                  Icons.circle_outlined,
+                  size: 10,
+                  color: isFuture
+                      ? colors.onSurface
+                          .withValues(
+                          alpha: 0.10,
+                        )
+                      : colors.onSurfaceVariant
+                          .withValues(
+                          alpha: 0.45,
+                        ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
