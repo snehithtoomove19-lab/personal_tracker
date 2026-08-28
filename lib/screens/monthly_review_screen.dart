@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../models/mood_entry.dart';
@@ -69,7 +68,6 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
     final topMood = _getTopMood(moodSummary);
 
-    // moodOptionFor() is defined in models/mood_entry.dart
     final topMoodOption = topMood == null
         ? null
         : moodOptionFor(topMood.key);
@@ -95,8 +93,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     final savings = totalIncome - totalSpent;
     final savingsPositive = savings >= 0;
 
-    final bottomInset =
-        MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -237,16 +234,16 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             size: 24,
           ),
         ),
+
         const SizedBox(width: 13),
+
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Monthly Review',
-                style:
-                    theme.textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.8,
                 ),
@@ -254,8 +251,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               const SizedBox(height: 3),
               Text(
                 'Your month, beautifully summarized',
-                style:
-                    theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
@@ -295,17 +291,14 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(
-              alpha: 0.22,
-            ),
+            color: colors.primary.withValues(alpha: 0.22),
             blurRadius: 26,
             offset: const Offset(0, 11),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.symmetric(
@@ -313,11 +306,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(
-                alpha: 0.16,
-              ),
-              borderRadius:
-                  BorderRadius.circular(12),
+              color: Colors.white.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -346,8 +336,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             savingsPositive
                 ? 'You finished the month in the green.'
                 : 'Your spending was higher than your income.',
-            style:
-                theme.textTheme.headlineSmall?.copyWith(
+            style: theme.textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.5,
@@ -361,11 +350,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             savingsPositive
                 ? 'Great work keeping your finances under control.'
                 : 'Review your expenses and find opportunities to save.',
-            style:
-                theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(
-                alpha: 0.82,
-              ),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.82),
               height: 1.45,
             ),
           ),
@@ -383,7 +369,9 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   ),
                 ),
               ),
+
               _heroDivider(),
+
               Expanded(
                 child: _HeroMetric(
                   label: 'Spent',
@@ -393,12 +381,12 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   ),
                 ),
               ),
+
               _heroDivider(),
+
               Expanded(
                 child: _HeroMetric(
-                  label: savingsPositive
-                      ? 'Saved'
-                      : 'Deficit',
+                  label: savingsPositive ? 'Saved' : 'Deficit',
                   value: formatMoney(
                     savings.abs(),
                     currency,
@@ -416,9 +404,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     return Container(
       width: 1,
       height: 38,
-      color: Colors.white.withValues(
-        alpha: 0.20,
-      ),
+      color: Colors.white.withValues(alpha: 0.20),
     );
   }
 
@@ -426,21 +412,19 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
   // MONTH SELECTOR
   // ===========================================================================
 
-  Widget _buildMonthSelector(
-    BuildContext context,
-  ) {
+  Widget _buildMonthSelector(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest
-            .withValues(alpha: 0.65),
+        color: colors.surfaceContainerHighest.withValues(
+          alpha: 0.65,
+        ),
         borderRadius: BorderRadius.circular(19),
         border: Border.all(
-          color: colors.outlineVariant
-              .withValues(alpha: 0.35),
+          color: colors.outlineVariant.withValues(alpha: 0.35),
         ),
       ),
       child: Row(
@@ -459,8 +443,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 Text(
                   formatMonthYear(_month),
                   textAlign: TextAlign.center,
-                  style:
-                      theme.textTheme.titleMedium?.copyWith(
+                  style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w900,
                   ),
                 ),
@@ -469,8 +452,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   _isCurrentMonth
                       ? 'Current month'
                       : 'Monthly overview',
-                  style:
-                      theme.textTheme.labelSmall?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
                 ),
@@ -482,8 +464,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             tooltip: _isCurrentMonth
                 ? 'Current month'
                 : 'Next month',
-            onPressed:
-                _isCurrentMonth ? null : _nextMonth,
+            onPressed: _isCurrentMonth ? null : _nextMonth,
             icon: const Icon(
               Icons.chevron_right_rounded,
             ),
@@ -511,11 +492,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: colors.primary.withValues(
-              alpha: 0.10,
-            ),
-            borderRadius:
-                BorderRadius.circular(11),
+            color: colors.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(
             icon,
@@ -523,11 +501,12 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             color: colors.primary,
           ),
         ),
+
         const SizedBox(width: 9),
+
         Text(
           title,
-          style:
-              theme.textTheme.titleMedium?.copyWith(
+          style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w900,
             letterSpacing: -0.2,
           ),
@@ -555,10 +534,15 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
       crossAxisCount: 2,
       crossAxisSpacing: 12,
       mainAxisSpacing: 12,
+
+      // FIX:
+      // The old 1.27 ratio made the cards slightly too short.
+      // 1.08 gives the cards enough vertical room.
+      childAspectRatio: 1.08,
+
       shrinkWrap: true,
-      physics:
-          const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.27,
+      physics: const NeverScrollableScrollPhysics(),
+
       children: [
         _MetricCard(
           icon: Icons.arrow_upward_rounded,
@@ -568,9 +552,9 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             currency,
           ),
           description: 'Expenses this month',
-          iconColor:
-              const Color(0xFFE2574C),
+          iconColor: const Color(0xFFE2574C),
         ),
+
         _MetricCard(
           icon: Icons.arrow_downward_rounded,
           title: 'Total Income',
@@ -579,16 +563,14 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             currency,
           ),
           description: 'Income this month',
-          iconColor:
-              const Color(0xFF2FB380),
+          iconColor: const Color(0xFF2FB380),
         ),
+
         _MetricCard(
           icon: savingsPositive
               ? Icons.savings_rounded
               : Icons.warning_rounded,
-          title: savingsPositive
-              ? 'Saved'
-              : 'Deficit',
+          title: savingsPositive ? 'Saved' : 'Deficit',
           value: formatMoney(
             savings.abs(),
             currency,
@@ -600,6 +582,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               ? Colors.teal
               : Colors.red,
         ),
+
         _MetricCard(
           icon: Icons.percent_rounded,
           title: 'Balance',
@@ -607,8 +590,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               ? '—'
               : '${balancePercentage.clamp(-999.0, 999.0).toStringAsFixed(0)}%',
           description: 'Income retained',
-          iconColor:
-              Colors.deepPurple,
+          iconColor: Colors.deepPurple,
         ),
       ],
     );
@@ -624,8 +606,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     int goalsAchieved,
     dynamic productiveDay,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return SectionCard(
       child: Column(
@@ -666,21 +647,18 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     );
   }
 
-  Widget _activityDivider(
-    BuildContext context,
-  ) {
-    final colors =
-        Theme.of(context).colorScheme;
+  Widget _activityDivider(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
 
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 8,
       ),
       child: Divider(
         height: 1,
-        color: colors.outlineVariant
-            .withValues(alpha: 0.35),
+        color: colors.outlineVariant.withValues(
+          alpha: 0.35,
+        ),
       ),
     );
   }
@@ -698,45 +676,38 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    if (topMood == null ||
-        topMoodOption == null) {
+    if (topMood == null || topMoodOption == null) {
       return SectionCard(
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             vertical: 18,
           ),
           child: Row(
             children: [
               _MoodIcon(
-                icon:
-                    Icons.sentiment_neutral_rounded,
-                color:
-                    colors.onSurfaceVariant,
+                icon: Icons.sentiment_neutral_rounded,
+                color: colors.onSurfaceVariant,
               ),
+
               const SizedBox(width: 14),
+
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'No mood data yet',
-                      style: theme
-                          .textTheme.titleSmall
-                          ?.copyWith(
-                        fontWeight:
-                            FontWeight.w900,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     Text(
                       'Log your mood throughout the month to see your emotional trend here.',
-                      style: theme
-                          .textTheme.bodySmall
-                          ?.copyWith(
-                        color:
-                            colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                         height: 1.4,
                       ),
                     ),
@@ -749,22 +720,16 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
       );
     }
 
-    final totalMoodEntries =
-        moodSummary.values.fold<int>(
+    final totalMoodEntries = moodSummary.values.fold<int>(
       0,
       (sum, value) => sum + value,
     );
 
-    final percentage =
-        totalMoodEntries == 0
-            ? 0
-            : ((topMood.value /
-                        totalMoodEntries) *
-                    100)
-                .round();
+    final percentage = totalMoodEntries == 0
+        ? 0
+        : ((topMood.value / totalMoodEntries) * 100).round();
 
-    final moodColor =
-        topMoodOption.color as Color;
+    final moodColor = topMoodOption.color as Color;
 
     return Container(
       padding: const EdgeInsets.all(19),
@@ -773,18 +738,13 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            moodColor.withValues(
-              alpha: 0.13,
-            ),
+            moodColor.withValues(alpha: 0.13),
             colors.surface,
           ],
         ),
-        borderRadius:
-            BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: moodColor.withValues(
-            alpha: 0.20,
-          ),
+          color: moodColor.withValues(alpha: 0.20),
         ),
       ),
       child: Row(
@@ -799,45 +759,35 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Your dominant mood',
-                  style: theme
-                      .textTheme.labelMedium
-                      ?.copyWith(
-                    color:
-                        colors.onSurfaceVariant,
-                    fontWeight:
-                        FontWeight.w700,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
+
                 const SizedBox(height: 3),
+
                 Text(
-                  topMoodOption.label
-                      .toString(),
+                  topMoodOption.label.toString(),
                   maxLines: 1,
-                  overflow:
-                      TextOverflow.ellipsis,
-                  style: theme
-                      .textTheme.titleLarge
-                      ?.copyWith(
-                    fontWeight:
-                        FontWeight.w900,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
+
                 const SizedBox(height: 4),
+
                 Text(
                   '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} • $percentage% of logged moods',
                   maxLines: 2,
-                  overflow:
-                      TextOverflow.ellipsis,
-                  style: theme
-                      .textTheme.bodySmall
-                      ?.copyWith(
-                    color:
-                        colors.onSurfaceVariant,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -880,52 +830,44 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
       title = 'Start your month';
       message =
           'Add expenses, income, tasks and moods to build a useful monthly picture.';
-      icon =
-          Icons.rocket_launch_rounded;
+      icon = Icons.rocket_launch_rounded;
     } else if (!savingsPositive) {
       title = 'Watch your spending';
       message =
           'Your expenses are currently higher than your income. Review your biggest spending categories.';
-      icon =
-          Icons.trending_down_rounded;
-    } else if (tasksCompleted > 0 &&
-        goalsAchieved > 0) {
+      icon = Icons.trending_down_rounded;
+    } else if (tasksCompleted > 0 && goalsAchieved > 0) {
       title = 'Strong month';
       message =
           'You made financial progress while also completing tasks and achieving goals. Keep the momentum going.';
-      icon =
-          Icons.celebration_rounded;
+      icon = Icons.celebration_rounded;
     } else if (savings > 0) {
-      title =
-          'Good financial progress';
+      title = 'Good financial progress';
       message =
           'You finished with money left over. Consider moving part of it toward your savings goal.';
-      icon =
-          Icons.savings_rounded;
+      icon = Icons.savings_rounded;
     } else {
       title = 'Keep building';
       message =
           'Small improvements across money, tasks, goals and mood tracking can make next month even better.';
-      icon =
-          Icons.auto_awesome_rounded;
+      icon = Icons.auto_awesome_rounded;
     }
 
     return Container(
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
-        color: colors
-            .surfaceContainerHighest
-            .withValues(alpha: 0.48),
-        borderRadius:
-            BorderRadius.circular(25),
+        color: colors.surfaceContainerHighest.withValues(
+          alpha: 0.48,
+        ),
+        borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: colors.outlineVariant
-              .withValues(alpha: 0.35),
+          color: colors.outlineVariant.withValues(
+            alpha: 0.35,
+          ),
         ),
       ),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 46,
@@ -937,8 +879,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   colors.secondary,
                 ],
               ),
-              borderRadius:
-                  BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               icon,
@@ -951,16 +892,12 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: theme
-                      .textTheme.titleSmall
-                      ?.copyWith(
-                    fontWeight:
-                        FontWeight.w900,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
 
@@ -968,40 +905,33 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
                 Text(
                   message,
-                  style: theme
-                      .textTheme.bodySmall
-                      ?.copyWith(
-                    color:
-                        colors.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                     height: 1.45,
                   ),
                 ),
 
                 if (topMoodOption != null) ...[
                   const SizedBox(height: 10),
+
                   Row(
                     children: [
                       Icon(
                         topMoodOption.icon,
                         size: 15,
-                        color:
-                            topMoodOption.color,
+                        color: topMoodOption.color,
                       ),
+
                       const SizedBox(width: 5),
+
                       Expanded(
                         child: Text(
                           'Mood trend: ${topMoodOption.label}',
                           maxLines: 1,
-                          overflow:
-                              TextOverflow.ellipsis,
-                          style: theme
-                              .textTheme
-                              .labelSmall
-                              ?.copyWith(
-                            color:
-                                topMoodOption.color,
-                            fontWeight:
-                                FontWeight.w800,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: topMoodOption.color,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -1039,11 +969,10 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
       } else if (rawValue is num) {
         count = rawValue.toInt();
       } else {
-        count =
-            int.tryParse(
-                  rawValue.toString(),
-                ) ??
-                0;
+        count = int.tryParse(
+              rawValue.toString(),
+            ) ??
+            0;
       }
 
       if (count > 0) {
@@ -1062,8 +991,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     }
 
     return moodSummary.entries.reduce(
-      (a, b) =>
-          a.value >= b.value ? a : b,
+      (a, b) => a.value >= b.value ? a : b,
     );
   }
 
@@ -1095,9 +1023,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
   String _monthName(DateTime date) {
     try {
-      return formatMonthYear(date)
-          .split(' ')
-          .first;
+      return formatMonthYear(date).split(' ').first;
     } catch (_) {
       return '${date.month}';
     }
@@ -1120,29 +1046,29 @@ class _HeroMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 7,
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: TextStyle(
-              color: Colors.white
-                  .withValues(alpha: 0.72),
+              color: Colors.white.withValues(
+                alpha: 0.72,
+              ),
               fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
           ),
+
           const SizedBox(height: 3),
+
           Text(
             value,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 14,
@@ -1183,11 +1109,11 @@ class _MetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius:
-            BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colors.outlineVariant
-              .withValues(alpha: 0.38),
+          color: colors.outlineVariant.withValues(
+            alpha: 0.38,
+          ),
         ),
         boxShadow: [
           BoxShadow(
@@ -1200,8 +1126,7 @@ class _MetricCard extends StatelessWidget {
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 35,
@@ -1210,8 +1135,7 @@ class _MetricCard extends StatelessWidget {
               color: iconColor.withValues(
                 alpha: 0.10,
               ),
-              borderRadius:
-                  BorderRadius.circular(11),
+              borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(
               icon,
@@ -1225,15 +1149,10 @@ class _MetricCard extends StatelessWidget {
           Text(
             title,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            style: theme
-                .textTheme.labelMedium
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
-              fontWeight:
-                  FontWeight.w700,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
             ),
           ),
 
@@ -1242,13 +1161,9 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            style: theme
-                .textTheme.titleMedium
-                ?.copyWith(
-              fontWeight:
-                  FontWeight.w900,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
               letterSpacing: -0.3,
             ),
           ),
@@ -1258,13 +1173,9 @@ class _MetricCard extends StatelessWidget {
           Text(
             description,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            style: theme
-                .textTheme.labelSmall
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colors.onSurfaceVariant,
             ),
           ),
         ],
@@ -1306,8 +1217,7 @@ class _ActivityRow extends StatelessWidget {
             color: color.withValues(
               alpha: 0.10,
             ),
-            borderRadius:
-                BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(13),
           ),
           child: Icon(
             icon,
@@ -1320,32 +1230,25 @@ class _ActivityRow extends StatelessWidget {
 
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
                 maxLines: 1,
-                overflow:
-                    TextOverflow.ellipsis,
-                style: theme
-                    .textTheme.titleSmall
-                    ?.copyWith(
-                  fontWeight:
-                      FontWeight.w800,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
               ),
+
               const SizedBox(height: 2),
+
               Text(
                 subtitle,
                 maxLines: 1,
-                overflow:
-                    TextOverflow.ellipsis,
-                style: theme
-                    .textTheme.labelSmall
-                    ?.copyWith(
-                  color:
-                      colors.onSurfaceVariant,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: colors.onSurfaceVariant,
                 ),
               ),
             ],
@@ -1358,14 +1261,10 @@ class _ActivityRow extends StatelessWidget {
           child: Text(
             value,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.end,
-            style: theme
-                .textTheme.titleMedium
-                ?.copyWith(
-              fontWeight:
-                  FontWeight.w900,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w900,
             ),
           ),
         ),
