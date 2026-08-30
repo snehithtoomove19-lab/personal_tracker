@@ -1,10 +1,28 @@
+
 import 'package:flutter/material.dart';
 
+/// ─────────────────────────────────────────────────────────────
+/// SECTION CARD
+/// ─────────────────────────────────────────────────────────────
+///
+/// A modern reusable card for grouping content.
+///
+/// Features:
+/// • Rounded modern design
+/// • Subtle border
+/// • Soft shadow
+/// • Optional title
+/// • Optional trailing widget
+/// • Optional title icon
+/// • Dark-mode friendly
+/// • Fully dependency-free
 class SectionCard extends StatelessWidget {
   final String? title;
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Widget? trailing;
+  final IconData? titleIcon;
+  final Color? accentColor;
 
   const SectionCard({
     super.key,
@@ -12,31 +30,81 @@ class SectionCard extends StatelessWidget {
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.trailing,
+    this.titleIcon,
+    this.accentColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final accent = accentColor ?? colorScheme.primary;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.12),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(
+              alpha: theme.brightness == Brightness.dark ? 0.18 : 0.05,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
       child: Padding(
         padding: padding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (title != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(title!,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w700)),
-                    if (trailing != null) trailing!,
+            if (title != null) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (titleIcon != null) ...[
+                    Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: 0.11),
+                        borderRadius: BorderRadius.circular(11),
+                      ),
+                      child: Icon(
+                        titleIcon,
+                        size: 19,
+                        color: accent,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
                   ],
-                ),
+                  Expanded(
+                    child: Text(
+                      title!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.2,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  if (trailing != null) ...[
+                    const SizedBox(width: 10),
+                    trailing!,
+                  ],
+                ],
               ),
+              const SizedBox(height: 14),
+            ],
             child,
           ],
         ),
@@ -45,32 +113,173 @@ class SectionCard extends StatelessWidget {
   }
 }
 
+/// ─────────────────────────────────────────────────────────────
+/// STAT TILE
+/// ─────────────────────────────────────────────────────────────
+///
+/// A compact modern statistic component.
+///
+/// Example:
+///
+/// StatTile(
+///   label: 'Expenses',
+///   value: '₹12,450',
+///   icon: Icons.payments_rounded,
+///   color: Colors.red,
+/// )
 class StatTile extends StatelessWidget {
   final String label;
   final String value;
   final Color? color;
   final IconData? icon;
 
-  const StatTile({super.key, required this.label, required this.value, this.color, this.icon});
+  /// Optional subtitle displayed underneath the value.
+  final String? subtitle;
+
+  /// Optional trend text such as "+12%" or "-8%".
+  final String? trend;
+
+  /// Whether to display the tile inside a rounded container.
+  final bool showBackground;
+
+  const StatTile({
+    super.key,
+    required this.label,
+    required this.value,
+    this.color,
+    this.icon,
+    this.subtitle,
+    this.trend,
+    this.showBackground = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final accent = color ?? colorScheme.primary;
+
+    final content = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        // Label row
         Row(
           children: [
-            if (icon != null) Icon(icon, size: 16, color: color),
-            if (icon != null) const SizedBox(width: 4),
-            Text(label, style: TextStyle(color: Colors.grey.shade600, fontSize: 12)),
+            if (icon != null) ...[
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.11),
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Icon(
+                  icon,
+                  size: 15,
+                  color: accent,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: colorScheme.onSurface.withValues(alpha: 0.55),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 4),
-        Text(value,
+
+        const SizedBox(height: 9),
+
+        // Main value + trend
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Flexible(
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 19,
+                  height: 1.1,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+
+            if (trend != null) ...[
+              const SizedBox(width: 7),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    trend!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: accent,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+
+        if (subtitle != null) ...[
+          const SizedBox(height: 5),
+          Text(
+            subtitle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: color ?? Colors.black87)),
+              color: colorScheme.onSurface.withValues(alpha: 0.42),
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ],
+    );
+
+    if (!showBackground) {
+      return content;
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(
+          color: accent.withValues(alpha: 0.08),
+        ),
+      ),
+      child: content,
     );
   }
 }
+
