@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,401 +16,465 @@ void showQuickAddSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
+    barrierColor: Colors.black.withValues(alpha: 0.55),
     builder: (ctx) {
       final app = AppScope.of(ctx);
+      final theme = Theme.of(ctx);
+      final colors = theme.colorScheme;
+      final isDark = theme.brightness == Brightness.dark;
 
       return SafeArea(
+        top: false,
         child: Container(
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(ctx).size.height * 0.88,
+            maxHeight: MediaQuery.of(ctx).size.height * 0.92,
           ),
           decoration: BoxDecoration(
-            color: Theme.of(ctx).colorScheme.surface,
+            color: colors.surface,
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(28),
+              top: Radius.circular(32),
             ),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                blurRadius: 30,
-                spreadRadius: 5,
-                offset: Offset(0, -8),
+                color: Colors.black.withValues(alpha: 0.18),
+                blurRadius: 40,
+                offset: const Offset(0, -12),
               ),
             ],
           ),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ------------------------------------------------------
-                  // HANDLE
-                  // ------------------------------------------------------
+            padding: EdgeInsets.fromLTRB(
+              18,
+              10,
+              18,
+              20 + MediaQuery.of(ctx).padding.bottom,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ========================================================
+                // HANDLE
+                // ========================================================
 
-                  Center(
-                    child: Container(
-                      width: 42,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade400,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: colors.onSurface.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 18),
+                const SizedBox(height: 22),
 
-                  // ------------------------------------------------------
-                  // HEADER
-                  // ------------------------------------------------------
+                // ========================================================
+                // HERO HEADER
+                // ========================================================
 
-                  Row(
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        colors.primary,
+                        colors.primary.withValues(alpha: 0.72),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(26),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.primary.withValues(alpha: 0.22),
+                        blurRadius: 22,
+                        offset: const Offset(0, 9),
+                      ),
+                    ],
+                  ),
+                  child: Row(
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 54,
+                        height: 54,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [
-                              Colors.indigo,
-                              Colors.deepPurple,
-                            ],
+                          color: Colors.white.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(17),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.12),
                           ),
-                          borderRadius: BorderRadius.circular(15),
                         ),
                         child: const Icon(
                           Icons.bolt_rounded,
                           color: Colors.white,
-                          size: 28,
+                          size: 30,
                         ),
                       ),
                       const SizedBox(width: 14),
-                      Expanded(
+                      const Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               'Quick Add',
-                              style: Theme.of(ctx)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                  ),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 21,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.4,
+                              ),
                             ),
-                            const SizedBox(height: 3),
+                            SizedBox(height: 4),
                             Text(
-                              'Track something in seconds',
-                              style: Theme.of(ctx)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.grey.shade600,
-                                  ),
+                              'Capture something in seconds',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ------------------------------------------------------
-                  // MONEY
-                  // ------------------------------------------------------
-
-                  _sectionTitle(
-                    context: ctx,
-                    title: 'Money',
-                    icon: Icons.account_balance_wallet_outlined,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _quickCard(
-                          context: ctx,
-                          icon: Icons.remove_circle_outline,
-                          title: 'Expense',
-                          subtitle: 'Add spending',
-                          color: Colors.redAccent,
-                          onTap: () {
-                            Navigator.pop(ctx);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const AddTransactionScreen(
-                                  type: TxType.expense,
-                                ),
-                              ),
-                            );
-                          },
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 9,
+                          vertical: 6,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _quickCard(
-                          context: ctx,
-                          icon: Icons.add_circle_outline,
-                          title: 'Income',
-                          subtitle: 'Add earnings',
-                          color: Colors.green,
-                          onTap: () {
-                            Navigator.pop(ctx);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    const AddTransactionScreen(
-                                  type: TxType.income,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // ------------------------------------------------------
-                  // PRODUCTIVITY
-                  // ------------------------------------------------------
-
-                  _sectionTitle(
-                    context: ctx,
-                    title: 'Productivity',
-                    icon: Icons.auto_awesome_outlined,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _quickCard(
-                          context: ctx,
-                          icon: Icons.check_circle_outline,
-                          title: 'Task',
-                          subtitle: 'Stay organized',
-                          color: Colors.blue,
-                          onTap: () {
-                            Navigator.pop(ctx);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AddTaskScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _quickCard(
-                          context: ctx,
-                          icon: Icons.note_add_outlined,
-                          title: 'Note',
-                          subtitle: 'Save an idea',
-                          color: Colors.orange,
-                          onTap: () {
-                            Navigator.pop(ctx);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AddNoteScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _quickCard(
-                          context: ctx,
-                          icon: Icons.flag_outlined,
-                          title: 'Goal',
-                          subtitle: 'Set a target',
-                          color: Colors.purple,
-                          onTap: () {
-                            Navigator.pop(ctx);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AddGoalScreen(),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // ------------------------------------------------------
-                  // LIFESTYLE
-                  // ------------------------------------------------------
-
-                  _sectionTitle(
-                    context: ctx,
-                    title: 'Lifestyle',
-                    icon: Icons.favorite_outline,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // GYM
-                  _largeLifestyleCard(
-                    context: ctx,
-                    icon: Icons.fitness_center_rounded,
-                    title: 'Gym',
-                    subtitle: 'Track your workout',
-                    color: Colors.deepOrange,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showGymDialog(context);
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // SLEEP
-                  _largeLifestyleCard(
-                    context: ctx,
-                    icon: Icons.bedtime_rounded,
-                    title: 'Sleep',
-                    subtitle: 'Track your sleep & recovery',
-                    color: Colors.indigo,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showSleepDialog(context);
-                    },
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // COOK
-                  _largeLifestyleCard(
-                    context: ctx,
-                    icon: Icons.restaurant_rounded,
-                    title: 'Cook',
-                    subtitle: 'Track meals you prepare',
-                    color: Colors.teal,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showCookDialog(context);
-                    },
-                  ),
-
-                  const SizedBox(height: 22),
-
-                  // ------------------------------------------------------
-                  // TOOLS
-                  // ------------------------------------------------------
-
-                  _sectionTitle(
-                    context: ctx,
-                    title: 'Tools',
-                    icon: Icons.tune_rounded,
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // GitHub
-                  _toolTile(
-                    context: ctx,
-                    icon: Icons.code_rounded,
-                    title: 'GitHub',
-                    subtitle: 'Open your GitHub profile',
-                    color: Colors.black,
-                    onTap: () {
-                      Navigator.pop(ctx);
-                      _showGitHubDialog(context);
-                    },
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Settings
-                  _toolTile(
-                    context: ctx,
-                    icon: Icons.settings_outlined,
-                    title: 'Settings',
-                    subtitle: 'Manage your app',
-                    color: Colors.grey,
-                    onTap: () {
-                      Navigator.pop(ctx);
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // ------------------------------------------------------
-                  // DARK MODE
-                  // ------------------------------------------------------
-
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withValues(alpha: 0.55),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: SwitchListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      secondary: Container(
-                        width: 42,
-                        height: 42,
                         decoration: BoxDecoration(
-                          color: Colors.indigo.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(13),
+                          color: Colors.white.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Icon(
-                          app.darkMode
-                              ? Icons.dark_mode_rounded
-                              : Icons.light_mode_rounded,
-                          color: Colors.indigo,
-                        ),
-                      ),
-                      title: const Text(
-                        'Dark Mode',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                        child: const Icon(
+                          Icons.auto_awesome_rounded,
+                          color: Colors.white,
+                          size: 17,
                         ),
                       ),
-                      subtitle: Text(
-                        app.darkMode ? 'Enabled' : 'Disabled',
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // ========================================================
+                // MONEY
+                // ========================================================
+
+                _sectionTitle(
+                  context: ctx,
+                  title: 'Money',
+                  subtitle: 'Keep your finances up to date',
+                  icon: Icons.account_balance_wallet_rounded,
+                ),
+
+                const SizedBox(height: 11),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _quickCard(
+                        context: ctx,
+                        icon: Icons.arrow_downward_rounded,
+                        title: 'Expense',
+                        subtitle: 'Add spending',
+                        color: const Color(0xFFE2574C),
+                        onTap: () {
+                          Navigator.pop(ctx);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddTransactionScreen(
+                                type: TxType.expense,
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                      value: app.darkMode,
-                      onChanged: (value) {
-                        app.setDarkMode(value);
-                      },
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _quickCard(
+                        context: ctx,
+                        icon: Icons.arrow_upward_rounded,
+                        title: 'Income',
+                        subtitle: 'Add earnings',
+                        color: const Color(0xFF2FB380),
+                        onTap: () {
+                          Navigator.pop(ctx);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddTransactionScreen(
+                                type: TxType.income,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // ========================================================
+                // PRODUCTIVITY
+                // ========================================================
+
+                _sectionTitle(
+                  context: ctx,
+                  title: 'Productivity',
+                  subtitle: 'Turn ideas into progress',
+                  icon: Icons.auto_awesome_rounded,
+                ),
+
+                const SizedBox(height: 11),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _quickCard(
+                        context: ctx,
+                        icon: Icons.check_circle_outline_rounded,
+                        title: 'Task',
+                        subtitle: 'Stay organized',
+                        color: const Color(0xFF4285F4),
+                        onTap: () {
+                          Navigator.pop(ctx);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddTaskScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _quickCard(
+                        context: ctx,
+                        icon: Icons.note_add_outlined,
+                        title: 'Note',
+                        subtitle: 'Save an idea',
+                        color: const Color(0xFFF59E0B),
+                        onTap: () {
+                          Navigator.pop(ctx);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddNoteScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _quickCard(
+                        context: ctx,
+                        icon: Icons.flag_outlined,
+                        title: 'Goal',
+                        subtitle: 'Set a target',
+                        color: const Color(0xFF8B5CF6),
+                        onTap: () {
+                          Navigator.pop(ctx);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AddGoalScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+
+                // ========================================================
+                // LIFESTYLE
+                // ========================================================
+
+                _sectionTitle(
+                  context: ctx,
+                  title: 'Lifestyle',
+                  subtitle: 'Track the things that matter',
+                  icon: Icons.favorite_rounded,
+                ),
+
+                const SizedBox(height: 11),
+
+                _largeLifestyleCard(
+                  context: ctx,
+                  icon: Icons.fitness_center_rounded,
+                  title: 'Gym',
+                  subtitle: 'Track your workout & activity',
+                  color: const Color(0xFFF97316),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showGymDialog(context);
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                _largeLifestyleCard(
+                  context: ctx,
+                  icon: Icons.bedtime_rounded,
+                  title: 'Sleep',
+                  subtitle: 'Track sleep & recovery',
+                  color: const Color(0xFF6366F1),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showSleepDialog(context);
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                _largeLifestyleCard(
+                  context: ctx,
+                  icon: Icons.restaurant_rounded,
+                  title: 'Cook',
+                  subtitle: 'Track meals you prepare',
+                  color: const Color(0xFF14B8A6),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showCookDialog(context);
+                  },
+                ),
+
+                const SizedBox(height: 24),
+
+                // ========================================================
+                // TOOLS
+                // ========================================================
+
+                _sectionTitle(
+                  context: ctx,
+                  title: 'Tools',
+                  subtitle: 'Useful shortcuts',
+                  icon: Icons.tune_rounded,
+                ),
+
+                const SizedBox(height: 11),
+
+                _toolTile(
+                  context: ctx,
+                  icon: Icons.code_rounded,
+                  title: 'GitHub',
+                  subtitle: 'Open your GitHub profile',
+                  color: isDark ? Colors.white : Colors.black87,
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _showGitHubDialog(context);
+                  },
+                ),
+
+                const SizedBox(height: 9),
+
+                _toolTile(
+                  context: ctx,
+                  icon: Icons.settings_outlined,
+                  title: 'Settings',
+                  subtitle: 'Manage your app',
+                  color: colors.primary,
+                  onTap: () {
+                    Navigator.pop(ctx);
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                // ========================================================
+                // DARK MODE
+                // ========================================================
+
+                Container(
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest.withValues(
+                      alpha: isDark ? 0.55 : 0.48,
+                    ),
+                    borderRadius: BorderRadius.circular(19),
+                    border: Border.all(
+                      color: colors.outline.withValues(alpha: 0.06),
                     ),
                   ),
-                ],
-              ),
+                  child: SwitchListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 3,
+                    ),
+                    secondary: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.primary.withValues(alpha: 0.11),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Icon(
+                        app.darkMode
+                            ? Icons.dark_mode_rounded
+                            : Icons.light_mode_rounded,
+                        color: colors.primary,
+                        size: 22,
+                      ),
+                    ),
+                    title: const Text(
+                      'Dark Mode',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
+                    ),
+                    subtitle: Text(
+                      app.darkMode
+                          ? 'Dark appearance enabled'
+                          : 'Use the light appearance',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: colors.onSurface.withValues(alpha: 0.55),
+                      ),
+                    ),
+                    value: app.darkMode,
+                    activeThumbColor: colors.primary,
+                    onChanged: (value) {
+                      app.setDarkMode(value);
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Center(
+                  child: Text(
+                    'Quick Add • Personal Tracker',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: colors.onSurface.withValues(alpha: 0.30),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -425,22 +490,49 @@ void showQuickAddSheet(BuildContext context) {
 Widget _sectionTitle({
   required BuildContext context,
   required String title,
+  required String subtitle,
   required IconData icon,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Row(
     children: [
-      Icon(
-        icon,
-        size: 18,
-        color: Theme.of(context).colorScheme.primary,
+      Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: colors.primary.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          size: 19,
+          color: colors.primary,
+        ),
       ),
-      const SizedBox(width: 7),
-      Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.2,
+      const SizedBox(width: 10),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.1,
+              ),
             ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 10,
+                color: colors.onSurface.withValues(alpha: 0.48),
+              ),
+            ),
+          ],
+        ),
       ),
     ],
   );
@@ -458,29 +550,38 @@ Widget _quickCard({
   required Color color,
   required VoidCallback onTap,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Material(
     color: Colors.transparent,
     child: InkWell(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(19),
       onTap: onTap,
-      child: Container(
+      child: Ink(
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(18),
+          color: color.withValues(alpha: 0.075),
+          borderRadius: BorderRadius.circular(19),
           border: Border.all(
-            color: color.withValues(alpha: 0.12),
+            color: color.withValues(alpha: 0.13),
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 38,
-              height: 38,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withValues(alpha: 0.20),
+                    color.withValues(alpha: 0.09),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(
                 icon,
@@ -488,21 +589,22 @@ Widget _quickCard({
                 size: 21,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 11),
             Text(
               title,
               style: const TextStyle(
-                fontWeight: FontWeight.w700,
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 3),
             Text(
               subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey.shade600,
+                fontSize: 9,
+                color: colors.onSurface.withValues(alpha: 0.50),
               ),
             ),
           ],
@@ -524,34 +626,43 @@ Widget _largeLifestyleCard({
   required Color color,
   required VoidCallback onTap,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Material(
     color: Colors.transparent,
     child: InkWell(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(21),
       onTap: onTap,
-      child: Container(
+      child: Ink(
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              color.withValues(alpha: 0.15),
-              color.withValues(alpha: 0.05),
+              color.withValues(alpha: 0.14),
+              color.withValues(alpha: 0.045),
             ],
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(21),
           border: Border.all(
-            color: color.withValues(alpha: 0.16),
+            color: color.withValues(alpha: 0.14),
           ),
         ),
         child: Row(
           children: [
             Container(
-              width: 50,
-              height: 50,
+              width: 51,
+              height: 51,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.17),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withValues(alpha: 0.20),
+                    color.withValues(alpha: 0.09),
+                  ],
+                ),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
@@ -568,25 +679,35 @@ Widget _largeLifestyleCard({
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
+                      color: colors.onSurface.withValues(alpha: 0.52),
+                      fontSize: 10.5,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_ios_rounded,
-              size: 16,
-              color: color,
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.10),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.arrow_forward_rounded,
+                size: 17,
+                color: color,
+              ),
             ),
           ],
         ),
@@ -607,35 +728,38 @@ Widget _toolTile({
   required Color color,
   required VoidCallback onTap,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Material(
     color: Colors.transparent,
     child: InkWell(
-      borderRadius: BorderRadius.circular(17),
+      borderRadius: BorderRadius.circular(18),
       onTap: onTap,
-      child: Container(
+      child: Ink(
         padding: const EdgeInsets.symmetric(
           horizontal: 14,
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: Theme.of(context)
-              .colorScheme
-              .surfaceContainerHighest
-              .withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(17),
+          color: colors.surfaceContainerHighest.withValues(alpha: 0.46),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: colors.outline.withValues(alpha: 0.05),
+          ),
         ),
         child: Row(
           children: [
             Container(
-              width: 42,
-              height: 42,
+              width: 43,
+              height: 43,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(13),
+                color: color.withValues(alpha: 0.09),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 color: color,
+                size: 21,
               ),
             ),
             const SizedBox(width: 13),
@@ -646,23 +770,24 @@ Widget _toolTile({
                   Text(
                     title,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 3),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade600,
+                      fontSize: 10.5,
+                      color: colors.onSurface.withValues(alpha: 0.48),
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: Colors.grey,
+              color: colors.onSurface.withValues(alpha: 0.35),
             ),
           ],
         ),
@@ -689,116 +814,87 @@ void _showGymDialog(BuildContext context) {
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (context, setState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 15, 20, 25),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _dialogHeader(
-                      context: context,
-                      icon: Icons.fitness_center_rounded,
-                      title: 'Gym',
-                      subtitle: 'Track your workout',
-                      color: Colors.deepOrange,
-                    ),
+          return _bottomSheetContainer(
+            context: context,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _dialogHeader(
+                    context: context,
+                    icon: Icons.fitness_center_rounded,
+                    title: 'Gym',
+                    subtitle: 'Track your workout & activity',
+                    color: const Color(0xFFF97316),
+                  ),
+                  const SizedBox(height: 22),
+                  _fieldLabel('Workout type'),
+                  const SizedBox(height: 9),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      'Strength',
+                      'Cardio',
+                      'Running',
+                      'Walking',
+                      'Yoga',
+                      'Other',
+                    ].map((type) {
+                      return ChoiceChip(
+                        label: Text(type),
+                        selected: selectedWorkout == type,
+                        onSelected: (_) {
+                          setState(() {
+                            selectedWorkout = type;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 18),
+                  _inputField(
+                    controller: workoutController,
+                    label: 'Workout name',
+                    hint: 'e.g. Chest & Triceps',
+                    icon: Icons.edit_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _inputField(
+                    controller: durationController,
+                    label: 'Duration',
+                    hint: 'Minutes',
+                    icon: Icons.timer_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 12),
+                  _inputField(
+                    controller: caloriesController,
+                    label: 'Calories',
+                    hint: 'Optional',
+                    icon: Icons.local_fire_department_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 22),
+                  _saveButton(
+                    context: context,
+                    label: 'Save Workout',
+                    icon: Icons.check_rounded,
+                    color: const Color(0xFFF97316),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
 
-                    const SizedBox(height: 22),
-
-                    const Text(
-                      'Workout type',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        'Strength',
-                        'Cardio',
-                        'Running',
-                        'Walking',
-                        'Yoga',
-                        'Other',
-                      ].map((type) {
-                        final selected = selectedWorkout == type;
-
-                        return ChoiceChip(
-                          label: Text(type),
-                          selected: selected,
-                          onSelected: (_) {
-                            setState(() {
-                              selectedWorkout = type;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    _inputField(
-                      controller: workoutController,
-                      label: 'Workout name',
-                      hint: 'e.g. Chest & Triceps',
-                      icon: Icons.edit_outlined,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _inputField(
-                      controller: durationController,
-                      label: 'Duration',
-                      hint: 'Minutes',
-                      icon: Icons.timer_outlined,
-                      keyboardType: TextInputType.number,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _inputField(
-                      controller: caloriesController,
-                      label: 'Calories',
-                      hint: 'Optional',
-                      icon: Icons.local_fire_department_outlined,
-                      keyboardType: TextInputType.number,
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    _saveButton(
-                      context: context,
-                      label: 'Save Workout',
-                      icon: Icons.check_rounded,
-                      color: Colors.deepOrange,
-                      onPressed: () {
-                        Navigator.pop(dialogContext);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '🏋️ $selectedWorkout workout added',
-                            ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            '🏋️ $selectedWorkout workout added',
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );
@@ -824,130 +920,105 @@ void _showSleepDialog(BuildContext context) {
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (context, setState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 15, 20, 25),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _dialogHeader(
-                      context: context,
-                      icon: Icons.bedtime_rounded,
-                      title: 'Sleep',
-                      subtitle: 'Track your sleep & recovery',
-                      color: Colors.indigo,
-                    ),
+          return _bottomSheetContainer(
+            context: context,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _dialogHeader(
+                    context: context,
+                    icon: Icons.bedtime_rounded,
+                    title: 'Sleep',
+                    subtitle: 'Track sleep & recovery',
+                    color: const Color(0xFF6366F1),
+                  ),
+                  const SizedBox(height: 22),
+                  _timeButton(
+                    context: context,
+                    icon: Icons.nightlight_round,
+                    title: 'Bedtime',
+                    value: sleepTime == null
+                        ? 'Select bedtime'
+                        : sleepTime!.format(context),
+                    color: const Color(0xFF6366F1),
+                    onTap: () async {
+                      final selected = await showTimePicker(
+                        context: context,
+                        initialTime: sleepTime ?? TimeOfDay.now(),
+                      );
 
-                    const SizedBox(height: 22),
+                      if (selected != null) {
+                        setState(() {
+                          sleepTime = selected;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _timeButton(
+                    context: context,
+                    icon: Icons.wb_sunny_outlined,
+                    title: 'Wake-up',
+                    value: wakeTime == null
+                        ? 'Select wake-up time'
+                        : wakeTime!.format(context),
+                    color: Colors.orange,
+                    onTap: () async {
+                      final selected = await showTimePicker(
+                        context: context,
+                        initialTime: wakeTime ?? TimeOfDay.now(),
+                      );
 
-                    _timeButton(
-                      context: context,
-                      icon: Icons.nightlight_round,
-                      title: 'Bedtime',
-                      value: sleepTime == null
-                          ? 'Select bedtime'
-                          : sleepTime!.format(context),
-                      color: Colors.indigo,
-                      onTap: () async {
-                        final selected = await showTimePicker(
-                          context: context,
-                          initialTime: sleepTime ?? TimeOfDay.now(),
-                        );
-
-                        if (selected != null) {
+                      if (selected != null) {
+                        setState(() {
+                          wakeTime = selected;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  _fieldLabel('Sleep quality'),
+                  const SizedBox(height: 9),
+                  Wrap(
+                    spacing: 8,
+                    children: [
+                      'Poor',
+                      'Okay',
+                      'Good',
+                      'Great',
+                    ].map((value) {
+                      return ChoiceChip(
+                        label: Text(value),
+                        selected: quality == value,
+                        onSelected: (_) {
                           setState(() {
-                            sleepTime = selected;
+                            quality = value;
                           });
-                        }
-                      },
-                    ),
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 22),
+                  _saveButton(
+                    context: context,
+                    label: 'Save Sleep',
+                    icon: Icons.bedtime_rounded,
+                    color: const Color(0xFF6366F1),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
 
-                    const SizedBox(height: 12),
-
-                    _timeButton(
-                      context: context,
-                      icon: Icons.wb_sunny_outlined,
-                      title: 'Wake-up',
-                      value: wakeTime == null
-                          ? 'Select wake-up time'
-                          : wakeTime!.format(context),
-                      color: Colors.orange,
-                      onTap: () async {
-                        final selected = await showTimePicker(
-                          context: context,
-                          initialTime: wakeTime ?? TimeOfDay.now(),
-                        );
-
-                        if (selected != null) {
-                          setState(() {
-                            wakeTime = selected;
-                          });
-                        }
-                      },
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      'Sleep quality',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        'Poor',
-                        'Okay',
-                        'Good',
-                        'Great',
-                      ].map((value) {
-                        return ChoiceChip(
-                          label: Text(value),
-                          selected: quality == value,
-                          onSelected: (_) {
-                            setState(() {
-                              quality = value;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    _saveButton(
-                      context: context,
-                      label: 'Save Sleep',
-                      icon: Icons.bedtime_rounded,
-                      color: Colors.indigo,
-                      onPressed: () {
-                        Navigator.pop(dialogContext);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '😴 Sleep recorded • Quality: $quality',
-                            ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            '😴 Sleep recorded • Quality: $quality',
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );
@@ -974,102 +1045,77 @@ void _showCookDialog(BuildContext context) {
     builder: (dialogContext) {
       return StatefulBuilder(
         builder: (context, setState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 15, 20, 25),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(28),
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _dialogHeader(
-                      context: context,
-                      icon: Icons.restaurant_rounded,
-                      title: 'Cook',
-                      subtitle: 'Track meals you prepare',
-                      color: Colors.teal,
-                    ),
+          return _bottomSheetContainer(
+            context: context,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _dialogHeader(
+                    context: context,
+                    icon: Icons.restaurant_rounded,
+                    title: 'Cook',
+                    subtitle: 'Track meals you prepare',
+                    color: const Color(0xFF14B8A6),
+                  ),
+                  const SizedBox(height: 22),
+                  _fieldLabel('Meal'),
+                  const SizedBox(height: 9),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      'Breakfast',
+                      'Lunch',
+                      'Dinner',
+                      'Meal Prep',
+                    ].map((type) {
+                      return ChoiceChip(
+                        label: Text(type),
+                        selected: mealType == type,
+                        onSelected: (_) {
+                          setState(() {
+                            mealType = type;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 18),
+                  _inputField(
+                    controller: mealController,
+                    label: 'What did you cook?',
+                    hint: 'e.g. Chicken rice',
+                    icon: Icons.restaurant_menu_outlined,
+                  ),
+                  const SizedBox(height: 12),
+                  _inputField(
+                    controller: durationController,
+                    label: 'Cooking time',
+                    hint: 'Minutes',
+                    icon: Icons.timer_outlined,
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 22),
+                  _saveButton(
+                    context: context,
+                    label: 'Save Meal',
+                    icon: Icons.restaurant_rounded,
+                    color: const Color(0xFF14B8A6),
+                    onPressed: () {
+                      Navigator.pop(dialogContext);
 
-                    const SizedBox(height: 22),
-
-                    const Text(
-                      'Meal',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        'Breakfast',
-                        'Lunch',
-                        'Dinner',
-                        'Meal Prep',
-                      ].map((type) {
-                        return ChoiceChip(
-                          label: Text(type),
-                          selected: mealType == type,
-                          onSelected: (_) {
-                            setState(() {
-                              mealType = type;
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
-
-                    const SizedBox(height: 18),
-
-                    _inputField(
-                      controller: mealController,
-                      label: 'What did you cook?',
-                      hint: 'e.g. Chicken rice',
-                      icon: Icons.restaurant_menu_outlined,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _inputField(
-                      controller: durationController,
-                      label: 'Cooking time',
-                      hint: 'Minutes',
-                      icon: Icons.timer_outlined,
-                      keyboardType: TextInputType.number,
-                    ),
-
-                    const SizedBox(height: 22),
-
-                    _saveButton(
-                      context: context,
-                      label: 'Save Meal',
-                      icon: Icons.restaurant_rounded,
-                      color: Colors.teal,
-                      onPressed: () {
-                        Navigator.pop(dialogContext);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              '🍳 $mealType added',
-                            ),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          content: Text(
+                            '🍳 $mealType added',
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );
@@ -1086,48 +1132,72 @@ void _showCookDialog(BuildContext context) {
 void _showGitHubDialog(BuildContext context) {
   const githubUrl = 'https://github.com/snehithtoomove19-lab';
 
+  final colors = Theme.of(context).colorScheme;
+
   showDialog(
     context: context,
     builder: (dialogContext) {
       return AlertDialog(
-        title: const Row(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        title: Row(
           children: [
-            Icon(
-              Icons.code_rounded,
-              color: Colors.black,
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: colors.onSurface.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(13),
+              ),
+              child: Icon(
+                Icons.code_rounded,
+                color: colors.onSurface,
+              ),
             ),
-            SizedBox(width: 10),
-            Text('GitHub'),
+            const SizedBox(width: 12),
+            const Text(
+              'GitHub',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ],
         ),
-        content: const SelectableText(
-          githubUrl,
-          style: TextStyle(
-            fontSize: 14,
+        content: Container(
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: const SelectableText(
+            githubUrl,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
         actions: [
           TextButton(
             onPressed: () {
               Clipboard.setData(
-                const ClipboardData(
-                  text: githubUrl,
-                ),
+                const ClipboardData(text: githubUrl),
               );
 
               Navigator.pop(dialogContext);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text(
-                    'GitHub link copied!',
-                  ),
+                  behavior: SnackBarBehavior.floating,
+                  content: Text('GitHub link copied!'),
                 ),
               );
             },
             child: const Text('Copy Link'),
           ),
-          ElevatedButton(
+          FilledButton.icon(
             onPressed: () async {
               final url = Uri.parse(githubUrl);
 
@@ -1140,9 +1210,7 @@ void _showGitHubDialog(BuildContext context) {
                 if (!opened && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Could not open GitHub',
-                      ),
+                      content: Text('Could not open GitHub'),
                     ),
                   );
                 }
@@ -1150,19 +1218,55 @@ void _showGitHubDialog(BuildContext context) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text(
-                        'Could not open GitHub',
-                      ),
+                      content: Text('Could not open GitHub'),
                     ),
                   );
                 }
               }
             },
-            child: const Text('Open GitHub'),
+            icon: const Icon(Icons.open_in_new_rounded, size: 17),
+            label: const Text('Open GitHub'),
           ),
         ],
       );
     },
+  );
+}
+
+// ============================================================================
+// BOTTOM SHEET CONTAINER
+// ============================================================================
+
+Widget _bottomSheetContainer({
+  required BuildContext context,
+  required Widget child,
+}) {
+  final colors = Theme.of(context).colorScheme;
+
+  return Padding(
+    padding: EdgeInsets.only(
+      bottom: MediaQuery.of(context).viewInsets.bottom,
+    ),
+    child: Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.88,
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 25),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(30),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.16),
+            blurRadius: 30,
+            offset: const Offset(0, -8),
+          ),
+        ],
+      ),
+      child: child,
+    ),
   );
 }
 
@@ -1177,14 +1281,23 @@ Widget _dialogHeader({
   required String subtitle,
   required Color color,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Row(
     children: [
       Container(
-        width: 52,
-        height: 52,
+        width: 54,
+        height: 54,
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.13),
-          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withValues(alpha: 0.19),
+              color.withValues(alpha: 0.07),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(17),
         ),
         child: Icon(
           icon,
@@ -1203,21 +1316,36 @@ Widget _dialogHeader({
                   .textTheme
                   .titleLarge
                   ?.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.3,
                   ),
             ),
             const SizedBox(height: 3),
             Text(
               subtitle,
               style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
+                color: colors.onSurface.withValues(alpha: 0.52),
+                fontSize: 11,
               ),
             ),
           ],
         ),
       ),
     ],
+  );
+}
+
+// ============================================================================
+// FIELD LABEL
+// ============================================================================
+
+Widget _fieldLabel(String text) {
+  return Text(
+    text,
+    style: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w800,
+    ),
   );
 }
 
@@ -1240,15 +1368,15 @@ Widget _inputField({
       hintText: hint,
       prefixIcon: Icon(icon),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(16),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(16),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(
-          width: 2,
+          width: 1.8,
         ),
       ),
     ),
@@ -1267,32 +1395,35 @@ Widget _timeButton({
   required Color color,
   required VoidCallback onTap,
 }) {
+  final colors = Theme.of(context).colorScheme;
+
   return Material(
     color: Colors.transparent,
     child: InkWell(
-      borderRadius: BorderRadius.circular(17),
+      borderRadius: BorderRadius.circular(18),
       onTap: onTap,
-      child: Container(
+      child: Ink(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(17),
+          color: color.withValues(alpha: 0.065),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: color.withValues(alpha: 0.14),
+            color: color.withValues(alpha: 0.13),
           ),
         ),
         child: Row(
           children: [
             Container(
-              width: 44,
-              height: 44,
+              width: 45,
+              height: 45,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.14),
-                borderRadius: BorderRadius.circular(13),
+                color: color.withValues(alpha: 0.13),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
                 color: color,
+                size: 21,
               ),
             ),
             const SizedBox(width: 13),
@@ -1303,15 +1434,16 @@ Widget _timeButton({
                   Text(
                     title,
                     style: const TextStyle(
-                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     value,
                     style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
+                      color: colors.onSurface.withValues(alpha: 0.52),
+                      fontSize: 11,
                     ),
                   ),
                 ],
@@ -1341,14 +1473,15 @@ Widget _saveButton({
 }) {
   return SizedBox(
     width: double.infinity,
-    height: 52,
+    height: 54,
     child: ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon),
+      icon: Icon(icon, size: 20),
       label: Text(
         label,
         style: const TextStyle(
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w800,
+          fontSize: 13,
         ),
       ),
       style: ElevatedButton.styleFrom(
@@ -1356,9 +1489,10 @@ Widget _saveButton({
         foregroundColor: Colors.white,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(17),
         ),
       ),
     ),
   );
 }
+
