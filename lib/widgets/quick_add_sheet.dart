@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,12 +10,16 @@ import '../screens/settings_screen.dart';
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
 
+// ============================================================================
+// QUICK ADD SHEET
+// ============================================================================
+
 void showQuickAddSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.55),
+    barrierColor: Colors.black.withOpacity(0.55),
     builder: (ctx) {
       final app = AppScope.of(ctx);
       final theme = Theme.of(ctx);
@@ -36,7 +39,7 @@ void showQuickAddSheet(BuildContext context) {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
+                color: Colors.black.withOpacity(0.18),
                 blurRadius: 40,
                 offset: const Offset(0, -12),
               ),
@@ -53,16 +56,16 @@ void showQuickAddSheet(BuildContext context) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ========================================================
+                // ============================================================
                 // HANDLE
-                // ========================================================
+                // ============================================================
 
                 Center(
                   child: Container(
                     width: 42,
                     height: 5,
                     decoration: BoxDecoration(
-                      color: colors.onSurface.withValues(alpha: 0.18),
+                      color: colors.onSurface.withOpacity(0.18),
                       borderRadius: BorderRadius.circular(20),
                     ),
                   ),
@@ -70,9 +73,9 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 22),
 
-                // ========================================================
+                // ============================================================
                 // HERO HEADER
-                // ========================================================
+                // ============================================================
 
                 Container(
                   padding: const EdgeInsets.all(18),
@@ -82,13 +85,13 @@ void showQuickAddSheet(BuildContext context) {
                       end: Alignment.bottomRight,
                       colors: [
                         colors.primary,
-                        colors.primary.withValues(alpha: 0.72),
+                        colors.primary.withOpacity(0.72),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(26),
                     boxShadow: [
                       BoxShadow(
-                        color: colors.primary.withValues(alpha: 0.22),
+                        color: colors.primary.withOpacity(0.22),
                         blurRadius: 22,
                         offset: const Offset(0, 9),
                       ),
@@ -100,10 +103,10 @@ void showQuickAddSheet(BuildContext context) {
                         width: 54,
                         height: 54,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.16),
+                          color: Colors.white.withOpacity(0.16),
                           borderRadius: BorderRadius.circular(17),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.12),
+                            color: Colors.white.withOpacity(0.12),
                           ),
                         ),
                         child: const Icon(
@@ -144,7 +147,7 @@ void showQuickAddSheet(BuildContext context) {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
+                          color: Colors.white.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(
@@ -159,9 +162,9 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 24),
 
-                // ========================================================
+                // ============================================================
                 // MONEY
-                // ========================================================
+                // ============================================================
 
                 _sectionTitle(
                   context: ctx,
@@ -222,9 +225,9 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 24),
 
-                // ========================================================
+                // ============================================================
                 // PRODUCTIVITY
-                // ========================================================
+                // ============================================================
 
                 _sectionTitle(
                   context: ctx,
@@ -301,9 +304,9 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 24),
 
-                // ========================================================
+                // ============================================================
                 // LIFESTYLE
-                // ========================================================
+                // ============================================================
 
                 _sectionTitle(
                   context: ctx,
@@ -356,9 +359,9 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 24),
 
-                // ========================================================
+                // ============================================================
                 // TOOLS
-                // ========================================================
+                // ============================================================
 
                 _sectionTitle(
                   context: ctx,
@@ -403,18 +406,18 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 10),
 
-                // ========================================================
+                // ============================================================
                 // DARK MODE
-                // ========================================================
+                // ============================================================
 
                 Container(
                   decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest.withValues(
-                      alpha: isDark ? 0.55 : 0.48,
+                    color: colors.surfaceVariant.withOpacity(
+                      isDark ? 0.55 : 0.48,
                     ),
                     borderRadius: BorderRadius.circular(19),
                     border: Border.all(
-                      color: colors.outline.withValues(alpha: 0.06),
+                      color: colors.outline.withOpacity(0.06),
                     ),
                   ),
                   child: SwitchListTile(
@@ -426,7 +429,7 @@ void showQuickAddSheet(BuildContext context) {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.11),
+                        color: colors.primary.withOpacity(0.11),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Icon(
@@ -450,11 +453,11 @@ void showQuickAddSheet(BuildContext context) {
                           : 'Use the light appearance',
                       style: TextStyle(
                         fontSize: 11,
-                        color: colors.onSurface.withValues(alpha: 0.55),
+                        color: colors.onSurface.withOpacity(0.55),
                       ),
                     ),
                     value: app.darkMode,
-                    activeThumbColor: colors.primary,
+                    activeColor: colors.primary,
                     onChanged: (value) {
                       app.setDarkMode(value);
                     },
@@ -463,14 +466,18 @@ void showQuickAddSheet(BuildContext context) {
 
                 const SizedBox(height: 12),
 
+                // ============================================================
+                // FOOTER
+                // ============================================================
+
                 Center(
                   child: Text(
-                    'Quick Add • Personal Tracker',
+                    'Quick Add â€¢ Personal Tracker',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.4,
-                      color: colors.onSurface.withValues(alpha: 0.30),
+                      color: colors.onSurface.withOpacity(0.30),
                     ),
                   ),
                 ),
@@ -501,7 +508,7 @@ Widget _sectionTitle({
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: colors.primary.withValues(alpha: 0.10),
+          color: colors.primary.withOpacity(0.10),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
@@ -528,7 +535,7 @@ Widget _sectionTitle({
               subtitle,
               style: TextStyle(
                 fontSize: 10,
-                color: colors.onSurface.withValues(alpha: 0.48),
+                color: colors.onSurface.withOpacity(0.48),
               ),
             ),
           ],
@@ -560,10 +567,10 @@ Widget _quickCard({
       child: Ink(
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.075),
+          color: color.withOpacity(0.075),
           borderRadius: BorderRadius.circular(19),
           border: Border.all(
-            color: color.withValues(alpha: 0.13),
+            color: color.withOpacity(0.13),
           ),
         ),
         child: Column(
@@ -577,8 +584,8 @@ Widget _quickCard({
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    color.withValues(alpha: 0.20),
-                    color.withValues(alpha: 0.09),
+                    color.withOpacity(0.20),
+                    color.withOpacity(0.09),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(13),
@@ -604,7 +611,7 @@ Widget _quickCard({
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 9,
-                color: colors.onSurface.withValues(alpha: 0.50),
+                color: colors.onSurface.withOpacity(0.50),
               ),
             ),
           ],
@@ -640,13 +647,13 @@ Widget _largeLifestyleCard({
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              color.withValues(alpha: 0.14),
-              color.withValues(alpha: 0.045),
+              color.withOpacity(0.14),
+              color.withOpacity(0.045),
             ],
           ),
           borderRadius: BorderRadius.circular(21),
           border: Border.all(
-            color: color.withValues(alpha: 0.14),
+            color: color.withOpacity(0.14),
           ),
         ),
         child: Row(
@@ -659,8 +666,8 @@ Widget _largeLifestyleCard({
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    color.withValues(alpha: 0.20),
-                    color.withValues(alpha: 0.09),
+                    color.withOpacity(0.20),
+                    color.withOpacity(0.09),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(16),
@@ -689,7 +696,7 @@ Widget _largeLifestyleCard({
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: colors.onSurface.withValues(alpha: 0.52),
+                      color: colors.onSurface.withOpacity(0.52),
                       fontSize: 10.5,
                     ),
                   ),
@@ -700,7 +707,7 @@ Widget _largeLifestyleCard({
               width: 32,
               height: 32,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.10),
+                color: color.withOpacity(0.10),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -741,10 +748,10 @@ Widget _toolTile({
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: colors.surfaceContainerHighest.withValues(alpha: 0.46),
+          color: colors.surfaceVariant.withOpacity(0.46),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: colors.outline.withValues(alpha: 0.05),
+            color: colors.outline.withOpacity(0.05),
           ),
         ),
         child: Row(
@@ -753,7 +760,7 @@ Widget _toolTile({
               width: 43,
               height: 43,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.09),
+                color: color.withOpacity(0.09),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -779,7 +786,7 @@ Widget _toolTile({
                     subtitle,
                     style: TextStyle(
                       fontSize: 10.5,
-                      color: colors.onSurface.withValues(alpha: 0.48),
+                      color: colors.onSurface.withOpacity(0.48),
                     ),
                   ),
                 ],
@@ -787,7 +794,7 @@ Widget _toolTile({
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: colors.onSurface.withValues(alpha: 0.35),
+              color: colors.onSurface.withOpacity(0.35),
             ),
           ],
         ),
@@ -888,7 +895,7 @@ void _showGymDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            '🏋️ $selectedWorkout workout added',
+                            'ðŸ‹ï¸ $selectedWorkout workout added',
                           ),
                         ),
                       );
@@ -1012,7 +1019,7 @@ void _showSleepDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            '😴 Sleep recorded • Quality: $quality',
+                            'ðŸ˜´ Sleep recorded â€¢ Quality: $quality',
                           ),
                         ),
                       );
@@ -1109,7 +1116,7 @@ void _showCookDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            '🍳 $mealType added',
+                            'ðŸ³ $mealType added',
                           ),
                         ),
                       );
@@ -1147,7 +1154,7 @@ void _showGitHubDialog(BuildContext context) {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: colors.onSurface.withValues(alpha: 0.08),
+                color: colors.onSurface.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(
@@ -1167,7 +1174,7 @@ void _showGitHubDialog(BuildContext context) {
         content: Container(
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            color: colors.surfaceContainerHighest.withValues(alpha: 0.5),
+            color: colors.surfaceVariant.withOpacity(0.5),
             borderRadius: BorderRadius.circular(14),
           ),
           child: const SelectableText(
@@ -1224,7 +1231,10 @@ void _showGitHubDialog(BuildContext context) {
                 }
               }
             },
-            icon: const Icon(Icons.open_in_new_rounded, size: 17),
+            icon: const Icon(
+              Icons.open_in_new_rounded,
+              size: 17,
+            ),
             label: const Text('Open GitHub'),
           ),
         ],
@@ -1251,7 +1261,12 @@ Widget _bottomSheetContainer({
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.88,
       ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 25),
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        12,
+        20,
+        25,
+      ),
       decoration: BoxDecoration(
         color: colors.surface,
         borderRadius: const BorderRadius.vertical(
@@ -1259,7 +1274,7 @@ Widget _bottomSheetContainer({
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.16),
+            color: Colors.black.withOpacity(0.16),
             blurRadius: 30,
             offset: const Offset(0, -8),
           ),
@@ -1293,8 +1308,8 @@ Widget _dialogHeader({
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              color.withValues(alpha: 0.19),
-              color.withValues(alpha: 0.07),
+              color.withOpacity(0.19),
+              color.withOpacity(0.07),
             ],
           ),
           borderRadius: BorderRadius.circular(17),
@@ -1312,10 +1327,7 @@ Widget _dialogHeader({
           children: [
             Text(
               title,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.3,
                   ),
@@ -1324,7 +1336,7 @@ Widget _dialogHeader({
             Text(
               subtitle,
               style: TextStyle(
-                color: colors.onSurface.withValues(alpha: 0.52),
+                color: colors.onSurface.withOpacity(0.52),
                 fontSize: 11,
               ),
             ),
@@ -1405,10 +1417,10 @@ Widget _timeButton({
       child: Ink(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.065),
+          color: color.withOpacity(0.065),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: color.withValues(alpha: 0.13),
+            color: color.withOpacity(0.13),
           ),
         ),
         child: Row(
@@ -1417,7 +1429,7 @@ Widget _timeButton({
               width: 45,
               height: 45,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.13),
+                color: color.withOpacity(0.13),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
@@ -1442,7 +1454,7 @@ Widget _timeButton({
                   Text(
                     value,
                     style: TextStyle(
-                      color: colors.onSurface.withValues(alpha: 0.52),
+                      color: colors.onSurface.withOpacity(0.52),
                       fontSize: 11,
                     ),
                   ),
@@ -1476,7 +1488,10 @@ Widget _saveButton({
     height: 54,
     child: ElevatedButton.icon(
       onPressed: onPressed,
-      icon: Icon(icon, size: 20),
+      icon: Icon(
+        icon,
+        size: 20,
+      ),
       label: Text(
         label,
         style: const TextStyle(
@@ -1495,4 +1510,3 @@ Widget _saveButton({
     ),
   );
 }
-
