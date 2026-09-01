@@ -115,7 +115,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   Icons.flag_outlined,
                 ),
                 filled: true,
-                fillColor: colors.surfaceContainerHighest.withOpacity(0.45),
+                fillColor: colors.surface.withValues(alpha: 0.45),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide: BorderSide.none,
@@ -191,8 +191,8 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             const SizedBox(height: 10),
             Text(
               completed
-                  ? 'ðŸŽ‰ Great job! You have completed this goal.'
-                  : 'Keep going â€” every small step counts.',
+                  ? 'Ã°Å¸Å½â€° Great job! You have completed this goal.'
+                  : 'Keep going Ã¢â‚¬â€ every small step counts.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -225,12 +225,12 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withOpacity(0.16),
-            colors.secondary.withOpacity(0.07),
+            colors.primary.withValues(alpha: 0.16),
+            colors.secondary.withValues(alpha: 0.07),
           ],
         ),
         border: Border.all(
-          color: colors.primary.withOpacity(0.12),
+          color: colors.primary.withValues(alpha: 0.12),
         ),
       ),
       child: Row(
@@ -239,7 +239,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             width: 62,
             height: 62,
             decoration: BoxDecoration(
-              color: colors.primary.withOpacity(0.13),
+              color: colors.primary.withValues(alpha: 0.13),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -267,7 +267,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                 Text(
                   completed
                       ? 'You made it. Well done!'
-                      : '$progress% complete â€¢ Keep pushing forward',
+                      : '$progress% complete Ã¢â‚¬Â¢ Keep pushing forward',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                     height: 1.35,
@@ -338,7 +338,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     final bool hasDate = _targetDate != null;
 
     return Material(
-      color: colors.surfaceContainerHighest.withValues(
+      color: colors.surface.withValues(
         alpha: 0.45,
       ),
       borderRadius: BorderRadius.circular(17),
@@ -416,7 +416,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(
+        color: colors.surface.withValues(
           alpha: 0.38,
         ),
         borderRadius: BorderRadius.circular(19),
@@ -464,7 +464,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      completed ? 'Completed ðŸŽ‰' : '$progress% Complete',
+                      completed ? 'Completed Ã°Å¸Å½â€°' : '$progress% Complete',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),

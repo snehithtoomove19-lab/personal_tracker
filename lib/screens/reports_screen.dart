@@ -96,7 +96,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Card(
-                color: Colors.red.withOpacity(0.08),
+                color: Colors.red.withValues(alpha: 0.08),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(
@@ -206,7 +206,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                   minHeight: 10,
                                   color: colors[i % colors.length],
                                   backgroundColor: colors[i % colors.length]
-                                      .withOpacity(0.15),
+                                      .withValues(alpha: 0.15),
                                 ),
                               ),
                             ),
@@ -267,7 +267,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                   minHeight: 10,
                                   color: Colors.indigo,
                                   backgroundColor:
-                                      Colors.indigo.withOpacity(0.12)),
+                                      Colors.indigo.withValues(alpha: 0.12)),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -319,7 +319,7 @@ class _BarRow extends StatelessWidget {
                 value: max == 0 ? 0 : value / max,
                 minHeight: 14,
                 color: color,
-                backgroundColor: color.withOpacity(0.12)),
+                backgroundColor: color.withValues(alpha: 0.12)),
           ),
         ),
         const SizedBox(width: 8),

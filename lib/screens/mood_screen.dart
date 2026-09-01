@@ -193,10 +193,10 @@ class _MoodScreenState extends State<MoodScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: color.withOpacity(0.18),
+          color: color.withValues(alpha: 0.18),
         ),
       ),
       child: Row(
@@ -205,7 +205,7 @@ class _MoodScreenState extends State<MoodScreen> {
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.14),
+              color: color.withValues(alpha: 0.14),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -230,7 +230,7 @@ class _MoodScreenState extends State<MoodScreen> {
                 Text(
                   'Tap a day in the calendar below to record how you felt.',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.orange.shade900.withOpacity(0.75),
+                    color: Colors.orange.shade900.withValues(alpha: 0.75),
                     height: 1.35,
                   ),
                 ),
@@ -259,8 +259,8 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
           colors: [
-            colors.primary.withOpacity(0.10),
-            colors.secondary.withOpacity(0.05),
+            colors.primary.withValues(alpha: 0.10),
+            colors.secondary.withValues(alpha: 0.05),
           ],
         ),
         border: Border.all(
@@ -655,7 +655,7 @@ class _MoodScreenState extends State<MoodScreen> {
         horizontal: 16,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withOpacity(0.45),
+        color: colors.surface.withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -955,7 +955,7 @@ class _MoodScreenState extends State<MoodScreen> {
                     ),
                     alignLabelWithHint: true,
                     filled: true,
-                    fillColor: colors.surfaceContainerHighest.withValues(
+                    fillColor: colors.surface.withValues(
                       alpha: 0.45,
                     ),
                     border: OutlineInputBorder(
@@ -1194,7 +1194,7 @@ class _MoodDayCell extends StatelessWidget {
         ? moodOption.color.withValues(
             alpha: 0.08,
           )
-        : colors.surfaceContainerHighest.withValues(
+        : colors.surface.withValues(
             alpha: 0.25,
           );
 

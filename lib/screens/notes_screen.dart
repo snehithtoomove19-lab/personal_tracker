@@ -248,7 +248,7 @@ class _NotesScreenState extends State<NotesScreen> {
               )
             : null,
         filled: true,
-        fillColor: colors.surfaceContainerHighest.withValues(
+        fillColor: colors.surface.withValues(
           alpha: 0.55,
         ),
         contentPadding: const EdgeInsets.symmetric(
@@ -353,7 +353,7 @@ class _NotesScreenState extends State<NotesScreen> {
         vertical: 42,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(
+        color: colors.surface.withValues(
           alpha: 0.35,
         ),
         borderRadius: BorderRadius.circular(24),
@@ -832,7 +832,7 @@ class _NoteTile extends StatelessWidget {
           content: Text(
             note.title.trim().isEmpty
                 ? 'This note will be removed. You can undo this immediately after deleting.'
-                : 'â€œ${note.title.trim()}â€ will be removed. You can undo this immediately after deleting.',
+                : 'Ã¢â‚¬Å“${note.title.trim()}Ã¢â‚¬Â will be removed. You can undo this immediately after deleting.',
             textAlign: TextAlign.center,
           ),
           actionsAlignment: MainAxisAlignment.center,

@@ -383,10 +383,10 @@ class TasksScreen extends StatelessWidget {
             vertical: 11,
           ),
           decoration: BoxDecoration(
-            color: colors.primary.withOpacity(0.09),
+            color: colors.primary.withValues(alpha: 0.09),
             borderRadius: BorderRadius.circular(17),
             border: Border.all(
-              color: colors.primary.withOpacity(0.13),
+              color: colors.primary.withValues(alpha: 0.13),
             ),
           ),
           child: Column(
@@ -441,13 +441,13 @@ class TasksScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withOpacity(0.10),
-            colors.secondary.withOpacity(0.045),
+            colors.primary.withValues(alpha: 0.10),
+            colors.secondary.withValues(alpha: 0.045),
           ],
         ),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colors.primary.withOpacity(0.11),
+          color: colors.primary.withValues(alpha: 0.11),
         ),
       ),
       child: Column(
@@ -457,7 +457,7 @@ class TasksScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.11),
+                  color: colors.primary.withValues(alpha: 0.11),
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
@@ -502,7 +502,7 @@ class TasksScreen extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 7,
-              backgroundColor: colors.primary.withOpacity(0.08),
+              backgroundColor: colors.primary.withValues(alpha: 0.08),
               valueColor: AlwaysStoppedAnimation<Color>(
                 colors.primary,
               ),
@@ -552,7 +552,7 @@ class TasksScreen extends StatelessWidget {
         color: colors.surface,
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.7),
+          color: colors.outlineVariant.withValues(alpha: 0.7),
         ),
       ),
       child: Column(
@@ -560,7 +560,7 @@ class TasksScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: colors.primary.withOpacity(0.10),
+              color: colors.primary.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -655,7 +655,7 @@ class _TaskSection extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.10),
+                    color: color.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
@@ -693,7 +693,7 @@ class _TaskSection extends StatelessWidget {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.09),
+                    color: color.withValues(alpha: 0.09),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -720,7 +720,7 @@ class _TaskSection extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.018),
+                  color: Colors.black.withValues(alpha: 0.018),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -992,10 +992,10 @@ class _PriorityBadge extends StatelessWidget {
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: color.withOpacity(0.12),
+          color: color.withValues(alpha: 0.12),
         ),
       ),
       child: Row(

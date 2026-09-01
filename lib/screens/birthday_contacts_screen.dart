@@ -70,7 +70,7 @@ class BirthdayContactsScreen extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: Colors.pink.withOpacity(0.10),
+                color: Colors.pink.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -120,7 +120,7 @@ class BirthdayContactsScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(26),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.pink.withOpacity(0.20),
+                  color: Colors.pink.withValues(alpha: 0.20),
                   blurRadius: 24,
                   offset: const Offset(0, 10),
                 ),
@@ -134,7 +134,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                   child: Icon(
                     Icons.cake_rounded,
                     size: 110,
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                   ),
                 ),
                 Positioned(
@@ -143,7 +143,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                   child: Icon(
                     Icons.auto_awesome_rounded,
                     size: 58,
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                   ),
                 ),
                 Column(
@@ -153,7 +153,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.16),
+                        color: Colors.white.withValues(alpha: 0.16),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Icon(
@@ -164,7 +164,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Celebrate the people\nwho matter most ðŸŽ‰',
+                      'Celebrate the people\nwho matter most Ã°Å¸Å½â€°',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -178,7 +178,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                           ? 'Add your first birthday to get started.'
                           : '${contacts.length} special ${contacts.length == 1 ? 'person' : 'people'} in your birthday list.',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.82),
+                        color: Colors.white.withValues(alpha: 0.82),
                         fontSize: 11,
                         height: 1.4,
                       ),
@@ -235,7 +235,7 @@ class BirthdayContactsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest.withOpacity(0.48),
+              color: colors.surface.withValues(alpha: 0.48),
               borderRadius: BorderRadius.circular(18),
             ),
             child: Row(
@@ -245,7 +245,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                   width: 38,
                   height: 38,
                   decoration: BoxDecoration(
-                    color: colors.primary.withOpacity(0.10),
+                    color: colors.primary.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -261,7 +261,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       height: 1.45,
-                      color: colors.onSurface.withOpacity(0.62),
+                      color: colors.onSurface.withValues(alpha: 0.62),
                     ),
                   ),
                 ),
@@ -281,7 +281,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: Colors.pink.withOpacity(0.10),
+                  color: Colors.pink.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
@@ -503,11 +503,10 @@ class BirthdayContactsScreen extends StatelessWidget {
                           child: Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: colors.surfaceContainerHighest
-                                  .withOpacity(0.45),
+                              color: colors.surface.withValues(alpha: 0.45),
                               borderRadius: BorderRadius.circular(17),
                               border: Border.all(
-                                color: colors.outline.withOpacity(0.10),
+                                color: colors.outline.withValues(alpha: 0.10),
                               ),
                             ),
                             child: Row(
@@ -516,7 +515,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                                   width: 44,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: Colors.pink.withOpacity(0.10),
+                                    color: Colors.pink.withValues(alpha: 0.10),
                                     borderRadius: BorderRadius.circular(13),
                                   ),
                                   child: const Icon(
@@ -601,8 +600,8 @@ class BirthdayContactsScreen extends StatelessWidget {
                               SnackBar(
                                 content: Text(
                                   contact == null
-                                      ? 'ðŸŽ‰ Birthday added'
-                                      : 'âœ¨ Birthday updated',
+                                      ? 'Ã°Å¸Å½â€° Birthday added'
+                                      : 'Ã¢Å“Â¨ Birthday updated',
                                 ),
                               ),
                             );
@@ -653,7 +652,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.10),
+                  color: Colors.red.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: const Icon(
@@ -737,7 +736,7 @@ class _StatCard extends StatelessWidget {
         color: Theme.of(context)
             .colorScheme
             .surfaceContainerHighest
-            .withOpacity(0.45),
+            .withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -746,7 +745,7 @@ class _StatCard extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(
@@ -814,7 +813,7 @@ class _BirthdayCard extends StatelessWidget {
             : Colors.pink;
 
     final String label = isToday
-        ? 'TODAY ðŸŽ‰'
+        ? 'TODAY Ã°Å¸Å½â€°'
         : isTomorrow
             ? 'TOMORROW'
             : days <= 30
@@ -828,11 +827,11 @@ class _BirthdayCard extends StatelessWidget {
           color: colors.surface,
           borderRadius: BorderRadius.circular(21),
           border: Border.all(
-            color: accent.withOpacity(0.10),
+            color: accent.withValues(alpha: 0.10),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.035),
+              color: Colors.black.withValues(alpha: 0.035),
               blurRadius: 14,
               offset: const Offset(0, 5),
             ),
@@ -857,8 +856,8 @@ class _BirthdayCard extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            accent.withOpacity(0.18),
-                            accent.withOpacity(0.07),
+                            accent.withValues(alpha: 0.18),
+                            accent.withValues(alpha: 0.07),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(18),
@@ -885,14 +884,14 @@ class _BirthdayCard extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 5,
                               ),
                             ],
                           ),
                           child: const Center(
                             child: Text(
-                              'ðŸŽ‚',
+                              'Ã°Å¸Å½â€š',
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -947,7 +946,7 @@ class _BirthdayCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 7),
                           Text(
-                            'â€¢',
+                            'Ã¢â‚¬Â¢',
                             style: TextStyle(
                               color: Colors.grey.shade400,
                             ),
@@ -980,7 +979,7 @@ class _BirthdayCard extends StatelessWidget {
                         vertical: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: accent.withOpacity(0.09),
+                        color: accent.withValues(alpha: 0.09),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -1069,10 +1068,10 @@ class _EmptyBirthdayState extends StatelessWidget {
         vertical: 34,
       ),
       decoration: BoxDecoration(
-        color: colors.primary.withOpacity(0.04),
+        color: colors.primary.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors.primary.withOpacity(0.08),
+          color: colors.primary.withValues(alpha: 0.08),
         ),
       ),
       child: Column(
@@ -1083,8 +1082,8 @@ class _EmptyBirthdayState extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.pink.withOpacity(0.14),
-                  Colors.deepPurple.withOpacity(0.10),
+                  Colors.pink.withValues(alpha: 0.14),
+                  Colors.deepPurple.withValues(alpha: 0.10),
                 ],
               ),
               shape: BoxShape.circle,
@@ -1106,7 +1105,7 @@ class _EmptyBirthdayState extends StatelessWidget {
           ),
           const SizedBox(height: 7),
           Text(
-            'Add friends and family to your birthday list and weâ€™ll help you remember their special days.',
+            'Add friends and family to your birthday list and weÃ¢â‚¬â„¢ll help you remember their special days.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11,
@@ -1199,7 +1198,7 @@ class _BirthdayInput extends StatelessWidget {
         hintText: hint,
         prefixIcon: Icon(icon),
         filled: true,
-        fillColor: colors.surfaceContainerHighest.withOpacity(0.42),
+        fillColor: colors.surface.withValues(alpha: 0.42),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(17),
           borderSide: BorderSide.none,

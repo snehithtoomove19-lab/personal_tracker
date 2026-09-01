@@ -21,7 +21,7 @@ class _SmsCandidate {
 }
 
 final RegExp _amountPattern = RegExp(
-  r'(?:rs\.?|inr|â‚¹|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
+  r'(?:rs\.?|inr|Ã¢â€šÂ¹|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
   caseSensitive: false,
 );
 
@@ -43,7 +43,7 @@ const List<String> _creditKeywords = [
 /// Lets the person paste one or more bank/UPI SMS messages (copied from
 /// their phone's messaging app) and detects transaction amounts from them.
 ///
-/// This deliberately avoids reading the SMS inbox directly â€” that requires
+/// This deliberately avoids reading the SMS inbox directly Ã¢â‚¬â€ that requires
 /// a native Android permission and platform-specific plugin, which is a
 /// common source of build/permission issues across different devices and
 /// Flutter/Gradle versions. Paste-based detection gets the same practical
@@ -138,7 +138,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           children: [
             Text(
               'Copy a bank/UPI SMS (long-press it in your messages app, then Copy) and paste it below. '
-              'You can paste several messages at once â€” separate them with a blank line.',
+              'You can paste several messages at once Ã¢â‚¬â€ separate them with a blank line.',
               style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
             ),
             const SizedBox(height: 12),
@@ -165,7 +165,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               child: _candidates.isEmpty
                   ? Center(
                       child: Text(
-                        'Detected transactions will appear here. Always double-check amounts and\ncategories before adding â€” this is a best-effort text parser.',
+                        'Detected transactions will appear here. Always double-check amounts and\ncategories before adding Ã¢â‚¬â€ this is a best-effort text parser.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: Colors.grey.shade500, fontSize: 13),
@@ -183,7 +183,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                               backgroundColor: (isIncome
                                       ? const Color(0xFF2FB380)
                                       : const Color(0xFFE2574C))
-                                  .withOpacity(0.15),
+                                  .withValues(alpha: 0.15),
                               child: Icon(
                                   isIncome
                                       ? Icons.arrow_downward
@@ -193,7 +193,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                                       : const Color(0xFFE2574C)),
                             ),
                             title: Text(
-                                '${formatMoney(c.amount, app.currency)} Â· ${c.category}'),
+                                '${formatMoney(c.amount, app.currency)} Ã‚Â· ${c.category}'),
                             subtitle: Text(c.rawBody,
                                 maxLines: 2, overflow: TextOverflow.ellipsis),
                             isThreeLine: true,

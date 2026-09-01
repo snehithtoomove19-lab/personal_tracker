@@ -205,7 +205,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: colors.surfaceContainerHighest,
+                    color: colors.surface,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -314,7 +314,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest,
+              color: colors.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: colors.outlineVariant.withValues(
@@ -451,13 +451,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withOpacity(0.11),
-            colors.secondary.withOpacity(0.045),
+            colors.primary.withValues(alpha: 0.11),
+            colors.secondary.withValues(alpha: 0.045),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors.primary.withOpacity(0.11),
+          color: colors.primary.withValues(alpha: 0.11),
         ),
         boxShadow: [
           BoxShadow(
@@ -596,7 +596,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               )
             : null,
         filled: true,
-        fillColor: colors.surfaceContainerHighest.withValues(
+        fillColor: colors.surface.withValues(
           alpha: 0.55,
         ),
         border: OutlineInputBorder(
@@ -690,7 +690,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           const SizedBox(width: 5),
           Container(
             decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest,
+              color: colors.surface,
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -743,7 +743,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 ? accent.withValues(
                     alpha: 0.12,
                   )
-                : colors.surfaceContainerHighest.withValues(
+                : colors.surface.withValues(
                     alpha: 0.55,
                   ),
             borderRadius: BorderRadius.circular(14),
@@ -797,7 +797,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ? colors.primary.withValues(
                 alpha: 0.11,
               )
-            : colors.surfaceContainerHighest.withValues(
+            : colors.surface.withValues(
                 alpha: 0.55,
               ),
         borderRadius: BorderRadius.circular(14),
@@ -860,7 +860,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         vertical: 34,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(
+        color: colors.surface.withValues(
           alpha: 0.35,
         ),
         borderRadius: BorderRadius.circular(22),

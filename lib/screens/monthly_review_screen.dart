@@ -202,8 +202,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                colors.primary.withOpacity(0.16),
-                colors.secondary.withOpacity(0.10),
+                colors.primary.withValues(alpha: 0.16),
+                colors.secondary.withValues(alpha: 0.10),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
@@ -269,7 +269,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withOpacity(0.22),
+            color: colors.primary.withValues(alpha: 0.22),
             blurRadius: 26,
             offset: const Offset(0, 11),
           ),
@@ -284,7 +284,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
+              color: Colors.white.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -325,7 +325,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 ? 'Great work keeping your finances under control.'
                 : 'Review your expenses and find opportunities to save.',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withOpacity(0.82),
+              color: Colors.white.withValues(alpha: 0.82),
               height: 1.45,
             ),
           ),
@@ -372,7 +372,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     return Container(
       width: 1,
       height: 38,
-      color: Colors.white.withOpacity(0.20),
+      color: Colors.white.withValues(alpha: 0.20),
     );
   }
 
@@ -387,12 +387,12 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     return Container(
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(
+        color: colors.surface.withValues(
           alpha: 0.65,
         ),
         borderRadius: BorderRadius.circular(19),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.35),
+          color: colors.outlineVariant.withValues(alpha: 0.35),
         ),
       ),
       child: Row(
@@ -454,7 +454,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: colors.primary.withOpacity(0.10),
+            color: colors.primary.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(
@@ -537,7 +537,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           icon: Icons.percent_rounded,
           title: 'Balance',
           value: balancePercentage == null
-              ? 'â€”'
+              ? 'Ã¢â‚¬â€'
               : '${balancePercentage.clamp(-999.0, 999.0).toStringAsFixed(0)}%',
           description: 'Income retained',
           iconColor: Colors.deepPurple,
@@ -581,7 +581,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             icon: Icons.bolt_rounded,
             color: Colors.orange,
             title: 'Most productive day',
-            value: productiveDay != null ? productiveDay.toString() : 'â€”',
+            value:
+                productiveDay != null ? productiveDay.toString() : 'Ã¢â‚¬â€',
             subtitle: productiveDay != null
                 ? '${_monthName(_month)} productivity'
                 : 'No activity recorded',
@@ -678,13 +679,13 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            moodColor.withOpacity(0.13),
+            moodColor.withValues(alpha: 0.13),
             colors.surface,
           ],
         ),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: moodColor.withOpacity(0.20),
+          color: moodColor.withValues(alpha: 0.20),
         ),
       ),
       child: Row(
@@ -717,7 +718,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} â€¢ $percentage% of logged moods',
+                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} Ã¢â‚¬Â¢ $percentage% of logged moods',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -788,7 +789,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     return Container(
       padding: const EdgeInsets.all(19),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(
+        color: colors.surface.withValues(
           alpha: 0.48,
         ),
         borderRadius: BorderRadius.circular(25),

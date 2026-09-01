@@ -1,449 +1,183 @@
-﻿
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
-import '../models/birthday_contact.dart';
 import '../services/app_scope.dart';
+import '../models/task.dart';
+import '../utils/formatters.dart';
 
-const _uuid = Uuid();
+class AddTaskScreen extends StatefulWidget {
+  final AppTask? existing;
 
-class BirthdayContactsScreen extends StatelessWidget {
-  const BirthdayContactsScreen({super.key});
+  const AddTaskScreen({
+    super.key,
+    this.existing,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final app = AppScope.of(context);
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+  State<AddTaskScreen> createState() => _AddTaskScreenState();
+}
 
-    final now = DateTime.now();
+class _AddTaskScreenState extends State<AddTaskScreen> {
+  final _formKey = GlobalKey<FormState>();
 
-    final contacts = app.birthdayContacts.toList()
-      ..sort(
-        (a, b) => a
-            .nextOccurrence(now)
-            .compareTo(b.nextOccurrence(now)),
+  final _titleCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  final _subtaskCtrl = TextEditingController();
+
+  DateTime? _dueDate;
+  TimeOfDay? _dueTime;
+
+  TaskPriority _priority = TaskPriority.medium;
+  String _category = kTaskCategories.first;
+  TaskRepeat _repeat = TaskRepeat.none;
+
+  bool _reminderEnabled = false;
+
+  final List<SubTask> _subtasks = [];
+
+  bool get _isEditing => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final existing = widget.existing;
+
+    if (existing != null) {
+      _titleCtrl.text = existing.title;
+      _descCtrl.text = existing.description;
+
+      _dueDate = existing.dueDate;
+
+      if (existing.dueTimeMinutes != null) {
+        final minutes = existing.dueTimeMinutes!;
+
+        _dueTime = TimeOfDay(
+          hour: minutes ~/ 60,
+          minute: minutes % 60,
+        );
+      }
+
+      _priority = existing.priority;
+
+      if (kTaskCategories.contains(existing.category)) {
+        _category = existing.category;
+      } else {
+        _category = kTaskCategories.first;
+      }
+
+      _repeat = existing.repeat;
+      _reminderEnabled = existing.reminderEnabled;
+
+      _subtasks.addAll(
+        existing.subtasks.map(
+          (s) => SubTask(
+            id: s.id,
+            title: s.title,
+            completed: s.completed,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _descCtrl.dispose();
+    _subtaskCtrl.dispose();
+    super.dispose();
+  }
+
+  void _addSubtask() {
+    final text = _subtaskCtrl.text.trim();
+
+    if (text.isEmpty) return;
+
+    setState(() {
+      _subtasks.add(
+        SubTask(
+          id: DateTime.now().microsecondsSinceEpoch.toString(),
+          title: text,
+          completed: false,
+        ),
       );
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 100;
-
-    final todayCount = contacts.where((contact) {
-      return contact.daysUntil(now) == 0;
-    }).length;
-
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        titleSpacing: 20,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Birthdays',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            Text(
-              '${contacts.length} contact${contacts.length == 1 ? '' : 's'} saved',
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 10,
-                color: colors.onSurface.withOpacity(0.55),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: Colors.pink.withOpacity(0.10),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.cake_rounded,
-              color: Colors.pink,
-              size: 21,
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _editContact(context, app),
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text(
-          'Add Birthday',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(
-          16,
-          10,
-          16,
-          bottomPadding,
-        ),
-        children: [
-          // ----------------------------------------------------------
-          // HERO CARD
-          // ----------------------------------------------------------
-
-          _BirthdayHero(
-            total: contacts.length,
-            today: todayCount,
-          ),
-
-          const SizedBox(height: 20),
-
-          // ----------------------------------------------------------
-          // DESCRIPTION
-          // ----------------------------------------------------------
-
-          if (contacts.isNotEmpty)
-            const _InfoCard(),
-
-          if (contacts.isNotEmpty)
-            const SizedBox(height: 18),
-
-          // ----------------------------------------------------------
-          // CONTACTS
-          // ----------------------------------------------------------
-
-          if (contacts.isEmpty)
-            _EmptyBirthdayState(
-              onAdd: () => _editContact(context, app),
-            )
-          else ...[
-            Row(
-              children: [
-                Icon(
-                  Icons.people_alt_outlined,
-                  size: 19,
-                  color: colors.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Your People',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const Spacer(),
-                Text(
-                  '${contacts.length}',
-                  style: TextStyle(
-                    color: colors.primary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 10),
-
-            ...contacts.map(
-              (contact) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _BirthdayCard(
-                  contact: contact,
-                  now: now,
-                  onEdit: () => _editContact(
-                    context,
-                    app,
-                    contact: contact,
-                  ),
-                  onDelete: () => _deleteContact(
-                    context,
-                    app,
-                    contact,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
+      _subtaskCtrl.clear();
+    });
   }
 
-  // =========================================================================
-  // ADD / EDIT
-  // =========================================================================
+  void _removeSubtask(SubTask subtask) {
+    setState(() {
+      _subtasks.remove(subtask);
+    });
+  }
 
-  void _editContact(
-    BuildContext context,
-    dynamic app, {
-    BirthdayContact? contact,
-  }) {
-    final nameController = TextEditingController(
-      text: contact?.name ?? '',
-    );
+  Future<void> _pickDueDate() async {
+    final now = DateTime.now();
 
-    final relationController = TextEditingController(
-      text: contact?.relation ?? 'Friend',
-    );
-
-    DateTime selectedDate =
-        contact?.date ?? DateTime.now();
-
-    showDialog(
+    final picked = await showDatePicker(
       context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final colors =
-                Theme.of(context).colorScheme;
-
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
-              ),
-              titlePadding:
-                  const EdgeInsets.fromLTRB(24, 24, 24, 8),
-              contentPadding:
-                  const EdgeInsets.fromLTRB(24, 8, 24, 10),
-              actionsPadding:
-                  const EdgeInsets.fromLTRB(18, 4, 18, 18),
-              title: Row(
-                children: [
-                  Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFF5C8A),
-                          Color(0xFFFF8A65),
-                        ],
-                      ),
-                      borderRadius:
-                          BorderRadius.circular(15),
-                    ),
-                    child: const Icon(
-                      Icons.cake_rounded,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 13),
-                  Expanded(
-                    child: Text(
-                      contact == null
-                          ? 'Add Birthday'
-                          : 'Edit Birthday',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: nameController,
-                      autofocus: contact == null,
-                      textCapitalization:
-                          TextCapitalization.words,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        hintText: 'e.g. Mom, Rahul, Ananya',
-                        prefixIcon: const Icon(
-                          Icons.person_outline_rounded,
-                        ),
-                        filled: true,
-                        fillColor: colors
-                            .surfaceContainerHighest
-                            .withOpacity(0.45),
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextField(
-                      controller: relationController,
-                      textCapitalization:
-                          TextCapitalization.words,
-                      decoration: InputDecoration(
-                        labelText: 'Relation',
-                        hintText: 'e.g. Sister, Friend, Dad',
-                        prefixIcon: const Icon(
-                          Icons.favorite_outline_rounded,
-                        ),
-                        filled: true,
-                        fillColor: colors
-                            .surfaceContainerHighest
-                            .withOpacity(0.45),
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(16),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    _DatePickerCard(
-                      date: selectedDate,
-                      onTap: () async {
-                        final picked =
-                            await showDatePicker(
-                          context: context,
-                          initialDate: selectedDate,
-                          firstDate:
-                              DateTime(1900),
-                          lastDate: DateTime(
-                            DateTime.now().year + 5,
-                          ),
-                        );
-
-                        if (picked != null) {
-                          setState(() {
-                            selectedDate = picked;
-                          });
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () =>
-                      Navigator.pop(dialogContext),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton.icon(
-                  onPressed: () {
-                    final name =
-                        nameController.text.trim();
-
-                    if (name.isEmpty) {
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Please enter a name.',
-                          ),
-                        ),
-                      );
-                      return;
-                    }
-
-                    final relation =
-                        relationController.text.trim();
-
-                    final birthday =
-                        BirthdayContact(
-                      id: contact?.id ?? _uuid.v4(),
-                      name: name,
-                      relation: relation.isEmpty
-                          ? 'Friend'
-                          : relation,
-                      date: DateTime(
-                        selectedDate.year,
-                        selectedDate.month,
-                        selectedDate.day,
-                      ),
-                    );
-
-                    if (contact == null) {
-                      app.addBirthdayContact(
-                        birthday,
-                      );
-                    } else {
-                      app.updateBirthdayContact(
-                        birthday,
-                      );
-                    }
-
-                    Navigator.pop(dialogContext);
-
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(
-                      SnackBar(
-                        behavior:
-                            SnackBarBehavior.floating,
-                        content: Text(
-                          contact == null
-                              ? 'ðŸŽ‚ Birthday added for $name'
-                              : 'âœ¨ Birthday updated',
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    Icons.check_rounded,
-                  ),
-                  label: const Text(
-                    'Save',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      initialDate: _dueDate ?? now,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
     );
+
+    if (picked == null) return;
+
+    setState(() {
+      _dueDate = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+      );
+    });
   }
 
-  // =========================================================================
-  // DELETE
-  // =========================================================================
+  Future<void> _pickDueTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _dueTime ?? TimeOfDay.now(),
+    );
 
-  void _deleteContact(
-    BuildContext context,
-    dynamic app,
-    BirthdayContact contact,
-  ) {
-    showDialog(
+    if (picked == null) return;
+
+    setState(() {
+      _dueTime = picked;
+    });
+  }
+
+  void _clearDueDate() {
+    setState(() {
+      _dueDate = null;
+      _dueTime = null;
+      _reminderEnabled = false;
+    });
+  }
+
+  void _clearDueTime() {
+    setState(() {
+      _dueTime = null;
+    });
+  }
+
+  void _deleteExistingTask() {
+    final existing = widget.existing;
+
+    if (existing == null) return;
+
+    final app = AppScope.of(context);
+
+    showDialog<void>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(26),
-          ),
-          title: const Row(
-            children: [
-              Icon(
-                Icons.delete_outline_rounded,
-                color: Colors.red,
-              ),
-              SizedBox(width: 10),
-              Text(
-                'Delete birthday?',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ],
-          ),
+          title: const Text('Delete task?'),
           content: Text(
-            'Remove ${contact.name} from your birthday reminders?',
+            'Are you sure you want to delete "${existing.title}"?',
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext),
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel'),
             ),
             FilledButton(
@@ -452,256 +186,281 @@ class BirthdayContactsScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
-                app.deleteBirthdayContact(
-                  contact.id,
-                );
+                app.deleteTask(existing.id);
 
                 Navigator.pop(dialogContext);
-
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(
-                  SnackBar(
-                    behavior:
-                        SnackBarBehavior.floating,
-                    content: Text(
-                      '${contact.name} removed',
-                    ),
-                  ),
-                );
+                Navigator.pop(context);
               },
-              child: const Text(
-                'Delete',
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              child: const Text('Delete'),
             ),
           ],
         );
       },
     );
   }
-}
 
-// ============================================================================
-// HERO
-// ============================================================================
+  void _saveTask() {
+    FocusScope.of(context).unfocus();
 
-class _BirthdayHero extends StatelessWidget {
-  final int total;
-  final int today;
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-  const _BirthdayHero({
-    required this.total,
-    required this.today,
-  });
+    final app = AppScope.of(context);
+
+    final minutes =
+        _dueTime == null ? null : (_dueTime!.hour * 60) + _dueTime!.minute;
+
+    if (_isEditing) {
+      final existing = widget.existing!;
+
+      final updated = AppTask(
+        id: existing.id,
+        title: _titleCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        dueDate: _dueDate,
+        dueTimeMinutes: minutes,
+        createdAt: existing.createdAt,
+        priority: _priority,
+        category: _category,
+        repeat: _repeat,
+        reminderEnabled: _reminderEnabled,
+        subtasks: List<SubTask>.from(_subtasks),
+      );
+
+      app.updateTask(updated);
+    } else {
+      final task = AppTask(
+        id: app.newId(),
+        title: _titleCtrl.text.trim(),
+        description: _descCtrl.text.trim(),
+        dueDate: _dueDate,
+        dueTimeMinutes: minutes,
+        createdAt: DateTime.now(),
+        priority: _priority,
+        category: _category,
+        repeat: _repeat,
+        reminderEnabled: _reminderEnabled,
+        subtasks: List<SubTask>.from(_subtasks),
+      );
+
+      app.addTask(task);
+    }
+
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Scaffold(
+      backgroundColor: colors.surface,
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: colors.surface,
+        titleSpacing: 20,
+        title: Text(
+          _isEditing ? 'Edit Task' : 'New Task',
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
+          ),
+        ),
+        actions: [
+          if (_isEditing)
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                tooltip: 'Delete task',
+                onPressed: _deleteExistingTask,
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  color: colors.error,
+                ),
+              ),
+            ),
+        ],
+      ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(
+              16,
+              8,
+              16,
+              110,
+            ),
+            children: [
+              _buildIntro(context),
+              const SizedBox(height: 18),
+              _buildMainDetailsCard(context),
+              const SizedBox(height: 14),
+              _buildChecklistCard(context),
+              const SizedBox(height: 14),
+              _buildScheduleCard(context),
+              const SizedBox(height: 14),
+              _buildOrganizationCard(context),
+              const SizedBox(height: 14),
+              _buildRepeatCard(context),
+              const SizedBox(height: 22),
+              _buildSaveButton(context),
+              if (_isEditing) ...[
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: _deleteExistingTask,
+                  style: TextButton.styleFrom(
+                    foregroundColor: colors.error,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: const Text(
+                    'Delete this task',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===============================================================
+  // INTRO
+  // ===============================================================
+
+  Widget _buildIntro(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFFF5C8A),
-            Color(0xFFFF8A65),
+            colors.primary.withValues(alpha: 0.12),
+            colors.secondary.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(26),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.pink.withOpacity(0.22),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.white
-                      .withOpacity(0.18),
-                  borderRadius:
-                      BorderRadius.circular(17),
-                ),
-                child: const Icon(
-                  Icons.cake_rounded,
-                  color: Colors.white,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 14),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Birthday Circle',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight:
-                            FontWeight.w900,
-                      ),
-                    ),
-                    SizedBox(height: 3),
-                    Text(
-                      'Never miss a special day',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: _HeroStat(
-                  icon: Icons.people_alt_outlined,
-                  value: '$total',
-                  label: 'People',
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _HeroStat(
-                  icon: Icons.today_outlined,
-                  value: '$today',
-                  label: 'Today',
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroStat extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
-  const _HeroStat({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 11,
-        horizontal: 12,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white
-            .withOpacity(0.12),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            icon,
-            color: Colors.white70,
-            size: 19,
-          ),
-          const SizedBox(width: 9),
-          Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              Text(
-                label,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 9,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ============================================================================
-// INFO CARD
-// ============================================================================
-
-class _InfoCard extends StatelessWidget {
-  const _InfoCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest
-            .withOpacity(0.45),
-        borderRadius: BorderRadius.circular(19),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors.outline
-              .withOpacity(0.06),
+          color: colors.primary.withValues(alpha: 0.12),
         ),
       ),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
         children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.pink
-                  .withOpacity(0.10),
-              borderRadius:
-                  BorderRadius.circular(12),
+              color: colors.primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(
-              Icons.notifications_active_outlined,
-              color: Colors.pink,
-              size: 19,
+            child: Icon(
+              _isEditing ? Icons.edit_note_rounded : Icons.add_task_rounded,
+              color: colors.primary,
+              size: 26,
             ),
           ),
-          const SizedBox(width: 11),
+          const SizedBox(width: 13),
           Expanded(
-            child: Text(
-              'Add birthdays for friends and family. Your Reminders screen will automatically show upcoming birthdays.',
-              style: TextStyle(
-                color: colors.onSurface
-                    .withOpacity(0.60),
-                fontSize: 10,
-                height: 1.45,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _isEditing ? 'Update your task' : 'Plan something great',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  _isEditing
+                      ? 'Make changes and keep yourself organized.'
+                      : 'Add the details now so you can focus later.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===============================================================
+  // MAIN DETAILS
+  // ===============================================================
+
+  Widget _buildMainDetailsCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return _SectionContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeading(
+            icon: Icons.edit_note_rounded,
+            title: 'Task details',
+            color: colors.primary,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _titleCtrl,
+            autofocus: !_isEditing,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.next,
+            maxLength: 100,
+            decoration: InputDecoration(
+              labelText: 'Task title',
+              hintText: 'What do you need to do?',
+              prefixIcon: const Icon(
+                Icons.check_circle_outline_rounded,
+              ),
+              counterText: '',
+              filled: true,
+              fillColor: colors.surfaceContainerHighest.withValues(
+                alpha: 0.35,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Please enter a task title';
+              }
+
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _descCtrl,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 4,
+            minLines: 3,
+            decoration: InputDecoration(
+              labelText: 'Description',
+              hintText: 'Add notes or extra details...',
+              alignLabelWithHint: true,
+              prefixIcon: const Padding(
+                padding: EdgeInsets.only(bottom: 54),
+                child: Icon(Icons.notes_rounded),
+              ),
+              filled: true,
+              fillColor: colors.surfaceContainerHighest.withValues(
+                alpha: 0.35,
               ),
             ),
           ),
@@ -709,332 +468,744 @@ class _InfoCard extends StatelessWidget {
       ),
     );
   }
-}
 
-// ============================================================================
-// BIRTHDAY CARD
-// ============================================================================
+  // ===============================================================
+  // CHECKLIST
+  // ===============================================================
 
-class _BirthdayCard extends StatelessWidget {
-  final BirthdayContact contact;
-  final DateTime now;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
+  Widget _buildChecklistCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
-  const _BirthdayCard({
-    required this.contact,
-    required this.now,
-    required this.onEdit,
-    required this.onDelete,
-  });
+    final completedCount = _subtasks.where((s) => s.completed).length;
 
-  @override
-  Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
-
-    final next =
-        contact.nextOccurrence(now);
-
-    final days =
-        contact.daysUntil(now);
-
-    final age =
-        contact.ageOn(next);
-
-    final isToday = days == 0;
-    final isSoon = days > 0 && days <= 7;
-
-    final dateText =
-        DateFormat.yMMMMd().format(contact.date);
-
-    String statusText;
-
-    if (isToday) {
-      statusText = 'ðŸŽ‰ Today â€¢ turns $age';
-    } else if (days == 1) {
-      statusText = 'Tomorrow â€¢ turns $age';
-    } else if (isSoon) {
-      statusText = 'In $days days â€¢ turns $age';
-    } else {
-      statusText = 'In $days days â€¢ turns $age';
-    }
-
-    return Material(
-      color: colors.surface,
-      borderRadius: BorderRadius.circular(22),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(22),
-        onTap: onEdit,
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(22),
-            border: Border.all(
-              color: isToday
-                  ? Colors.pink
-                      .withOpacity(0.20)
-                  : colors.outline
-                      .withOpacity(0.08),
+    return _SectionContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: _SectionHeading(
+                  icon: Icons.checklist_rounded,
+                  title: 'Checklist',
+                  color: colors.primary,
+                ),
+              ),
+              if (_subtasks.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    '$completedCount/${_subtasks.length}',
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 13),
+          if (_subtasks.isNotEmpty) ...[
+            Container(
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHighest.withValues(
+                  alpha: 0.32,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  for (int i = 0; i < _subtasks.length; i++)
+                    _buildSubtaskTile(
+                      context,
+                      _subtasks[i],
+                      i == _subtasks.length - 1,
+                    ),
+                ],
+              ),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black
-                    .withOpacity(0.025),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+            const SizedBox(height: 10),
+          ],
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _subtaskCtrl,
+                  textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _addSubtask(),
+                  decoration: InputDecoration(
+                    hintText: 'Add checklist item...',
+                    prefixIcon: const Icon(
+                      Icons.add_task_rounded,
+                    ),
+                    filled: true,
+                    fillColor: colors.surfaceContainerHighest.withValues(
+                      alpha: 0.35,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filled(
+                tooltip: 'Add checklist item',
+                onPressed: _addSubtask,
+                icon: const Icon(Icons.add_rounded),
               ),
             ],
           ),
+          if (_subtasks.isEmpty) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Break this task into smaller steps if needed.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubtaskTile(
+    BuildContext context,
+    SubTask subtask,
+    bool isLast,
+  ) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 3,
+          ),
           child: Row(
             children: [
-              // AVATAR
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isToday
-                        ? [
-                            Colors.pink,
-                            Colors.deepOrange,
-                          ]
-                        : [
-                            colors.primary,
-                            colors.primary
-                                .withOpacity(0.70),
-                          ],
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    contact.initials,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: 13),
-
-              // DETAILS
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            contact.name,
-                            maxLines: 1,
-                            overflow:
-                                TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight:
-                                  FontWeight.w900,
-                            ),
-                          ),
-                        ),
-                        if (isToday)
-                          Container(
-                            padding:
-                                const EdgeInsets
-                                    .symmetric(
-                              horizontal: 7,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.pink
-                                  .withValues(
-                                alpha: 0.10,
-                              ),
-                              borderRadius:
-                                  BorderRadius.circular(
-                                      8),
-                            ),
-                            child: const Text(
-                              'TODAY',
-                              style: TextStyle(
-                                color: Colors.pink,
-                                fontSize: 7,
-                                fontWeight:
-                                    FontWeight.w900,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      contact.relation,
-                      style: TextStyle(
-                        color: colors.primary,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      '$dateText â€¢ $statusText',
-                      maxLines: 2,
-                      overflow:
-                          TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: colors.onSurface
-                            .withOpacity(0.55),
-                        fontSize: 10,
-                        height: 1.3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 4),
-
-              // MENU
-              PopupMenuButton<String>(
-                icon: Icon(
-                  Icons.more_vert_rounded,
-                  color: colors.onSurface
-                      .withOpacity(0.45),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(16),
-                ),
-                onSelected: (value) {
-                  if (value == 'edit') {
-                    onEdit();
-                  } else if (value == 'delete') {
-                    onDelete();
-                  }
+              Checkbox(
+                value: subtask.completed,
+                onChanged: (value) {
+                  setState(() {
+                    subtask.completed = value ?? false;
+                  });
                 },
-                itemBuilder: (_) => const [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.edit_outlined,
-                          size: 19,
-                        ),
-                        SizedBox(width: 10),
-                        Text('Edit'),
-                      ],
-                    ),
+                visualDensity: VisualDensity.compact,
+              ),
+              Expanded(
+                child: Text(
+                  subtask.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    decoration:
+                        subtask.completed ? TextDecoration.lineThrough : null,
+                    color: subtask.completed ? colors.onSurfaceVariant : null,
                   ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.delete_outline_rounded,
-                          size: 19,
-                          color: Colors.red,
-                        ),
-                        SizedBox(width: 10),
-                        Text('Delete'),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              IconButton(
+                tooltip: 'Remove',
+                onPressed: () => _removeSubtask(subtask),
+                icon: Icon(
+                  Icons.close_rounded,
+                  size: 19,
+                  color: colors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
         ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            indent: 48,
+            endIndent: 8,
+            color: colors.outlineVariant.withValues(alpha: 0.5),
+          ),
+      ],
+    );
+  }
+
+  // ===============================================================
+  // SCHEDULE
+  // ===============================================================
+
+  Widget _buildScheduleCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return _SectionContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeading(
+            icon: Icons.schedule_rounded,
+            title: 'Schedule',
+            color: colors.primary,
+          ),
+          const SizedBox(height: 14),
+          _buildSettingTile(
+            context,
+            icon: Icons.calendar_today_rounded,
+            title: 'Due date',
+            subtitle: _dueDate != null ? formatDate(_dueDate!) : 'No due date',
+            trailing: _dueDate != null
+                ? IconButton(
+                    tooltip: 'Clear date',
+                    onPressed: _clearDueDate,
+                    icon: const Icon(Icons.close_rounded),
+                  )
+                : Icon(
+                    Icons.chevron_right_rounded,
+                    color: colors.onSurfaceVariant,
+                  ),
+            onTap: _pickDueDate,
+            highlighted: _dueDate != null,
+          ),
+          const SizedBox(height: 8),
+          _buildSettingTile(
+            context,
+            icon: Icons.access_time_rounded,
+            title: 'Reminder time',
+            subtitle: _dueTime != null
+                ? _dueTime!.format(context)
+                : 'No specific time',
+            trailing: _dueTime != null
+                ? IconButton(
+                    tooltip: 'Clear time',
+                    onPressed: _clearDueTime,
+                    icon: const Icon(Icons.close_rounded),
+                  )
+                : Icon(
+                    Icons.chevron_right_rounded,
+                    color: colors.onSurfaceVariant,
+                  ),
+            onTap: _pickDueTime,
+            highlighted: _dueTime != null,
+          ),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: colors.surfaceContainerHighest.withValues(
+                alpha: 0.32,
+              ),
+              borderRadius: BorderRadius.circular(17),
+            ),
+            child: SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 13,
+                vertical: 2,
+              ),
+              secondary: Container(
+                padding: const EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  color: colors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.notifications_active_outlined,
+                  color: colors.primary,
+                  size: 21,
+                ),
+              ),
+              title: const Text(
+                'Remind me',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              subtitle: Text(
+                _dueDate == null
+                    ? 'Set a due date first'
+                    : 'Show this task in reminders as it approaches',
+              ),
+              value: _reminderEnabled,
+              onChanged: _dueDate == null
+                  ? null
+                  : (value) {
+                      setState(() {
+                        _reminderEnabled = value;
+                      });
+                    },
+            ),
+          ),
+        ],
       ),
     );
   }
-}
 
-// ============================================================================
-// DATE PICKER
-// ============================================================================
-
-class _DatePickerCard extends StatelessWidget {
-  final DateTime date;
-  final VoidCallback onTap;
-
-  const _DatePickerCard({
-    required this.date,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+  Widget _buildSettingTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget trailing,
+    required VoidCallback onTap,
+    bool highlighted = false,
+  }) {
+    final colors = Theme.of(context).colorScheme;
 
     return Material(
-      color: Colors.transparent,
+      color: highlighted
+          ? colors.primary.withValues(alpha: 0.055)
+          : colors.surfaceContainerHighest.withValues(alpha: 0.32),
+      borderRadius: BorderRadius.circular(17),
       child: InkWell(
-        borderRadius: BorderRadius.circular(17),
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: colors.primary
-                .withOpacity(0.07),
-            borderRadius:
-                BorderRadius.circular(17),
-            border: Border.all(
-              color: colors.primary
-                  .withOpacity(0.12),
-            ),
+        borderRadius: BorderRadius.circular(17),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 13,
+            vertical: 10,
           ),
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: colors.primary
-                      .withOpacity(0.12),
-                  borderRadius:
-                      BorderRadius.circular(13),
+                  color: highlighted
+                      ? colors.primary.withValues(alpha: 0.11)
+                      : colors.surface,
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
-                  Icons.calendar_month_rounded,
-                  color: colors.primary,
+                  icon,
+                  size: 20,
+                  color: highlighted ? colors.primary : colors.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Birthday',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w800,
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 2),
                     Text(
-                      DateFormat.yMMMMd().format(date),
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: colors.onSurface
-                            .withOpacity(0.55),
-                        fontSize: 11,
+                        fontSize: 12,
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
+              trailing,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ===============================================================
+  // ORGANIZATION
+  // ===============================================================
+
+  Widget _buildOrganizationCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return _SectionContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeading(
+            icon: Icons.tune_rounded,
+            title: 'Organization',
+            color: colors.primary,
+          ),
+          const SizedBox(height: 15),
+          Text(
+            'Category',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          DropdownButtonFormField<String>(
+            initialValue: _category,
+            isExpanded: true,
+            decoration: InputDecoration(
+              prefixIcon: const Icon(
+                Icons.folder_open_rounded,
+              ),
+              filled: true,
+              fillColor: colors.surfaceContainerHighest.withValues(alpha: 0.35),
+            ),
+            items: kTaskCategories
+                .map(
+                  (category) => DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  ),
+                )
+                .toList(),
+            onChanged: (value) {
+              if (value == null) return;
+
+              setState(() {
+                _category = value;
+              });
+            },
+          ),
+          const SizedBox(height: 17),
+          Text(
+            'Priority',
+            style: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 9),
+          _buildPrioritySelector(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPrioritySelector(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _PriorityButton(
+            label: 'Low',
+            icon: Icons.keyboard_arrow_down_rounded,
+            color: Colors.green,
+            selected: _priority == TaskPriority.low,
+            onTap: () {
+              setState(() {
+                _priority = TaskPriority.low;
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _PriorityButton(
+            label: 'Medium',
+            icon: Icons.remove_rounded,
+            color: Colors.orange,
+            selected: _priority == TaskPriority.medium,
+            onTap: () {
+              setState(() {
+                _priority = TaskPriority.medium;
+              });
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _PriorityButton(
+            label: 'High',
+            icon: Icons.keyboard_arrow_up_rounded,
+            color: Colors.red,
+            selected: _priority == TaskPriority.high,
+            onTap: () {
+              setState(() {
+                _priority = TaskPriority.high;
+              });
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ===============================================================
+  // REPEAT
+  // ===============================================================
+
+  Widget _buildRepeatCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return _SectionContainer(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeading(
+            icon: Icons.repeat_rounded,
+            title: 'Repeat',
+            color: colors.primary,
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _RepeatChip(
+                label: 'None',
+                icon: Icons.block_rounded,
+                selected: _repeat == TaskRepeat.none,
+                onTap: () {
+                  setState(() {
+                    _repeat = TaskRepeat.none;
+                  });
+                },
+              ),
+              _RepeatChip(
+                label: 'Daily',
+                icon: Icons.today_rounded,
+                selected: _repeat == TaskRepeat.daily,
+                onTap: () {
+                  setState(() {
+                    _repeat = TaskRepeat.daily;
+                  });
+                },
+              ),
+              _RepeatChip(
+                label: 'Weekly',
+                icon: Icons.date_range_rounded,
+                selected: _repeat == TaskRepeat.weekly,
+                onTap: () {
+                  setState(() {
+                    _repeat = TaskRepeat.weekly;
+                  });
+                },
+              ),
+              _RepeatChip(
+                label: 'Monthly',
+                icon: Icons.calendar_month_rounded,
+                selected: _repeat == TaskRepeat.monthly,
+                onTap: () {
+                  setState(() {
+                    _repeat = TaskRepeat.monthly;
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_repeat != TaskRepeat.none) ...[
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 18,
+                    color: colors.primary,
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      'When you complete this task, the next occurrence will be created automatically.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ===============================================================
+  // SAVE BUTTON
+  // ===============================================================
+
+  Widget _buildSaveButton(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        onPressed: _saveTask,
+        icon: Icon(
+          _isEditing ? Icons.check_rounded : Icons.add_task_rounded,
+        ),
+        label: Text(
+          _isEditing ? 'Save Changes' : 'Create Task',
+          style: const TextStyle(
+            fontWeight: FontWeight.w800,
+            fontSize: 15,
+          ),
+        ),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(56),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          backgroundColor: colors.primary,
+          foregroundColor: colors.onPrimary,
+        ),
+      ),
+    );
+  }
+}
+
+// =================================================================
+// SECTION CONTAINER
+// =================================================================
+
+class _SectionContainer extends StatelessWidget {
+  final Widget child;
+
+  const _SectionContainer({
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(17),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(23),
+        border: Border.all(
+          color: colors.outlineVariant.withValues(alpha: 0.65),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.025),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+// =================================================================
+// SECTION HEADING
+// =================================================================
+
+class _SectionHeading extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+
+  const _SectionHeading({
+    required this.icon,
+    required this.title,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(9),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            icon,
+            color: color,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 11),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.2,
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+// =================================================================
+// PRIORITY BUTTON
+// =================================================================
+
+class _PriorityButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _PriorityButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Material(
+      color: selected
+          ? color.withValues(alpha: 0.12)
+          : colors.surfaceContainerHighest.withValues(alpha: 0.35),
+      borderRadius: BorderRadius.circular(15),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 7,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: selected
+                  ? color.withValues(alpha: 0.35)
+                  : colors.outlineVariant.withValues(alpha: 0.45),
+              width: selected ? 1.2 : 1,
+            ),
+          ),
+          child: Column(
+            children: [
               Icon(
-                Icons.chevron_right_rounded,
-                color: colors.primary,
+                icon,
+                size: 20,
+                color: selected ? color : colors.onSurfaceVariant,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? color : colors.onSurfaceVariant,
+                ),
               ),
             ],
           ),
@@ -1044,101 +1215,61 @@ class _DatePickerCard extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// EMPTY STATE
-// ============================================================================
+// =================================================================
+// REPEAT CHIP
+// =================================================================
 
-class _EmptyBirthdayState extends StatelessWidget {
-  final VoidCallback onAdd;
+class _RepeatChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
 
-  const _EmptyBirthdayState({
-    required this.onAdd,
+  const _RepeatChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 38,
-      ),
-      decoration: BoxDecoration(
-        color: colors.primary
-            .withOpacity(0.045),
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(
-          color: colors.primary
-              .withOpacity(0.08),
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 78,
-            height: 78,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFFFF5C8A),
-                  Color(0xFFFF8A65),
-                ],
+    return Material(
+      color: selected
+          ? colors.primary.withValues(alpha: 0.11)
+          : colors.surfaceContainerHighest.withValues(alpha: 0.35),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 10,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 17,
+                color: selected ? colors.primary : colors.onSurfaceVariant,
               ),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.pink
-                      .withOpacity(0.20),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? colors.primary : colors.onSurfaceVariant,
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.cake_rounded,
-              color: Colors.white,
-              size: 38,
-            ),
-          ),
-          const SizedBox(height: 17),
-          const Text(
-            'No birthdays yet',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            'Add friends and family so you never miss an important birthday.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: colors.onSurface
-                  .withOpacity(0.55),
-              fontSize: 11,
-              height: 1.45,
-            ),
-          ),
-          const SizedBox(height: 20),
-          FilledButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(
-              Icons.add_rounded,
-            ),
-            label: const Text(
-              'Add First Birthday',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 }
-
-

@@ -29,7 +29,7 @@ class GoalsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 60),
               child: Center(
-                  child: Text('No goals yet â€” tap + to add one',
+                  child: Text('No goals yet Ã¢â‚¬â€ tap + to add one',
                       style: TextStyle(color: Colors.grey.shade600))),
             ),
           ...active.map((g) => _GoalCard(goal: g)),
@@ -111,10 +111,10 @@ class _GoalCard extends StatelessWidget {
                     final daysLabel = goal.completed
                         ? ''
                         : days < 0
-                            ? ' Â· ${-days} day${-days == 1 ? '' : 's'} overdue'
+                            ? ' Ã‚Â· ${-days} day${-days == 1 ? '' : 's'} overdue'
                             : days == 0
-                                ? ' Â· due today'
-                                : ' Â· $days day${days == 1 ? '' : 's'} left';
+                                ? ' Ã‚Â· due today'
+                                : ' Ã‚Â· $days day${days == 1 ? '' : 's'} left';
                     return Text(
                       'Target: ${formatDate(goal.targetDate!)}$daysLabel',
                       style: TextStyle(

@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import 'birthday_contacts_screen.dart';
 
-const List<String> kCurrencies = ['â‚¹', '\$', 'â‚¬', 'Â£', 'Â¥'];
+const List<String> kCurrencies = ['Ã¢â€šÂ¹', '\$', 'Ã¢â€šÂ¬', 'Ã‚Â£', 'Ã‚Â¥'];
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -93,8 +93,8 @@ class SettingsScreen extends StatelessWidget {
               title: const Text('OpenAI API Key'),
               subtitle: Text(
                 app.aiApiKey.trim().isEmpty
-                    ? 'Not set â€” required to use "Ask AI". Get a free key at platform.openai.com.'
-                    : 'â€¢â€¢â€¢â€¢ ${app.aiApiKey.length > 4 ? app.aiApiKey.substring(app.aiApiKey.length - 4) : ''}',
+                    ? 'Not set Ã¢â‚¬â€ required to use "Ask AI". Get a free key at platform.openai.com.'
+                    : 'Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢ ${app.aiApiKey.length > 4 ? app.aiApiKey.substring(app.aiApiKey.length - 4) : ''}',
               ),
               onTap: () => _editAiKey(context, app),
             ),
@@ -107,7 +107,7 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
-                'Get a key at platform.openai.com â€” your key is stored only on this device and sent directly to OpenAI, never through any server of ours.',
+                'Get a key at platform.openai.com Ã¢â‚¬â€ your key is stored only on this device and sent directly to OpenAI, never through any server of ours.',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
               ),
             ),
@@ -381,8 +381,8 @@ class SettingsScreen extends StatelessWidget {
                 if (ctx.mounted) {
                   ScaffoldMessenger.of(ctx).showSnackBar(
                     const SnackBar(
-                        content:
-                            Text('Could not restore â€” invalid backup data')),
+                        content: Text(
+                            'Could not restore Ã¢â‚¬â€ invalid backup data')),
                   );
                 }
               }

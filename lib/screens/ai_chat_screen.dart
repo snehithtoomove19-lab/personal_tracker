@@ -87,8 +87,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } on AiChatException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted)
+      if (mounted) {
         setState(() => _error = 'Something went wrong. Please try again.');
+      }
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -123,7 +124,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           if (app.aiApiKey.trim().isEmpty)
             Container(
               width: double.infinity,
-              color: Colors.orange.withOpacity(0.1),
+              color: Colors.orange.withValues(alpha: 0.1),
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
@@ -157,7 +158,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       size: 48, color: Colors.grey.shade400),
                   const SizedBox(height: 12),
                   Text(
-                    'Ask anything â€” questions about your finances, general knowledge, advice, or just to chat.',
+                    'Ask anything Ã¢â‚¬â€ questions about your finances, general knowledge, advice, or just to chat.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey.shade600),
                   ),

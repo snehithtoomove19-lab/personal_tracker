@@ -15,7 +15,7 @@ import 'widgets/app_drawer.dart';
 
 void main() {
   // Makes any widget-build error show its actual message on-screen instead
-  // of a blank grey box â€” Flutter's default error widget only shows details
+  // of a blank grey box Ã¢â‚¬â€ Flutter's default error widget only shows details
   // in debug mode, so on a release build a crash can otherwise look exactly
   // like "the app won't open" with zero information to go on.
   ErrorWidget.builder = (FlutterErrorDetails details) {
@@ -180,7 +180,7 @@ class _RootShellState extends State<RootShell> {
       builder: (ctx) {
         final children = <Widget>[];
         if (app.isMyBirthdayToday) {
-          children.add(const Text('Happy birthday! ðŸŽ‰',
+          children.add(const Text('Happy birthday! Ã°Å¸Å½â€°',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 10));
           children.add(Text('Today is your special day, ${app.userName}.',
@@ -197,7 +197,7 @@ class _RootShellState extends State<RootShell> {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 8));
           children.addAll(todaysContacts.map((c) => Text(
-              'â€¢ ${c.name} (${c.relation})',
+              'Ã¢â‚¬Â¢ ${c.name} (${c.relation})',
               style: const TextStyle(fontSize: 14))));
         }
 

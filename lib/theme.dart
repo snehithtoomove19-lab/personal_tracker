@@ -90,7 +90,7 @@ ThemeData buildLightTheme() {
       color: Colors.white,
       surfaceTintColor: Colors.transparent,
       margin: EdgeInsets.zero,
-      shadowColor: Colors.black.withOpacity(0.06),
+      shadowColor: Colors.black.withValues(alpha: 0.06),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -236,7 +236,7 @@ ThemeData buildLightTheme() {
           vertical: 12,
         ),
         side: BorderSide(
-          color: kPrimaryColor.withOpacity(0.28),
+          color: kPrimaryColor.withValues(alpha: 0.28),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -340,7 +340,7 @@ ThemeData buildLightTheme() {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       height: 72,
-      indicatorColor: kPrimaryColor.withOpacity(0.12),
+      indicatorColor: kPrimaryColor.withValues(alpha: 0.12),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) {
@@ -421,7 +421,7 @@ ThemeData buildLightTheme() {
 
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFFF0F1F6),
-      selectedColor: kPrimaryColor.withOpacity(0.12),
+      selectedColor: kPrimaryColor.withValues(alpha: 0.12),
       disabledColor: const Color(0xFFE9E9ED),
       padding: const EdgeInsets.symmetric(
         horizontal: 10,
@@ -586,7 +586,7 @@ ThemeData buildDarkTheme() {
       color: kDarkSurface,
       surfaceTintColor: Colors.transparent,
       margin: EdgeInsets.zero,
-      shadowColor: Colors.black.withOpacity(0.25),
+      shadowColor: Colors.black.withValues(alpha: 0.25),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
       ),
@@ -732,7 +732,7 @@ ThemeData buildDarkTheme() {
           vertical: 12,
         ),
         side: BorderSide(
-          color: const Color(0xFF8992F2).withOpacity(0.32),
+          color: const Color(0xFF8992F2).withValues(alpha: 0.32),
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -834,7 +834,7 @@ ThemeData buildDarkTheme() {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       height: 72,
-      indicatorColor: const Color(0xFF8992F2).withOpacity(0.15),
+      indicatorColor: const Color(0xFF8992F2).withValues(alpha: 0.15),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) {
@@ -915,7 +915,7 @@ ThemeData buildDarkTheme() {
 
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF24262E),
-      selectedColor: const Color(0xFF8992F2).withOpacity(0.16),
+      selectedColor: const Color(0xFF8992F2).withValues(alpha: 0.16),
       disabledColor: const Color(0xFF22242A),
       padding: const EdgeInsets.symmetric(
         horizontal: 10,

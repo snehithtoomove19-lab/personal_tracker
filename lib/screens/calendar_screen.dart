@@ -175,7 +175,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           color: isSelected
-              ? Theme.of(context).colorScheme.primary.withOpacity(0.15)
+              ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
               : null,
           borderRadius: BorderRadius.circular(8),
           border: isSelected

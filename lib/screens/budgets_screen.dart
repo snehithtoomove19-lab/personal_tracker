@@ -69,7 +69,7 @@ class BudgetsScreen extends StatelessWidget {
                           backgroundColor: (over
                                   ? Colors.red
                                   : Theme.of(context).colorScheme.primary)
-                              .withOpacity(0.12),
+                              .withValues(alpha: 0.12),
                         ),
                       ),
                       if (over)
