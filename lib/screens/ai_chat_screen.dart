@@ -158,7 +158,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       size: 48, color: Colors.grey.shade400),
                   const SizedBox(height: 12),
                   Text(
-                    'Ask anything Ã¢â‚¬â€ questions about your finances, general knowledge, advice, or just to chat.',
+                    'Ask anything ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â questions about your finances, general knowledge, advice, or just to chat.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey.shade600),
                   ),

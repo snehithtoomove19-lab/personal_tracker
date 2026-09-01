@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../models/transaction.dart';
@@ -42,7 +41,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
   bool _isParsing = false;
 
   static final RegExp _amountPattern = RegExp(
-    r'(?:rs\.?|inr|₹|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
+    r'(?:rs\.?|inr|Ã¢â€šÂ¹|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
     caseSensitive: false,
   );
 
@@ -142,9 +141,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
         continue;
       }
 
-      final type = isCredit && !isDebit
-          ? TxType.income
-          : TxType.expense;
+      final type = isCredit && !isDebit ? TxType.income : TxType.expense;
 
       found.add(
         _SmsCandidate(
@@ -300,9 +297,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
       ..showSnackBar(
         SnackBar(
           behavior: SnackBarBehavior.floating,
-          backgroundColor: isError
-              ? Theme.of(context).colorScheme.error
-              : null,
+          backgroundColor: isError ? Theme.of(context).colorScheme.error : null,
           content: Row(
             children: [
               Icon(
@@ -331,17 +326,20 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final pendingCount = _candidates.where(
-      (candidate) => !candidate.imported,
-    ).length;
+    final pendingCount = _candidates
+        .where(
+          (candidate) => !candidate.imported,
+        )
+        .length;
 
-    final importedCount = _candidates.where(
-      (candidate) => candidate.imported,
-    ).length;
+    final importedCount = _candidates
+        .where(
+          (candidate) => candidate.imported,
+        )
+        .length;
 
     return Scaffold(
       backgroundColor: colors.surface,
-
       appBar: AppBar(
         elevation: 0,
         backgroundColor: colors.surface,
@@ -353,7 +351,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: colors.primary.withOpacity(0.10),
+                color: colors.primary.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Icon(
@@ -382,22 +380,16 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           const SizedBox(width: 6),
         ],
       ),
-
       body: SafeArea(
         child: ListView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 30),
           children: [
             _buildHeroCard(context),
-
             const SizedBox(height: 18),
-
             _buildHowItWorks(context),
-
             const SizedBox(height: 18),
-
             _buildPasteSection(context),
-
             if (_candidates.isNotEmpty) ...[
               const SizedBox(height: 22),
               _buildResultsHeader(
@@ -419,19 +411,15 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                 },
               ),
             ],
-
             if (_candidates.isEmpty) ...[
               const SizedBox(height: 20),
               _buildEmptyState(context),
             ],
-
             const SizedBox(height: 12),
-
             _buildSafetyNote(context),
           ],
         ),
       ),
-
       bottomNavigationBar: pendingCount > 0
           ? SafeArea(
               minimum: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -468,13 +456,13 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           end: Alignment.bottomRight,
           colors: [
             colors.primary,
-            colors.primary.withOpacity(0.72),
+            colors.primary.withValues(alpha: 0.72),
           ],
         ),
         borderRadius: BorderRadius.circular(27),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withOpacity(0.20),
+            color: colors.primary.withValues(alpha: 0.20),
             blurRadius: 25,
             offset: const Offset(0, 10),
           ),
@@ -486,10 +474,10 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
             width: 58,
             height: 58,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
               ),
             ),
             child: const Icon(
@@ -539,10 +527,10 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withOpacity(0.42),
+        color: colors.surfaceContainerHighest.withValues(alpha: 0.42),
         borderRadius: BorderRadius.circular(21),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.55),
+          color: colors.outlineVariant.withValues(alpha: 0.55),
         ),
       ),
       child: Row(
@@ -603,7 +591,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
       width: 38,
       height: 38,
       decoration: BoxDecoration(
-        color: colors.primary.withOpacity(0.10),
+        color: colors.primary.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(
@@ -675,7 +663,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     return Icon(
       Icons.chevron_right_rounded,
       size: 17,
-      color: colors.onSurfaceVariant.withOpacity(0.35),
+      color: colors.onSurfaceVariant.withValues(alpha: 0.35),
     );
   }
 
@@ -693,11 +681,11 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
         color: colors.surface,
         borderRadius: BorderRadius.circular(23),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.7),
+          color: colors.outlineVariant.withValues(alpha: 0.7),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.025),
+            color: Colors.black.withValues(alpha: 0.025),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -712,7 +700,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                 width: 39,
                 height: 39,
                 decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.10),
+                  color: colors.primary.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -760,9 +748,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                 ),
             ],
           ),
-
           const SizedBox(height: 14),
-
           TextField(
             controller: _pasteController,
             minLines: 6,
@@ -772,28 +758,27 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               setState(() {});
             },
             decoration: InputDecoration(
-              hintText:
-                  'Example:\n'
+              hintText: 'Example:\n'
                   'Rs.450 debited from your account for UPI purchase\n\n'
                   'Paste your bank SMS here...',
               hintStyle: TextStyle(
-                color: colors.onSurfaceVariant.withOpacity(0.55),
+                color: colors.onSurfaceVariant.withValues(alpha: 0.55),
                 fontSize: 12,
                 height: 1.45,
               ),
               filled: true,
-              fillColor: colors.surfaceContainerHighest.withOpacity(0.35),
+              fillColor: colors.surfaceContainerHighest.withValues(alpha: 0.35),
               contentPadding: const EdgeInsets.all(15),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(17),
                 borderSide: BorderSide(
-                  color: colors.outlineVariant.withOpacity(0.5),
+                  color: colors.outlineVariant.withValues(alpha: 0.5),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(17),
                 borderSide: BorderSide(
-                  color: colors.outlineVariant.withOpacity(0.5),
+                  color: colors.outlineVariant.withValues(alpha: 0.5),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -805,9 +790,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               ),
             ),
           ),
-
           const SizedBox(height: 13),
-
           SizedBox(
             width: double.infinity,
             height: 51,
@@ -824,9 +807,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                     )
                   : const Icon(Icons.auto_awesome_rounded),
               label: Text(
-                _isParsing
-                    ? 'Detecting...'
-                    : 'Detect Transactions',
+                _isParsing ? 'Detecting...' : 'Detect Transactions',
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 13,
@@ -865,7 +846,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               ),
               const SizedBox(height: 3),
               Text(
-                '$pendingCount pending • $importedCount added',
+                '$pendingCount pending Ã¢â‚¬Â¢ $importedCount added',
                 style: TextStyle(
                   fontSize: 10.5,
                   color: colors.onSurfaceVariant,
@@ -880,7 +861,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
             vertical: 6,
           ),
           decoration: BoxDecoration(
-            color: colors.primary.withOpacity(0.10),
+            color: colors.primary.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
@@ -907,9 +888,8 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     final colors = Theme.of(context).colorScheme;
     final isIncome = candidate.type == TxType.income;
 
-    final transactionColor = isIncome
-        ? const Color(0xFF2FB380)
-        : const Color(0xFFE2574C);
+    final transactionColor =
+        isIncome ? const Color(0xFF2FB380) : const Color(0xFFE2574C);
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
@@ -921,12 +901,12 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           borderRadius: BorderRadius.circular(21),
           border: Border.all(
             color: candidate.imported
-                ? Colors.green.withOpacity(0.20)
-                : colors.outlineVariant.withOpacity(0.65),
+                ? Colors.green.withValues(alpha: 0.20)
+                : colors.outlineVariant.withValues(alpha: 0.65),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.025),
+              color: Colors.black.withValues(alpha: 0.025),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -941,7 +921,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: transactionColor.withOpacity(0.10),
+                    color: transactionColor.withValues(alpha: 0.10),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
@@ -987,7 +967,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                       vertical: 7,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.10),
+                      color: Colors.green.withValues(alpha: 0.10),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Row(
@@ -1024,9 +1004,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                   ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             Row(
               children: [
                 _categoryChip(
@@ -1044,14 +1022,12 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest.withOpacity(0.32),
+                color: colors.surfaceContainerHighest.withValues(alpha: 0.32),
                 borderRadius: BorderRadius.circular(13),
               ),
               child: Text(
@@ -1084,7 +1060,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
         vertical: 5,
       ),
       decoration: BoxDecoration(
-        color: colors.primary.withOpacity(0.07),
+        color: colors.primary.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(9),
       ),
       child: Row(
@@ -1122,10 +1098,10 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
         vertical: 30,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withOpacity(0.30),
+        color: colors.surfaceContainerHighest.withValues(alpha: 0.30),
         borderRadius: BorderRadius.circular(23),
         border: Border.all(
-          color: colors.outlineVariant.withOpacity(0.55),
+          color: colors.outlineVariant.withValues(alpha: 0.55),
         ),
       ),
       child: Column(
@@ -1134,7 +1110,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
             width: 68,
             height: 68,
             decoration: BoxDecoration(
-              color: colors.primary.withOpacity(0.09),
+              color: colors.primary.withValues(alpha: 0.09),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -1176,10 +1152,10 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     return Container(
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.07),
+        color: Colors.amber.withValues(alpha: 0.07),
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: Colors.amber.withOpacity(0.16),
+          color: Colors.amber.withValues(alpha: 0.16),
         ),
       ),
       child: Row(
@@ -1206,4 +1182,3 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
     );
   }
 }
-

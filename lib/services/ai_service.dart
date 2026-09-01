@@ -15,7 +15,7 @@ class AiChatException implements Exception {
 
 /// Calls the OpenAI Chat Completions API (also used by many
 /// OpenAI-compatible providers). Requires the person to supply their own
-/// API key in Settings Ã¢â‚¬â€ there is no built-in key, since API access is
+/// API key in Settings ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â there is no built-in key, since API access is
 /// tied to a paid/free account that only the person can create.
 class AiService {
   AiService._();
@@ -66,7 +66,7 @@ class AiService {
           .timeout(const Duration(seconds: 30));
     } catch (_) {
       throw AiChatException(
-          'Could not reach the AI service Ã¢â‚¬â€ check your internet connection and try again.');
+          'Could not reach the AI service ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â check your internet connection and try again.');
     }
 
     if (response.statusCode == 401) {
@@ -75,7 +75,7 @@ class AiService {
     }
     if (response.statusCode == 429) {
       throw AiChatException(
-          'Rate limit reached on your API key Ã¢â‚¬â€ wait a moment and try again.');
+          'Rate limit reached on your API key ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â wait a moment and try again.');
     }
     if (response.statusCode != 200) {
       String detail = 'Request failed (HTTP ${response.statusCode}).';
@@ -99,7 +99,7 @@ class AiService {
       final choices = decoded['choices'] as List?;
       if (choices == null || choices.isEmpty) {
         throw AiChatException(
-            'The AI returned an empty response Ã¢â‚¬â€ try again.');
+            'The AI returned an empty response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
       }
       final firstChoice = choices[0];
       String? content;
@@ -112,13 +112,13 @@ class AiService {
       }
       if (content == null || content.trim().isEmpty) {
         throw AiChatException(
-            'The AI returned an empty response Ã¢â‚¬â€ try again.');
+            'The AI returned an empty response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
       }
       return content.trim();
     } catch (e) {
       if (e is AiChatException) rethrow;
       throw AiChatException(
-          'Could not read the AI\'s response Ã¢â‚¬â€ try again.');
+          'Could not read the AI\'s response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
     }
   }
 }

@@ -1,4 +1,3 @@
-﻿
 import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
@@ -91,9 +90,7 @@ String _formatMinutes(int minutes) {
 }
 
 bool _sameDay(DateTime a, DateTime b) {
-  return a.year == b.year &&
-      a.month == b.month &&
-      a.day == b.day;
+  return a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
 // ============================================================================
@@ -113,13 +110,9 @@ class TasksScreen extends StatelessWidget {
 
     final allTasks = app.tasks;
 
-    final activeTasks = allTasks
-        .where((task) => !task.completed)
-        .toList();
+    final activeTasks = allTasks.where((task) => !task.completed).toList();
 
-    final completedTasks = allTasks
-        .where((task) => task.completed)
-        .toList();
+    final completedTasks = allTasks.where((task) => task.completed).toList();
 
     final overdue = _sortByPriority(
       app.overdueTasks,
@@ -129,25 +122,22 @@ class TasksScreen extends StatelessWidget {
       app.todayTasks,
     );
 
-    final upcoming = allTasks
-        .where((task) {
-          if (task.completed || task.dueDate == null) {
-            return false;
-          }
+    final upcoming = allTasks.where((task) {
+      if (task.completed || task.dueDate == null) {
+        return false;
+      }
 
-          final due = task.dueDate!;
+      final due = task.dueDate!;
 
-          return due.isAfter(now) && !_sameDay(due, now);
-        })
-        .toList();
+      return due.isAfter(now) && !_sameDay(due, now);
+    }).toList();
 
     upcoming.sort((a, b) {
       if (a.dueDate == null || b.dueDate == null) {
         return 0;
       }
 
-      final dateComparison =
-          a.dueDate!.compareTo(b.dueDate!);
+      final dateComparison = a.dueDate!.compareTo(b.dueDate!);
 
       if (dateComparison != 0) {
         return dateComparison;
@@ -161,9 +151,7 @@ class TasksScreen extends StatelessWidget {
     final noDate = _sortByPriority(
       allTasks
           .where(
-            (task) =>
-                !task.completed &&
-                task.dueDate == null,
+            (task) => !task.completed && task.dueDate == null,
           )
           .toList(),
     );
@@ -172,12 +160,9 @@ class TasksScreen extends StatelessWidget {
     final completedCount = completedTasks.length;
     final totalCount = allTasks.length;
 
-    final progress = totalCount == 0
-        ? 0.0
-        : completedCount / totalCount;
+    final progress = totalCount == 0 ? 0.0 : completedCount / totalCount;
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 110;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -243,8 +228,7 @@ class TasksScreen extends StatelessWidget {
               progress: progress,
             ),
 
-          if (allTasks.isNotEmpty)
-            const SizedBox(height: 18),
+          if (allTasks.isNotEmpty) const SizedBox(height: 18),
 
           // ==================================================================
           // QUICK STATS
@@ -258,8 +242,7 @@ class TasksScreen extends StatelessWidget {
               overdueCount: overdue.length,
             ),
 
-          if (allTasks.isNotEmpty)
-            const SizedBox(height: 18),
+          if (allTasks.isNotEmpty) const SizedBox(height: 18),
 
           // ==================================================================
           // DELETE HINT
@@ -365,8 +348,7 @@ class TasksScreen extends StatelessWidget {
           // EMPTY
           // ==================================================================
 
-          if (allTasks.isEmpty)
-            _buildEmptyState(context),
+          if (allTasks.isEmpty) _buildEmptyState(context),
         ],
       ),
     );
@@ -389,13 +371,11 @@ class TasksScreen extends StatelessWidget {
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Stay organized',
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                 ),
@@ -403,8 +383,7 @@ class TasksScreen extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 'My Tasks',
-                style: theme.textTheme.headlineMedium
-                    ?.copyWith(
+                style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -1,
                 ),
@@ -415,8 +394,7 @@ class TasksScreen extends StatelessWidget {
                     ? 'Everything is done. Great job!'
                     : '$activeCount active task'
                         '${activeCount == 1 ? '' : 's'} to focus on',
-                style:
-                    theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
@@ -431,12 +409,10 @@ class TasksScreen extends StatelessWidget {
             vertical: 11,
           ),
           decoration: BoxDecoration(
-            color:
-                colors.primary.withValues(alpha: 0.09),
+            color: colors.primary.withValues(alpha: 0.09),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color:
-                  colors.primary.withValues(alpha: 0.13),
+              color: colors.primary.withValues(alpha: 0.13),
             ),
           ),
           child: Column(
@@ -449,16 +425,14 @@ class TasksScreen extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 '$completedCount',
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(
+                style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: colors.primary,
                 ),
               ),
               Text(
                 'done',
-                style:
-                    theme.textTheme.labelSmall?.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
@@ -498,13 +472,11 @@ class TasksScreen extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color:
-              colors.primary.withValues(alpha: 0.12),
+          color: colors.primary.withValues(alpha: 0.12),
         ),
         boxShadow: [
           BoxShadow(
-            color:
-                colors.primary.withValues(alpha: 0.06),
+            color: colors.primary.withValues(alpha: 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -518,10 +490,8 @@ class TasksScreen extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color:
-                      colors.primary.withValues(alpha: 0.12),
-                  borderRadius:
-                      BorderRadius.circular(15),
+                  color: colors.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 child: Icon(
                   Icons.insights_rounded,
@@ -532,44 +502,36 @@ class TasksScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Task Progress',
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '$completedCount of $total completed',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(
-                        color:
-                            colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 11,
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.primary
-                      .withValues(alpha: 0.10),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  color: colors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${(progress * 100).round()}%',
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: colors.primary,
                   ),
@@ -579,15 +541,12 @@ class TasksScreen extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           ClipRRect(
-            borderRadius:
-                BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20),
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 8,
-              backgroundColor:
-                  colors.primary.withValues(alpha: 0.08),
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(
+              backgroundColor: colors.primary.withValues(alpha: 0.08),
+              valueColor: AlwaysStoppedAnimation<Color>(
                 colors.primary,
               ),
             ),
@@ -597,11 +556,9 @@ class TasksScreen extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color:
-                        Colors.red.withValues(alpha: 0.10),
+                    color: Colors.red.withValues(alpha: 0.10),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -614,8 +571,7 @@ class TasksScreen extends StatelessWidget {
                 Text(
                   '$overdueCount overdue task'
                   '${overdueCount == 1 ? '' : 's'}',
-                  style: theme.textTheme.labelSmall
-                      ?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.red,
                     fontWeight: FontWeight.w800,
                   ),
@@ -688,8 +644,7 @@ class TasksScreen extends StatelessWidget {
         color: colors.surface,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color:
-              colors.outlineVariant.withValues(alpha: 0.65),
+          color: colors.outlineVariant.withValues(alpha: 0.65),
         ),
       ),
       child: Column(
@@ -698,8 +653,7 @@ class TasksScreen extends StatelessWidget {
             width: 78,
             height: 78,
             decoration: BoxDecoration(
-              color:
-                  colors.primary.withValues(alpha: 0.10),
+              color: colors.primary.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -711,8 +665,7 @@ class TasksScreen extends StatelessWidget {
           const SizedBox(height: 18),
           Text(
             'No tasks yet',
-            style:
-                theme.textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -720,8 +673,7 @@ class TasksScreen extends StatelessWidget {
           Text(
             'Add your first task and start organizing your day.',
             textAlign: TextAlign.center,
-            style:
-                theme.textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
               height: 1.45,
             ),
@@ -732,8 +684,7 @@ class TasksScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const AddTaskScreen(),
+                  builder: (_) => const AddTaskScreen(),
                 ),
               );
             },
@@ -779,12 +730,10 @@ class _StatCard extends StatelessWidget {
         vertical: 12,
       ),
       decoration: BoxDecoration(
-        color:
-            color.withValues(alpha: 0.055),
+        color: color.withValues(alpha: 0.055),
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color:
-              color.withValues(alpha: 0.10),
+          color: color.withValues(alpha: 0.10),
         ),
       ),
       child: Row(
@@ -793,10 +742,8 @@ class _StatCard extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color:
-                  color.withValues(alpha: 0.11),
-              borderRadius:
-                  BorderRadius.circular(11),
+              color: color.withValues(alpha: 0.11),
+              borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(
               icon,
@@ -807,24 +754,20 @@ class _StatCard extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   value,
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w900,
                     color: colors.onSurface,
                   ),
                 ),
                 Text(
                   label,
-                  style: theme.textTheme.labelSmall
-                      ?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     fontSize: 9,
-                    color:
-                        colors.onSurfaceVariant,
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -867,8 +810,7 @@ class _TaskSection extends StatelessWidget {
         bottom: 18,
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(
@@ -882,10 +824,8 @@ class _TaskSection extends StatelessWidget {
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color:
-                        color.withValues(alpha: 0.10),
-                    borderRadius:
-                        BorderRadius.circular(11),
+                    color: color.withValues(alpha: 0.10),
+                    borderRadius: BorderRadius.circular(11),
                   ),
                   child: Icon(
                     icon,
@@ -896,49 +836,39 @@ class _TaskSection extends StatelessWidget {
                 const SizedBox(width: 9),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(
-                          fontWeight:
-                              FontWeight.w900,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w900,
                           color: faded
-                              ? colors
-                                  .onSurfaceVariant
+                              ? colors.onSurfaceVariant
                               : colors.onSurface,
                         ),
                       ),
                       const SizedBox(height: 1),
                       Text(
                         subtitle,
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(
-                          color:
-                              colors.onSurfaceVariant,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 9,
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color:
-                        color.withValues(alpha: 0.09),
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    color: color.withValues(alpha: 0.09),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${tasks.length}',
-                    style: theme.textTheme.labelMedium
-                        ?.copyWith(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: color,
                       fontWeight: FontWeight.w900,
                     ),
@@ -955,34 +885,27 @@ class _TaskSection extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               color: colors.surface,
-              borderRadius:
-                  BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: colors.outlineVariant
-                    .withValues(alpha: 0.65),
+                color: colors.outlineVariant.withValues(alpha: 0.65),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black
-                      .withValues(alpha: 0.018),
+                  color: Colors.black.withValues(alpha: 0.018),
                   blurRadius: 14,
                   offset: const Offset(0, 5),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius:
-                  BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(22),
               child: Column(
                 children: [
-                  for (int i = 0;
-                      i < tasks.length;
-                      i++)
+                  for (int i = 0; i < tasks.length; i++)
                     _TaskTile(
                       task: tasks[i],
                       faded: faded,
-                      showDivider:
-                          i != tasks.length - 1,
+                      showDivider: i != tasks.length - 1,
                     ),
                 ],
               ),
@@ -1033,8 +956,7 @@ class _TaskTile extends StatelessWidget {
           right: 22,
         ),
         child: const Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               Icons.delete_outline_rounded,
@@ -1067,13 +989,11 @@ class _TaskTile extends StatelessWidget {
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
-              behavior:
-                  SnackBarBehavior.floating,
+              behavior: SnackBarBehavior.floating,
               content: Text(
                 'Deleted "${removed.title}"',
                 maxLines: 1,
-                overflow:
-                    TextOverflow.ellipsis,
+                overflow: TextOverflow.ellipsis,
               ),
               action: SnackBarAction(
                 label: 'Undo',
@@ -1103,8 +1023,7 @@ class _TaskTile extends StatelessWidget {
             );
           },
           child: Padding(
-            padding:
-                const EdgeInsets.fromLTRB(
+            padding: const EdgeInsets.fromLTRB(
               9,
               11,
               8,
@@ -1113,8 +1032,7 @@ class _TaskTile extends StatelessWidget {
             child: Column(
               children: [
                 Row(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // ========================================================
                     // CHECKBOX
@@ -1125,12 +1043,9 @@ class _TaskTile extends StatelessWidget {
                       onChanged: (_) {
                         app.toggleTask(task.id);
                       },
-                      visualDensity:
-                          VisualDensity.compact,
-                      shape:
-                          RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(6),
+                      visualDensity: VisualDensity.compact,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
                       ),
                     ),
 
@@ -1142,47 +1057,32 @@ class _TaskTile extends StatelessWidget {
 
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: Text(
                                   task.title,
                                   maxLines: 2,
-                                  overflow:
-                                      TextOverflow
-                                          .ellipsis,
-                                  style: theme
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                    fontWeight:
-                                        FontWeight.w800,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w800,
                                     color: faded
-                                        ? colors
-                                            .onSurfaceVariant
-                                        : colors
-                                            .onSurface,
-                                    decoration:
-                                        completed
-                                            ? TextDecoration
-                                                .lineThrough
-                                            : null,
-                                    decorationThickness:
-                                        1.5,
+                                        ? colors.onSurfaceVariant
+                                        : colors.onSurface,
+                                    decoration: completed
+                                        ? TextDecoration.lineThrough
+                                        : null,
+                                    decorationThickness: 1.5,
                                   ),
                                 ),
                               ),
                               if (!completed) ...[
-                                const SizedBox(
-                                    width: 7),
+                                const SizedBox(width: 7),
                                 _PriorityBadge(
-                                  priority:
-                                      task.priority,
+                                  priority: task.priority,
                                 ),
                               ],
                             ],
@@ -1203,20 +1103,17 @@ class _TaskTile extends StatelessWidget {
 
                     IconButton(
                       tooltip: 'Edit task',
-                      visualDensity:
-                          VisualDensity.compact,
+                      visualDensity: VisualDensity.compact,
                       icon: Icon(
                         Icons.edit_outlined,
                         size: 18,
-                        color:
-                            colors.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) =>
-                                AddTaskScreen(
+                            builder: (_) => AddTaskScreen(
                               existing: task,
                             ),
                           ),
@@ -1232,19 +1129,16 @@ class _TaskTile extends StatelessWidget {
 
                 if (showDivider)
                   Padding(
-                    padding:
-                        const EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                       left: 48,
                       top: 11,
                     ),
                     child: Divider(
                       height: 1,
                       thickness: 0.7,
-                      color: colors
-                          .outlineVariant
-                          .withValues(
-                            alpha: 0.45,
-                          ),
+                      color: colors.outlineVariant.withValues(
+                        alpha: 0.45,
+                      ),
                     ),
                   ),
               ],
@@ -1273,24 +1167,19 @@ class _PriorityBadge extends StatelessWidget {
     final label = priorityLabel(priority);
 
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 7,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color:
-            color.withValues(alpha: 0.10),
-        borderRadius:
-            BorderRadius.circular(8),
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color:
-              color.withValues(alpha: 0.13),
+          color: color.withValues(alpha: 0.13),
         ),
       ),
       child: Row(
-        mainAxisSize:
-            MainAxisSize.min,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
             priorityIcon(priority),
@@ -1303,8 +1192,7 @@ class _PriorityBadge extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               color: color,
-              fontWeight:
-                  FontWeight.w800,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -1390,18 +1278,16 @@ class _TaskMetadata extends StatelessWidget {
     // ------------------------------------------------------------------------
 
     if (task.subtasks.isNotEmpty) {
-      final completedSubtasks =
-          task.subtasks
-              .where(
-                (subtask) => subtask.completed,
-              )
-              .length;
+      final completedSubtasks = task.subtasks
+          .where(
+            (subtask) => subtask.completed,
+          )
+          .length;
 
       parts.add(
         _MetadataItem(
           icon: Icons.checklist_rounded,
-          text:
-              '$completedSubtasks/${task.subtasks.length}',
+          text: '$completedSubtasks/${task.subtasks.length}',
         ),
       );
     }
@@ -1455,23 +1341,16 @@ class _MetadataItem extends StatelessWidget {
         ),
         const SizedBox(width: 4),
         ConstrainedBox(
-          constraints:
-              const BoxConstraints(
+          constraints: const BoxConstraints(
             maxWidth: 170,
           ),
           child: Text(
             text,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            style: theme
-                .textTheme
-                .labelSmall
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
-              fontWeight:
-                  FontWeight.w500,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colors.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -1479,4 +1358,3 @@ class _MetadataItem extends StatelessWidget {
     );
   }
 }
-

@@ -4,7 +4,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import 'birthday_contacts_screen.dart';
 
-const List<String> kCurrencies = ['Ã¢â€šÂ¹', '\$', 'Ã¢â€šÂ¬', 'Ã‚Â£', 'Ã‚Â¥'];
+const List<String> kCurrencies = [
+  'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹',
+  '\$',
+  'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬',
+  'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£',
+  'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥'
+];
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -93,8 +99,8 @@ class SettingsScreen extends StatelessWidget {
               title: const Text('OpenAI API Key'),
               subtitle: Text(
                 app.aiApiKey.trim().isEmpty
-                    ? 'Not set Ã¢â‚¬â€ required to use "Ask AI". Get a free key at platform.openai.com.'
-                    : 'Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢ ${app.aiApiKey.length > 4 ? app.aiApiKey.substring(app.aiApiKey.length - 4) : ''}',
+                    ? 'Not set ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â required to use "Ask AI". Get a free key at platform.openai.com.'
+                    : 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${app.aiApiKey.length > 4 ? app.aiApiKey.substring(app.aiApiKey.length - 4) : ''}',
               ),
               onTap: () => _editAiKey(context, app),
             ),
@@ -107,7 +113,7 @@ class SettingsScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
-                'Get a key at platform.openai.com Ã¢â‚¬â€ your key is stored only on this device and sent directly to OpenAI, never through any server of ours.',
+                'Get a key at platform.openai.com ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â your key is stored only on this device and sent directly to OpenAI, never through any server of ours.',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
               ),
             ),
@@ -382,7 +388,7 @@ class SettingsScreen extends StatelessWidget {
                   ScaffoldMessenger.of(ctx).showSnackBar(
                     const SnackBar(
                         content: Text(
-                            'Could not restore Ã¢â‚¬â€ invalid backup data')),
+                            'Could not restore ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â invalid backup data')),
                   );
                 }
               }

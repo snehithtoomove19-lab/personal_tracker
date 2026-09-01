@@ -164,7 +164,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Celebrate the people\nwho matter most Ã°Å¸Å½â€°',
+                      'Celebrate the people\nwho matter most ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -600,8 +600,8 @@ class BirthdayContactsScreen extends StatelessWidget {
                               SnackBar(
                                 content: Text(
                                   contact == null
-                                      ? 'Ã°Å¸Å½â€° Birthday added'
-                                      : 'Ã¢Å“Â¨ Birthday updated',
+                                      ? 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° Birthday added'
+                                      : 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨ Birthday updated',
                                 ),
                               ),
                             );
@@ -813,7 +813,7 @@ class _BirthdayCard extends StatelessWidget {
             : Colors.pink;
 
     final String label = isToday
-        ? 'TODAY Ã°Å¸Å½â€°'
+        ? 'TODAY ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°'
         : isTomorrow
             ? 'TOMORROW'
             : days <= 30
@@ -891,7 +891,7 @@ class _BirthdayCard extends StatelessWidget {
                           ),
                           child: const Center(
                             child: Text(
-                              'Ã°Å¸Å½â€š',
+                              'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡',
                               style: TextStyle(fontSize: 13),
                             ),
                           ),
@@ -946,7 +946,7 @@ class _BirthdayCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 7),
                           Text(
-                            'Ã¢â‚¬Â¢',
+                            'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢',
                             style: TextStyle(
                               color: Colors.grey.shade400,
                             ),
@@ -1105,7 +1105,7 @@ class _EmptyBirthdayState extends StatelessWidget {
           ),
           const SizedBox(height: 7),
           Text(
-            'Add friends and family to your birthday list and weÃ¢â‚¬â„¢ll help you remember their special days.',
+            'Add friends and family to your birthday list and weÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ll help you remember their special days.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 11,

@@ -284,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
                 label: 'Goal progress',
                 value: app.savingsGoal > 0
                     ? '${(savedPct * 100).toStringAsFixed(0)}%'
-                    : 'Ã¢â‚¬â€',
+                    : 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â',
                 color: colors.primary,
               ),
             ],
@@ -871,7 +871,7 @@ class _StreakCard extends StatelessWidget {
               children: [
                 Text(
                   streak > 0
-                      ? '$streak day streak Ã°Å¸â€Â¥'
+                      ? '$streak day streak ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â¥'
                       : 'Start your streak',
                   style: TextStyle(
                     fontSize: 15,
@@ -1050,7 +1050,7 @@ class _GoalProjection extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            'Goal reached! Ã°Å¸Å½â€°',
+            'Goal reached! ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°',
             style: TextStyle(
               fontSize: 12,
               color: Colors.green,

@@ -41,7 +41,7 @@ const List<String> kMotivationalQuotes = [
   "Your future self will thank you for today's discipline.",
   "Consistency beats intensity.",
   "Every entry you log is a step toward clarity.",
-  "Mood, money, and tasks Ã¢â‚¬â€ small logs, big awareness.",
+  "Mood, money, and tasks ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â small logs, big awareness.",
 ];
 
 class AppState extends ChangeNotifier {
@@ -56,7 +56,7 @@ class AppState extends ChangeNotifier {
 
   String userName = 'Friend';
   double savingsGoal = 0;
-  String currency = 'Ã¢â€šÂ¹';
+  String currency = 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹';
   bool darkMode = false;
   bool pinEnabled = false;
   String? pin;
@@ -72,7 +72,7 @@ class AppState extends ChangeNotifier {
   bool get loaded => _loaded;
 
   /// Marks the app as loaded without going through the normal [load]
-  /// sequence Ã¢â‚¬â€ used as a fallback if loading saved data throws, so the UI
+  /// sequence ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â used as a fallback if loading saved data throws, so the UI
   /// can still open (with whatever defaults are already set) instead of
   /// being stuck on a loading spinner forever.
   void forceMarkLoaded() {
@@ -94,7 +94,7 @@ class AppState extends ChangeNotifier {
       } catch (e, st) {
         // A single corrupted saved record should never permanently block
         // the app from opening. Log it and move on with whatever loaded
-        // successfully so far Ã¢â‚¬â€ this section just falls back to empty/
+        // successfully so far ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â this section just falls back to empty/
         // default rather than taking the whole app down.
         debugPrint('Failed to load $label: $e\n$st');
       }
@@ -167,7 +167,8 @@ class AppState extends ChangeNotifier {
 
     await safely('settings', () async {
       userName = await s.readString(StoreKeys.userName) ?? 'Friend';
-      currency = await s.readString(StoreKeys.currency) ?? 'Ã¢â€šÂ¹';
+      currency = await s.readString(StoreKeys.currency) ??
+          'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹';
       darkMode = await s.readBool(StoreKeys.darkMode) ?? false;
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
@@ -621,7 +622,7 @@ class AppState extends ChangeNotifier {
       isMyBirthdayToday || todayBirthdayContacts.isNotEmpty;
 
   /// A quick "what needs your attention" summary computed entirely from
-  /// data already on-device Ã¢â‚¬â€ shown once per app open as a lightweight
+  /// data already on-device ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â shown once per app open as a lightweight
   /// substitute for push notifications (which need native platform setup).
   LaunchDigest get launchDigest => LaunchDigest(
         overdueTaskCount: overdueTasks.length,
@@ -631,7 +632,7 @@ class AppState extends ChangeNotifier {
         overBudgetCategoryCount: overBudgetCategories.length,
       );
 
-  /// Days so far this month (up to yesterday) that have no mood entry Ã¢â‚¬â€
+  /// Days so far this month (up to yesterday) that have no mood entry ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â
   /// used to nudge the person to keep every day logged.
   List<DateTime> get missedMoodDaysThisMonth {
     final now = DateTime.now();
@@ -883,7 +884,7 @@ class AppState extends ChangeNotifier {
       'currency': currency,
       'birthday': birthday?.toIso8601String(),
       'birthdayContacts': birthdayContacts.map((e) => e.toJson()).toList(),
-      // Deliberately excluded: aiApiKey Ã¢â‚¬â€ backups may be pasted/shared, and
+      // Deliberately excluded: aiApiKey ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â backups may be pasted/shared, and
       // a secret API key should never end up in that text.
     };
     return const JsonEncoder.withIndent('  ').convert(payload);
