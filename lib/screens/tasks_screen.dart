@@ -1,3 +1,4 @@
+﻿
 import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
@@ -43,7 +44,7 @@ IconData priorityIcon(TaskPriority priority) {
 }
 
 List<AppTask> _sortByPriority(List<AppTask> tasks) {
-  final order = {
+  final order = <TaskPriority, int>{
     TaskPriority.high: 0,
     TaskPriority.medium: 1,
     TaskPriority.low: 2,
@@ -52,13 +53,15 @@ List<AppTask> _sortByPriority(List<AppTask> tasks) {
   final copy = [...tasks];
 
   copy.sort((a, b) {
-    final priorityComparison = order[a.priority]!.compareTo(order[b.priority]!);
+    final priorityA = order[a.priority] ?? 99;
+    final priorityB = order[b.priority] ?? 99;
+
+    final priorityComparison = priorityA.compareTo(priorityB);
 
     if (priorityComparison != 0) {
       return priorityComparison;
     }
 
-    // If priorities are equal, sort by due date.
     if (a.dueDate != null && b.dueDate != null) {
       return a.dueDate!.compareTo(b.dueDate!);
     }
@@ -87,6 +90,12 @@ String _formatMinutes(int minutes) {
   return '$displayHour:${minute.toString().padLeft(2, '0')} $period';
 }
 
+bool _sameDay(DateTime a, DateTime b) {
+  return a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day;
+}
+
 // ============================================================================
 // TASKS SCREEN
 // ============================================================================
@@ -102,54 +111,73 @@ class TasksScreen extends StatelessWidget {
 
     final now = DateTime.now();
 
-    final overdue = _sortByPriority(app.overdueTasks);
+    final allTasks = app.tasks;
 
-    final today = _sortByPriority(app.todayTasks);
+    final activeTasks = allTasks
+        .where((task) => !task.completed)
+        .toList();
 
-    final upcoming = _sortByPriority(
-      app.tasks.where((task) {
-        if (task.completed || task.dueDate == null) {
-          return false;
-        }
+    final completedTasks = allTasks
+        .where((task) => task.completed)
+        .toList();
 
-        final due = task.dueDate!;
-
-        return due.isAfter(now) && !_sameDay(due, now);
-      }).toList(),
+    final overdue = _sortByPriority(
+      app.overdueTasks,
     );
 
-    // Sort upcoming by actual due date first.
+    final today = _sortByPriority(
+      app.todayTasks,
+    );
+
+    final upcoming = allTasks
+        .where((task) {
+          if (task.completed || task.dueDate == null) {
+            return false;
+          }
+
+          final due = task.dueDate!;
+
+          return due.isAfter(now) && !_sameDay(due, now);
+        })
+        .toList();
+
     upcoming.sort((a, b) {
-      final dateComparison = a.dueDate!.compareTo(b.dueDate!);
+      if (a.dueDate == null || b.dueDate == null) {
+        return 0;
+      }
+
+      final dateComparison =
+          a.dueDate!.compareTo(b.dueDate!);
 
       if (dateComparison != 0) {
         return dateComparison;
       }
 
-      final order = {
-        TaskPriority.high: 0,
-        TaskPriority.medium: 1,
-        TaskPriority.low: 2,
-      };
-
-      return order[a.priority]!.compareTo(order[b.priority]!);
+      return priorityColor(a.priority)
+          .value
+          .compareTo(priorityColor(b.priority).value);
     });
 
     final noDate = _sortByPriority(
-      app.tasks
+      allTasks
           .where(
-            (task) => !task.completed && task.dueDate == null,
+            (task) =>
+                !task.completed &&
+                task.dueDate == null,
           )
           .toList(),
     );
 
-    final completed = app.tasks.where((task) => task.completed).toList();
+    final activeCount = activeTasks.length;
+    final completedCount = completedTasks.length;
+    final totalCount = allTasks.length;
 
-    final activeCount = app.tasks.where((task) => !task.completed).length;
+    final progress = totalCount == 0
+        ? 0.0
+        : completedCount / totalCount;
 
-    final completedCount = completed.length;
-
-    final bottomPadding = MediaQuery.of(context).padding.bottom + 100;
+    final bottomPadding =
+        MediaQuery.of(context).padding.bottom + 110;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -159,7 +187,7 @@ class TasksScreen extends StatelessWidget {
       // ======================================================================
 
       floatingActionButton: FloatingActionButton.extended(
-        elevation: 5,
+        elevation: 4,
         onPressed: () {
           Navigator.push(
             context,
@@ -200,31 +228,48 @@ class TasksScreen extends StatelessWidget {
             completedCount,
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
 
           // ==================================================================
-          // QUICK SUMMARY
+          // OVERVIEW CARD
           // ==================================================================
 
-          if (app.tasks.isNotEmpty)
-            _buildSummaryCard(
+          if (allTasks.isNotEmpty)
+            _buildOverviewCard(
               context,
-              activeCount,
-              completedCount,
-              overdue.length,
+              activeCount: activeCount,
+              completedCount: completedCount,
+              overdueCount: overdue.length,
+              progress: progress,
             ),
 
-          if (app.tasks.isNotEmpty) const SizedBox(height: 16),
+          if (allTasks.isNotEmpty)
+            const SizedBox(height: 18),
+
+          // ==================================================================
+          // QUICK STATS
+          // ==================================================================
+
+          if (allTasks.isNotEmpty)
+            _buildQuickStats(
+              context,
+              activeCount: activeCount,
+              completedCount: completedCount,
+              overdueCount: overdue.length,
+            ),
+
+          if (allTasks.isNotEmpty)
+            const SizedBox(height: 18),
 
           // ==================================================================
           // DELETE HINT
           // ==================================================================
 
-          if (app.tasks.isNotEmpty)
+          if (allTasks.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(
-                left: 4,
-                bottom: 10,
+                left: 5,
+                bottom: 11,
               ),
               child: Row(
                 children: [
@@ -235,7 +280,7 @@ class TasksScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'Swipe left to delete a task',
+                    'Swipe left to delete',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
@@ -305,22 +350,23 @@ class TasksScreen extends StatelessWidget {
           // COMPLETED
           // ==================================================================
 
-          if (completed.isNotEmpty)
+          if (completedTasks.isNotEmpty)
             _TaskSection(
               title: 'Completed',
               subtitle:
-                  '${completed.length} task${completed.length == 1 ? '' : 's'} finished',
-              tasks: completed,
+                  '${completedTasks.length} task${completedTasks.length == 1 ? '' : 's'} finished',
+              tasks: completedTasks,
               color: Colors.green,
               icon: Icons.task_alt_rounded,
               faded: true,
             ),
 
           // ==================================================================
-          // EMPTY STATE
+          // EMPTY
           // ==================================================================
 
-          if (app.tasks.isEmpty) _buildEmptyState(context),
+          if (allTasks.isEmpty)
+            _buildEmptyState(context),
         ],
       ),
     );
@@ -343,21 +389,24 @@ class TasksScreen extends StatelessWidget {
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               Text(
                 'Stay organized',
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style:
+                    theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: 3),
               Text(
                 'My Tasks',
-                style: theme.textTheme.headlineMedium?.copyWith(
+                style: theme.textTheme.headlineMedium
+                    ?.copyWith(
                   fontWeight: FontWeight.w900,
-                  letterSpacing: -0.8,
+                  letterSpacing: -1,
                 ),
               ),
               const SizedBox(height: 5),
@@ -366,27 +415,28 @@ class TasksScreen extends StatelessWidget {
                     ? 'Everything is done. Great job!'
                     : '$activeCount active task'
                         '${activeCount == 1 ? '' : 's'} to focus on',
-                style: theme.textTheme.bodySmall?.copyWith(
+                style:
+                    theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
-
         const SizedBox(width: 12),
-
-        // Completed counter
         Container(
+          width: 72,
           padding: const EdgeInsets.symmetric(
-            horizontal: 13,
+            horizontal: 10,
             vertical: 11,
           ),
           decoration: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.09),
-            borderRadius: BorderRadius.circular(17),
+            color:
+                colors.primary.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: colors.primary.withValues(alpha: 0.13),
+              color:
+                  colors.primary.withValues(alpha: 0.13),
             ),
           ),
           child: Column(
@@ -394,19 +444,21 @@ class TasksScreen extends StatelessWidget {
               Icon(
                 Icons.check_circle_rounded,
                 color: colors.primary,
-                size: 22,
+                size: 23,
               ),
               const SizedBox(height: 3),
               Text(
                 '$completedCount',
-                style: theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: colors.primary,
                 ),
               ),
               Text(
                 'done',
-                style: theme.textTheme.labelSmall?.copyWith(
+                style:
+                    theme.textTheme.labelSmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
@@ -418,112 +470,154 @@ class TasksScreen extends StatelessWidget {
   }
 
   // ==========================================================================
-  // SUMMARY
+  // OVERVIEW
   // ==========================================================================
 
-  Widget _buildSummaryCard(
-    BuildContext context,
-    int activeCount,
-    int completedCount,
-    int overdueCount,
-  ) {
+  Widget _buildOverviewCard(
+    BuildContext context, {
+    required int activeCount,
+    required int completedCount,
+    required int overdueCount,
+    required double progress,
+  }) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     final total = activeCount + completedCount;
 
-    final progress = total == 0 ? 0.0 : completedCount / total;
-
     return Container(
-      padding: const EdgeInsets.all(17),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withValues(alpha: 0.10),
+            colors.primary.withValues(alpha: 0.12),
             colors.secondary.withValues(alpha: 0.045),
           ],
         ),
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors.primary.withValues(alpha: 0.11),
+          color:
+              colors.primary.withValues(alpha: 0.12),
         ),
+        boxShadow: [
+          BoxShadow(
+            color:
+                colors.primary.withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.11),
-                  borderRadius: BorderRadius.circular(13),
+                  color:
+                      colors.primary.withValues(alpha: 0.12),
+                  borderRadius:
+                      BorderRadius.circular(15),
                 ),
                 child: Icon(
                   Icons.insights_rounded,
                   color: colors.primary,
-                  size: 21,
+                  size: 23,
                 ),
               ),
-              const SizedBox(width: 11),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Task Progress',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       '$completedCount of $total completed',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(
+                        color:
+                            colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-              Text(
-                '${(progress * 100).round()}%',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w900,
-                  color: colors.primary,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(
+                  horizontal: 11,
+                  vertical: 7,
+                ),
+                decoration: BoxDecoration(
+                  color: colors.primary
+                      .withValues(alpha: 0.10),
+                  borderRadius:
+                      BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${(progress * 100).round()}%',
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: colors.primary,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 13),
+          const SizedBox(height: 15),
           ClipRRect(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius:
+                BorderRadius.circular(20),
             child: LinearProgressIndicator(
               value: progress,
-              minHeight: 7,
-              backgroundColor: colors.primary.withValues(alpha: 0.08),
-              valueColor: AlwaysStoppedAnimation<Color>(
+              minHeight: 8,
+              backgroundColor:
+                  colors.primary.withValues(alpha: 0.08),
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(
                 colors.primary,
               ),
             ),
           ),
           if (overdueCount > 0) ...[
-            const SizedBox(height: 11),
+            const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 15,
-                  color: Colors.red,
+                Container(
+                  padding:
+                      const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color:
+                        Colors.red.withValues(alpha: 0.10),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.warning_amber_rounded,
+                    size: 14,
+                    color: Colors.red,
+                  ),
                 ),
-                const SizedBox(width: 5),
+                const SizedBox(width: 7),
                 Text(
                   '$overdueCount overdue task'
                   '${overdueCount == 1 ? '' : 's'}',
-                  style: theme.textTheme.labelSmall?.copyWith(
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(
                     color: Colors.red,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ],
@@ -531,6 +625,48 @@ class TasksScreen extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+
+  // ==========================================================================
+  // QUICK STATS
+  // ==========================================================================
+
+  Widget _buildQuickStats(
+    BuildContext context, {
+    required int activeCount,
+    required int completedCount,
+    required int overdueCount,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: _StatCard(
+            icon: Icons.pending_actions_rounded,
+            label: 'Active',
+            value: '$activeCount',
+            color: Colors.blue,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: _StatCard(
+            icon: Icons.check_circle_outline_rounded,
+            label: 'Done',
+            value: '$completedCount',
+            color: Colors.green,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: _StatCard(
+            icon: Icons.warning_amber_rounded,
+            label: 'Overdue',
+            value: '$overdueCount',
+            color: Colors.red,
+          ),
+        ),
+      ],
     );
   }
 
@@ -546,69 +682,157 @@ class TasksScreen extends StatelessWidget {
       margin: const EdgeInsets.only(top: 35),
       padding: const EdgeInsets.symmetric(
         horizontal: 24,
-        vertical: 34,
+        vertical: 36,
       ),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.7),
+          color:
+              colors.outlineVariant.withValues(alpha: 0.65),
         ),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(18),
+            width: 78,
+            height: 78,
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.10),
+              color:
+                  colors.primary.withValues(alpha: 0.10),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.task_alt_rounded,
-              size: 38,
+              size: 40,
               color: colors.primary,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           Text(
             'No tasks yet',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style:
+                theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w900,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 7),
           Text(
             'Add your first task and start organizing your day.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style:
+                theme.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
-              height: 1.4,
+              height: 1.45,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 20),
           FilledButton.icon(
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const AddTaskScreen(),
+                  builder: (_) =>
+                      const AddTaskScreen(),
                 ),
               );
             },
             icon: const Icon(Icons.add_rounded),
-            label: const Text('Create Task'),
+            label: const Text(
+              'Create Task',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
+}
 
-  // ==========================================================================
-  // SAME DAY
-  // ==========================================================================
+// ============================================================================
+// STAT CARD
+// ============================================================================
 
-  bool _sameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color:
+            color.withValues(alpha: 0.055),
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(
+          color:
+              color.withValues(alpha: 0.10),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color:
+                  color.withValues(alpha: 0.11),
+              borderRadius:
+                  BorderRadius.circular(11),
+            ),
+            child: Icon(
+              icon,
+              size: 18,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: colors.onSurface,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: theme.textTheme.labelSmall
+                      ?.copyWith(
+                    fontSize: 9,
+                    color:
+                        colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -639,11 +863,13 @@ class _TaskSection extends StatelessWidget {
     final colors = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 17),
+      padding: const EdgeInsets.only(
+        bottom: 18,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
         children: [
-          // Section heading
           Padding(
             padding: const EdgeInsets.only(
               left: 3,
@@ -653,10 +879,13 @@ class _TaskSection extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(7),
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.10),
-                    borderRadius: BorderRadius.circular(10),
+                    color:
+                        color.withValues(alpha: 0.10),
+                    borderRadius:
+                        BorderRadius.circular(11),
                   ),
                   child: Icon(
                     icon,
@@ -667,38 +896,49 @@ class _TaskSection extends StatelessWidget {
                 const SizedBox(width: 9),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w900,
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(
+                          fontWeight:
+                              FontWeight.w900,
                           color: faded
-                              ? colors.onSurfaceVariant
+                              ? colors
+                                  .onSurfaceVariant
                               : colors.onSurface,
                         ),
                       ),
+                      const SizedBox(height: 1),
                       Text(
                         subtitle,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                        style: theme.textTheme.labelSmall
+                            ?.copyWith(
+                          color:
+                              colors.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding:
+                      const EdgeInsets.symmetric(
                     horizontal: 9,
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.09),
-                    borderRadius: BorderRadius.circular(20),
+                    color:
+                        color.withValues(alpha: 0.09),
+                    borderRadius:
+                        BorderRadius.circular(20),
                   ),
                   child: Text(
                     '${tasks.length}',
-                    style: theme.textTheme.labelMedium?.copyWith(
+                    style: theme.textTheme.labelMedium
+                        ?.copyWith(
                       color: color,
                       fontWeight: FontWeight.w900,
                     ),
@@ -708,33 +948,41 @@ class _TaskSection extends StatelessWidget {
             ),
           ),
 
-          // Task container
+          // ==================================================================
+          // TASK LIST CONTAINER
+          // ==================================================================
+
           Container(
             decoration: BoxDecoration(
               color: colors.surface,
-              borderRadius: BorderRadius.circular(21),
+              borderRadius:
+                  BorderRadius.circular(22),
               border: Border.all(
-                color: colors.outlineVariant.withValues(
-                  alpha: 0.65,
-                ),
+                color: colors.outlineVariant
+                    .withValues(alpha: 0.65),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.018),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
+                  color: Colors.black
+                      .withValues(alpha: 0.018),
+                  blurRadius: 14,
+                  offset: const Offset(0, 5),
                 ),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(21),
+              borderRadius:
+                  BorderRadius.circular(22),
               child: Column(
                 children: [
-                  for (int i = 0; i < tasks.length; i++)
+                  for (int i = 0;
+                      i < tasks.length;
+                      i++)
                     _TaskTile(
                       task: tasks[i],
                       faded: faded,
-                      showDivider: i != tasks.length - 1,
+                      showDivider:
+                          i != tasks.length - 1,
                     ),
                 ],
               ),
@@ -768,6 +1016,7 @@ class _TaskTile extends StatelessWidget {
     final app = AppScope.of(context);
 
     final completed = task.completed;
+    final priority = priorityColor(task.priority);
 
     return Dismissible(
       key: ValueKey(task.id),
@@ -780,9 +1029,12 @@ class _TaskTile extends StatelessWidget {
       background: Container(
         color: Colors.red,
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 22),
+        padding: const EdgeInsets.only(
+          right: 22,
+        ),
         child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment:
+              MainAxisAlignment.center,
           children: [
             Icon(
               Icons.delete_outline_rounded,
@@ -795,7 +1047,7 @@ class _TaskTile extends StatelessWidget {
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 11,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],
@@ -803,7 +1055,7 @@ class _TaskTile extends StatelessWidget {
       ),
 
       // ======================================================================
-      // DELETE
+      // DELETE ACTION
       // ======================================================================
 
       onDismissed: (_) {
@@ -815,10 +1067,13 @@ class _TaskTile extends StatelessWidget {
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
+              behavior:
+                  SnackBarBehavior.floating,
               content: Text(
                 'Deleted "${removed.title}"',
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                overflow:
+                    TextOverflow.ellipsis,
               ),
               action: SnackBarAction(
                 label: 'Undo',
@@ -831,138 +1086,169 @@ class _TaskTile extends StatelessWidget {
       },
 
       // ======================================================================
-      // TILE
+      // TASK CONTENT
       // ======================================================================
 
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddTaskScreen(
-                existing: task,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddTaskScreen(
+                  existing: task,
+                ),
               ),
+            );
+          },
+          child: Padding(
+            padding:
+                const EdgeInsets.fromLTRB(
+              9,
+              11,
+              8,
+              11,
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 12,
-          ),
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // ==========================================================
-                  // CHECKBOX
-                  // ==========================================================
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.center,
+                  children: [
+                    // ========================================================
+                    // CHECKBOX
+                    // ========================================================
 
-                  Checkbox(
-                    value: completed,
-                    onChanged: (_) {
-                      app.toggleTask(task.id);
-                    },
-                    visualDensity: VisualDensity.compact,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                    Checkbox(
+                      value: completed,
+                      onChanged: (_) {
+                        app.toggleTask(task.id);
+                      },
+                      visualDensity:
+                          VisualDensity.compact,
+                      shape:
+                          RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(6),
+                      ),
                     ),
-                  ),
 
-                  const SizedBox(width: 5),
+                    const SizedBox(width: 4),
 
-                  // ==========================================================
-                  // TASK CONTENT
-                  // ==========================================================
+                    // ========================================================
+                    // TASK CONTENT
+                    // ========================================================
 
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                task.title,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: faded
-                                      ? colors.onSurfaceVariant
-                                      : colors.onSurface,
-                                  decoration: completed
-                                      ? TextDecoration.lineThrough
-                                      : null,
-                                  decorationThickness: 1.5,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  task.title,
+                                  maxLines: 2,
+                                  overflow:
+                                      TextOverflow
+                                          .ellipsis,
+                                  style: theme
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                    fontWeight:
+                                        FontWeight.w800,
+                                    color: faded
+                                        ? colors
+                                            .onSurfaceVariant
+                                        : colors
+                                            .onSurface,
+                                    decoration:
+                                        completed
+                                            ? TextDecoration
+                                                .lineThrough
+                                            : null,
+                                    decorationThickness:
+                                        1.5,
+                                  ),
                                 ),
                               ),
-                            ),
-                            if (!completed) ...[
-                              const SizedBox(width: 7),
-                              _PriorityBadge(
-                                priority: task.priority,
-                              ),
+                              if (!completed) ...[
+                                const SizedBox(
+                                    width: 7),
+                                _PriorityBadge(
+                                  priority:
+                                      task.priority,
+                                ),
+                              ],
                             ],
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        _TaskMetadata(
-                          task: task,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 5),
-
-                  // ==========================================================
-                  // EDIT BUTTON
-                  // ==========================================================
-
-                  IconButton(
-                    tooltip: 'Edit task',
-                    visualDensity: VisualDensity.compact,
-                    icon: Icon(
-                      Icons.edit_outlined,
-                      size: 19,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => AddTaskScreen(
-                            existing: task,
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                          const SizedBox(height: 5),
+                          _TaskMetadata(
+                            task: task,
+                          ),
+                        ],
+                      ),
+                    ),
 
-              // ============================================================
-              // DIVIDER
-              // ============================================================
+                    const SizedBox(width: 3),
 
-              if (showDivider)
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 48,
-                    right: 0,
-                    top: 12,
-                  ),
-                  child: Divider(
-                    height: 1,
-                    thickness: 0.7,
-                    color: colors.outlineVariant.withValues(
-                      alpha: 0.45,
+                    // ========================================================
+                    // EDIT
+                    // ========================================================
+
+                    IconButton(
+                      tooltip: 'Edit task',
+                      visualDensity:
+                          VisualDensity.compact,
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: 18,
+                        color:
+                            colors.onSurfaceVariant,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                AddTaskScreen(
+                              existing: task,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                // ============================================================
+                // DIVIDER
+                // ============================================================
+
+                if (showDivider)
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(
+                      left: 48,
+                      top: 11,
+                    ),
+                    child: Divider(
+                      height: 1,
+                      thickness: 0.7,
+                      color: colors
+                          .outlineVariant
+                          .withValues(
+                            alpha: 0.45,
+                          ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -987,19 +1273,24 @@ class _PriorityBadge extends StatelessWidget {
     final label = priorityLabel(priority);
 
     return Container(
-      padding: const EdgeInsets.symmetric(
+      padding:
+          const EdgeInsets.symmetric(
         horizontal: 7,
         vertical: 4,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(8),
+        color:
+            color.withValues(alpha: 0.10),
+        borderRadius:
+            BorderRadius.circular(8),
         border: Border.all(
-          color: color.withValues(alpha: 0.12),
+          color:
+              color.withValues(alpha: 0.13),
         ),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize:
+            MainAxisSize.min,
         children: [
           Icon(
             priorityIcon(priority),
@@ -1012,7 +1303,8 @@ class _PriorityBadge extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               color: color,
-              fontWeight: FontWeight.w800,
+              fontWeight:
+                  FontWeight.w800,
             ),
           ),
         ],
@@ -1045,23 +1337,9 @@ class _TaskMetadata extends StatelessWidget {
 
     if (task.dueDate != null) {
       parts.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.event_rounded,
-              size: 13,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              formatDate(task.dueDate!),
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        _MetadataItem(
+          icon: Icons.event_rounded,
+          text: formatDate(task.dueDate!),
         ),
       );
 
@@ -1071,25 +1349,11 @@ class _TaskMetadata extends StatelessWidget {
 
       if (task.dueTimeMinutes != null) {
         parts.add(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.schedule_rounded,
-                size: 13,
-                color: colors.onSurfaceVariant,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                _formatMinutes(
-                  task.dueTimeMinutes!,
-                ),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+          _MetadataItem(
+            icon: Icons.schedule_rounded,
+            text: _formatMinutes(
+              task.dueTimeMinutes!,
+            ),
           ),
         );
       }
@@ -1101,27 +1365,9 @@ class _TaskMetadata extends StatelessWidget {
 
     if (task.category.isNotEmpty) {
       parts.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.label_outline_rounded,
-              size: 13,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                task.category,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
+        _MetadataItem(
+          icon: Icons.label_outline_rounded,
+          text: task.category,
         ),
       );
     }
@@ -1132,23 +1378,9 @@ class _TaskMetadata extends StatelessWidget {
 
     if (task.repeat != TaskRepeat.none) {
       parts.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.repeat_rounded,
-              size: 13,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              'Repeats ${task.repeat.name}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        _MetadataItem(
+          icon: Icons.repeat_rounded,
+          text: 'Repeats ${task.repeat.name}',
         ),
       );
     }
@@ -1159,32 +1391,23 @@ class _TaskMetadata extends StatelessWidget {
 
     if (task.subtasks.isNotEmpty) {
       final completedSubtasks =
-          task.subtasks.where((subtask) => subtask.completed).length;
+          task.subtasks
+              .where(
+                (subtask) => subtask.completed,
+              )
+              .length;
 
       parts.add(
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.checklist_rounded,
-              size: 13,
-              color: colors.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4),
-            Text(
+        _MetadataItem(
+          icon: Icons.checklist_rounded,
+          text:
               '$completedSubtasks/${task.subtasks.length}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colors.onSurfaceVariant,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ),
       );
     }
 
     // ------------------------------------------------------------------------
-    // NO DETAILS
+    // EMPTY
     // ------------------------------------------------------------------------
 
     if (parts.isEmpty) {
@@ -1196,10 +1419,6 @@ class _TaskMetadata extends StatelessWidget {
       );
     }
 
-    // ------------------------------------------------------------------------
-    // METADATA
-    // ------------------------------------------------------------------------
-
     return Wrap(
       spacing: 10,
       runSpacing: 4,
@@ -1207,3 +1426,57 @@ class _TaskMetadata extends StatelessWidget {
     );
   }
 }
+
+// ============================================================================
+// METADATA ITEM
+// ============================================================================
+
+class _MetadataItem extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _MetadataItem({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          size: 13,
+          color: colors.onSurfaceVariant,
+        ),
+        const SizedBox(width: 4),
+        ConstrainedBox(
+          constraints:
+              const BoxConstraints(
+            maxWidth: 170,
+          ),
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow:
+                TextOverflow.ellipsis,
+            style: theme
+                .textTheme
+                .labelSmall
+                ?.copyWith(
+              color:
+                  colors.onSurfaceVariant,
+              fontWeight:
+                  FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
