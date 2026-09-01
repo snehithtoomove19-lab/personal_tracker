@@ -15,7 +15,7 @@ class AiChatException implements Exception {
 
 /// Calls the OpenAI Chat Completions API (also used by many
 /// OpenAI-compatible providers). Requires the person to supply their own
-/// API key in Settings — there is no built-in key, since API access is
+/// API key in Settings â€” there is no built-in key, since API access is
 /// tied to a paid/free account that only the person can create.
 class AiService {
   AiService._();
@@ -33,7 +33,8 @@ class AiService {
     String? systemPrompt,
   }) async {
     if (apiKey.trim().isEmpty) {
-      throw AiChatException('Add your OpenAI API key in Settings to use the AI assistant.');
+      throw AiChatException(
+          'Add your OpenAI API key in Settings to use the AI assistant.');
     }
 
     final List<Map<String, String>> messages = [];
@@ -64,14 +65,17 @@ class AiService {
           )
           .timeout(const Duration(seconds: 30));
     } catch (_) {
-      throw AiChatException('Could not reach the AI service — check your internet connection and try again.');
+      throw AiChatException(
+          'Could not reach the AI service â€” check your internet connection and try again.');
     }
 
     if (response.statusCode == 401) {
-      throw AiChatException('That API key was rejected. Double-check it in Settings.');
+      throw AiChatException(
+          'That API key was rejected. Double-check it in Settings.');
     }
     if (response.statusCode == 429) {
-      throw AiChatException('Rate limit reached on your API key — wait a moment and try again.');
+      throw AiChatException(
+          'Rate limit reached on your API key â€” wait a moment and try again.');
     }
     if (response.statusCode != 200) {
       String detail = 'Request failed (HTTP ${response.statusCode}).';
@@ -94,7 +98,8 @@ class AiService {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
       final choices = decoded['choices'] as List?;
       if (choices == null || choices.isEmpty) {
-        throw AiChatException('The AI returned an empty response — try again.');
+        throw AiChatException(
+            'The AI returned an empty response â€” try again.');
       }
       final firstChoice = choices[0];
       String? content;
@@ -106,12 +111,13 @@ class AiService {
         }
       }
       if (content == null || content.trim().isEmpty) {
-        throw AiChatException('The AI returned an empty response — try again.');
+        throw AiChatException(
+            'The AI returned an empty response â€” try again.');
       }
       return content.trim();
     } catch (e) {
       if (e is AiChatException) rethrow;
-      throw AiChatException('Could not read the AI\'s response — try again.');
+      throw AiChatException('Could not read the AI\'s response â€” try again.');
     }
   }
 }

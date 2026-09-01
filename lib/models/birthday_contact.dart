@@ -47,7 +47,8 @@ class BirthdayContact {
 
   factory BirthdayContact.fromJson(Map<String, dynamic> json) {
     return BirthdayContact(
-      id: json['id'] as String? ?? DateTime.now().microsecondsSinceEpoch.toString(),
+      id: json['id'] as String? ??
+          DateTime.now().microsecondsSinceEpoch.toString(),
       name: json['name'] as String? ?? '',
       relation: json['relation'] as String? ?? 'Friend',
       date: DateTime.parse(json['date'] as String),

@@ -27,7 +27,9 @@ class AppGoal {
   factory AppGoal.fromJson(Map<String, dynamic> json) => AppGoal(
         id: json['id'],
         title: json['title'],
-        targetDate: json['targetDate'] != null ? DateTime.parse(json['targetDate']) : null,
+        targetDate: json['targetDate'] != null
+            ? DateTime.parse(json['targetDate'])
+            : null,
         progress: json['progress'] ?? 0,
         completed: json['completed'] ?? false,
         createdAt: DateTime.parse(json['createdAt']),

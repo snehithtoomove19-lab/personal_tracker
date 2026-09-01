@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 /// A beautiful, dependency-free bar trend chart.
@@ -37,8 +36,7 @@ class BarTrendChart extends StatelessWidget {
             (a, b) => a > b ? a : b,
           );
 
-    final textColor =
-        theme.textTheme.bodySmall?.color ?? Colors.grey.shade600;
+    final textColor = theme.textTheme.bodySmall?.color ?? Colors.grey.shade600;
 
     final hasData = values.any((value) => value > 0);
 
@@ -49,22 +47,22 @@ class BarTrendChart extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.dividerColor.withValues(alpha: 0.35),
+          color: theme.dividerColor.withOpacity(0.35),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ─────────────────────────────────────────────
+          // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           // HEADER
-          // ─────────────────────────────────────────────
+          // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Row(
             children: [
               Container(
                 width: 34,
                 height: 34,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.12),
+                  color: color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(11),
                 ),
                 child: Icon(
@@ -91,7 +89,7 @@ class BarTrendChart extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.09),
+                    color: color.withOpacity(0.09),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Row(
@@ -119,9 +117,9 @@ class BarTrendChart extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // ─────────────────────────────────────────────
+          // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           // CHART
-          // ─────────────────────────────────────────────
+          // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           SizedBox(
             height: height,
             width: double.infinity,
@@ -167,12 +165,12 @@ class _EmptyChart extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.08),
+              color: color.withOpacity(0.08),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.bar_chart_rounded,
-              color: color.withValues(alpha: 0.55),
+              color: color.withOpacity(0.55),
               size: 24,
             ),
           ),
@@ -182,7 +180,7 @@ class _EmptyChart extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: textColor.withValues(alpha: 0.7),
+              color: textColor.withOpacity(0.7),
             ),
           ),
         ],
@@ -218,11 +216,8 @@ class _BarTrendPainter extends CustomPainter {
     const topPadding = 4.0;
     const bottomPadding = 2.0;
 
-    final chartHeight = size.height -
-        labelHeight -
-        valueHeight -
-        topPadding -
-        bottomPadding;
+    final chartHeight =
+        size.height - labelHeight - valueHeight - topPadding - bottomPadding;
 
     if (chartHeight <= 0) return;
 
@@ -232,34 +227,28 @@ class _BarTrendPainter extends CustomPainter {
     const maxBarWidth = 44.0;
     const gap = 8.0;
 
-    final availableWidth =
-        size.width - gap * (barCount - 1);
+    final availableWidth = size.width - gap * (barCount - 1);
 
     final calculatedBarWidth = availableWidth / barCount;
 
-    final barWidth =
-        calculatedBarWidth.clamp(10.0, maxBarWidth);
+    final barWidth = calculatedBarWidth.clamp(10.0, maxBarWidth);
 
-    final totalWidth =
-        barWidth * barCount + gap * (barCount - 1);
+    final totalWidth = barWidth * barCount + gap * (barCount - 1);
 
-    final startX =
-        (size.width - totalWidth) / 2;
+    final startX = (size.width - totalWidth) / 2;
 
-    // ─────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // GRID
-    // ─────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     final gridPaint = Paint()
-      ..color = textColor.withValues(alpha: 0.08)
+      ..color = textColor.withOpacity(0.08)
       ..strokeWidth = 1;
 
     const gridLines = 4;
 
     for (int i = 0; i <= gridLines; i++) {
-      final y = topPadding +
-          chartHeight -
-          (chartHeight / gridLines) * i;
+      final y = topPadding + chartHeight - (chartHeight / gridLines) * i;
 
       canvas.drawLine(
         Offset(0, y),
@@ -268,9 +257,9 @@ class _BarTrendPainter extends CustomPainter {
       );
     }
 
-    // ─────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // BARS
-    // ─────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     for (int i = 0; i < barCount; i++) {
       final value = values[i].clamp(0.0, double.infinity);
@@ -284,14 +273,11 @@ class _BarTrendPainter extends CustomPainter {
               chartHeight,
             );
 
-      final left =
-          startX + i * (barWidth + gap);
+      final left = startX + i * (barWidth + gap);
 
-      final top =
-          topPadding + chartHeight - barHeight;
+      final top = topPadding + chartHeight - barHeight;
 
-      final bottom =
-          topPadding + chartHeight;
+      final bottom = topPadding + chartHeight;
 
       final rect = Rect.fromLTRB(
         left,
@@ -310,7 +296,7 @@ class _BarTrendPainter extends CustomPainter {
 
       // Soft shadow.
       final shadowPaint = Paint()
-        ..color = color.withValues(alpha: 0.10)
+        ..color = color.withOpacity(0.10)
         ..maskFilter = const MaskFilter.blur(
           BlurStyle.normal,
           4,
@@ -326,13 +312,12 @@ class _BarTrendPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          color.withValues(alpha: 0.95),
-          color.withValues(alpha: 0.60),
+          color.withOpacity(0.95),
+          color.withOpacity(0.60),
         ],
       );
 
-      final barPaint = Paint()
-        ..shader = gradient.createShader(rect);
+      final barPaint = Paint()..shader = gradient.createShader(rect);
 
       canvas.drawRRect(
         roundedRect,
@@ -340,8 +325,7 @@ class _BarTrendPainter extends CustomPainter {
       );
 
       // Small highlight at the top.
-      final highlightPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.20);
+      final highlightPaint = Paint()..color = Colors.white.withOpacity(0.20);
 
       canvas.drawRRect(
         RRect.fromRectAndCorners(
@@ -357,9 +341,9 @@ class _BarTrendPainter extends CustomPainter {
         highlightPaint,
       );
 
-      // ───────────────────────────────────────────
+      // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // VALUE ABOVE BAR
-      // ───────────────────────────────────────────
+      // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
       if (value > 0) {
         final valuePainter = TextPainter(
@@ -368,7 +352,7 @@ class _BarTrendPainter extends CustomPainter {
             style: TextStyle(
               fontSize: 8.5,
               fontWeight: FontWeight.w700,
-              color: textColor.withValues(alpha: 0.72),
+              color: textColor.withOpacity(0.72),
             ),
           ),
           textDirection: TextDirection.ltr,
@@ -377,12 +361,9 @@ class _BarTrendPainter extends CustomPainter {
             maxWidth: barWidth + 18,
           );
 
-        final valueX =
-            left + (barWidth - valuePainter.width) / 2;
+        final valueX = left + (barWidth - valuePainter.width) / 2;
 
-        final valueY =
-            (top - valuePainter.height - 3)
-                .clamp(0.0, size.height);
+        final valueY = (top - valuePainter.height - 3).clamp(0.0, size.height);
 
         valuePainter.paint(
           canvas,
@@ -390,9 +371,9 @@ class _BarTrendPainter extends CustomPainter {
         );
       }
 
-      // ───────────────────────────────────────────
+      // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // LABEL BELOW BAR
-      // ───────────────────────────────────────────
+      // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
       if (i < labels.length) {
         final labelPainter = TextPainter(
@@ -401,22 +382,20 @@ class _BarTrendPainter extends CustomPainter {
             style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: textColor.withValues(alpha: 0.65),
+              color: textColor.withOpacity(0.65),
             ),
           ),
           textDirection: TextDirection.ltr,
           textAlign: TextAlign.center,
           maxLines: 1,
-          ellipsis: '…',
+          ellipsis: 'â€¦',
         )..layout(
             maxWidth: barWidth + gap,
           );
 
-        final labelX =
-            left + (barWidth - labelPainter.width) / 2;
+        final labelX = left + (barWidth - labelPainter.width) / 2;
 
-        final labelY =
-            topPadding + chartHeight + 5;
+        final labelY = topPadding + chartHeight + 5;
 
         labelPainter.paint(
           canvas,
@@ -437,4 +416,3 @@ class _BarTrendPainter extends CustomPainter {
         oldDelegate.textColor != textColor;
   }
 }
-

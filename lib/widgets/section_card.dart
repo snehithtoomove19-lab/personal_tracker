@@ -1,21 +1,20 @@
-
 import 'package:flutter/material.dart';
 
-/// ─────────────────────────────────────────────────────────────
+/// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /// SECTION CARD
-/// ─────────────────────────────────────────────────────────────
+/// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ///
 /// A modern reusable card for grouping content.
 ///
 /// Features:
-/// • Rounded modern design
-/// • Subtle border
-/// • Soft shadow
-/// • Optional title
-/// • Optional trailing widget
-/// • Optional title icon
-/// • Dark-mode friendly
-/// • Fully dependency-free
+/// â€¢ Rounded modern design
+/// â€¢ Subtle border
+/// â€¢ Soft shadow
+/// â€¢ Optional title
+/// â€¢ Optional trailing widget
+/// â€¢ Optional title icon
+/// â€¢ Dark-mode friendly
+/// â€¢ Fully dependency-free
 class SectionCard extends StatelessWidget {
   final String? title;
   final Widget child;
@@ -47,7 +46,7 @@ class SectionCard extends StatelessWidget {
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colorScheme.outline.withValues(alpha: 0.12),
+          color: colorScheme.outline.withOpacity(0.12),
           width: 1,
         ),
         boxShadow: [
@@ -74,7 +73,7 @@ class SectionCard extends StatelessWidget {
                       width: 36,
                       height: 36,
                       decoration: BoxDecoration(
-                        color: accent.withValues(alpha: 0.11),
+                        color: accent.withOpacity(0.11),
                         borderRadius: BorderRadius.circular(11),
                       ),
                       child: Icon(
@@ -113,9 +112,9 @@ class SectionCard extends StatelessWidget {
   }
 }
 
-/// ─────────────────────────────────────────────────────────────
+/// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 /// STAT TILE
-/// ─────────────────────────────────────────────────────────────
+/// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 ///
 /// A compact modern statistic component.
 ///
@@ -123,7 +122,7 @@ class SectionCard extends StatelessWidget {
 ///
 /// StatTile(
 ///   label: 'Expenses',
-///   value: '₹12,450',
+///   value: 'â‚¹12,450',
 ///   icon: Icons.payments_rounded,
 ///   color: Colors.red,
 /// )
@@ -172,7 +171,7 @@ class StatTile extends StatelessWidget {
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.11),
+                  color: accent.withOpacity(0.11),
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: Icon(
@@ -189,7 +188,7 @@ class StatTile extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: colorScheme.onSurface.withValues(alpha: 0.55),
+                  color: colorScheme.onSurface.withOpacity(0.55),
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.2,
@@ -219,7 +218,6 @@ class StatTile extends StatelessWidget {
                 ),
               ),
             ),
-
             if (trend != null) ...[
               const SizedBox(width: 7),
               Flexible(
@@ -229,7 +227,7 @@ class StatTile extends StatelessWidget {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.10),
+                    color: accent.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(7),
                   ),
                   child: Text(
@@ -255,7 +253,7 @@ class StatTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: colorScheme.onSurface.withValues(alpha: 0.42),
+              color: colorScheme.onSurface.withOpacity(0.42),
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
@@ -272,14 +270,13 @@ class StatTile extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(13),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.42),
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.42),
         borderRadius: BorderRadius.circular(17),
         border: Border.all(
-          color: accent.withValues(alpha: 0.08),
+          color: accent.withOpacity(0.08),
         ),
       ),
       child: content,
     );
   }
 }
-

@@ -48,29 +48,19 @@ class _NotesScreenState extends State<NotesScreen> {
         return b.updatedAt.compareTo(a.updatedAt);
       });
 
-    final pinnedNotes = notes
-        .where((note) => note.pinned)
-        .toList();
+    final pinnedNotes = notes.where((note) => note.pinned).toList();
 
-    final regularNotes = notes
-        .where((note) => !note.pinned)
-        .toList();
+    final regularNotes = notes.where((note) => !note.pinned).toList();
 
-    final bottomInset =
-        MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: colors.surface,
-
-      floatingActionButton:
-          _buildFloatingActionButton(context),
-
+      floatingActionButton: _buildFloatingActionButton(context),
       body: SafeArea(
         bottom: false,
         child: CustomScrollView(
-          physics:
-              const BouncingScrollPhysics(),
-
+          physics: const BouncingScrollPhysics(),
           slivers: [
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
@@ -79,54 +69,39 @@ class _NotesScreenState extends State<NotesScreen> {
                 18,
                 110 + bottomInset,
               ),
-
               sliver: SliverList(
-                delegate:
-                    SliverChildListDelegate(
+                delegate: SliverChildListDelegate(
                   [
                     _buildHeader(
                       context,
-                      totalNotes:
-                          app.notes.length,
+                      totalNotes: app.notes.length,
                     ),
-
                     const SizedBox(
                       height: 20,
                     ),
-
                     _buildSearchBar(context),
-
                     const SizedBox(
                       height: 22,
                     ),
-
                     if (notes.isEmpty)
                       _buildEmptyState(
                         context,
-                        isSearching:
-                            query.isNotEmpty,
+                        isSearching: query.isNotEmpty,
                       )
                     else ...[
-                      if (pinnedNotes
-                          .isNotEmpty) ...[
+                      if (pinnedNotes.isNotEmpty) ...[
                         _buildSectionHeader(
                           context,
-                          icon: Icons
-                              .push_pin_rounded,
+                          icon: Icons.push_pin_rounded,
                           title: 'Pinned',
-                          count:
-                              pinnedNotes.length,
+                          count: pinnedNotes.length,
                         ),
-
                         const SizedBox(
                           height: 10,
                         ),
-
                         ...pinnedNotes.map(
                           (note) => Padding(
-                            padding:
-                                const EdgeInsets
-                                    .only(
+                            padding: const EdgeInsets.only(
                               bottom: 12,
                             ),
                             child: _NoteTile(
@@ -134,34 +109,24 @@ class _NotesScreenState extends State<NotesScreen> {
                             ),
                           ),
                         ),
-
-                        if (regularNotes
-                            .isNotEmpty)
+                        if (regularNotes.isNotEmpty)
                           const SizedBox(
                             height: 10,
                           ),
                       ],
-
-                      if (regularNotes
-                          .isNotEmpty) ...[
+                      if (regularNotes.isNotEmpty) ...[
                         _buildSectionHeader(
                           context,
-                          icon: Icons
-                              .notes_rounded,
+                          icon: Icons.notes_rounded,
                           title: 'All Notes',
-                          count:
-                              regularNotes.length,
+                          count: regularNotes.length,
                         ),
-
                         const SizedBox(
                           height: 10,
                         ),
-
                         ...regularNotes.map(
                           (note) => Padding(
-                            padding:
-                                const EdgeInsets
-                                    .only(
+                            padding: const EdgeInsets.only(
                               bottom: 12,
                             ),
                             child: _NoteTile(
@@ -193,51 +158,37 @@ class _NotesScreenState extends State<NotesScreen> {
     final colors = theme.colorScheme;
 
     return Row(
-      crossAxisAlignment:
-          CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Notes',
-                style: theme
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(
-                  fontWeight:
-                      FontWeight.w900,
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.8,
                 ),
               ),
-
               const SizedBox(
                 height: 5,
               ),
-
               Text(
                 totalNotes == 0
                     ? 'Capture your thoughts and ideas.'
                     : '$totalNotes ${totalNotes == 1 ? 'note' : 'notes'} in your collection',
-                style: theme
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(
-                  color:
-                      colors.onSurfaceVariant,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colors.onSurfaceVariant,
                   height: 1.35,
                 ),
               ),
             ],
           ),
         ),
-
         const SizedBox(
           width: 14,
         ),
-
         Container(
           width: 48,
           height: 48,
@@ -245,8 +196,7 @@ class _NotesScreenState extends State<NotesScreen> {
             color: colors.primary.withValues(
               alpha: 0.10,
             ),
-            borderRadius:
-                BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Icon(
             Icons.auto_stories_rounded,
@@ -265,8 +215,7 @@ class _NotesScreenState extends State<NotesScreen> {
   Widget _buildSearchBar(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return TextField(
       onChanged: (value) {
@@ -274,23 +223,16 @@ class _NotesScreenState extends State<NotesScreen> {
           _query = value;
         });
       },
-
-      textInputAction:
-          TextInputAction.search,
-
+      textInputAction: TextInputAction.search,
       decoration: InputDecoration(
         hintText: 'Search your notes...',
-
         hintStyle: TextStyle(
           color: colors.onSurfaceVariant,
         ),
-
         prefixIcon: Icon(
           Icons.search_rounded,
-          color:
-              colors.onSurfaceVariant,
+          color: colors.onSurfaceVariant,
         ),
-
         suffixIcon: _query.isNotEmpty
             ? IconButton(
                 tooltip: 'Clear search',
@@ -301,52 +243,34 @@ class _NotesScreenState extends State<NotesScreen> {
                 },
                 icon: Icon(
                   Icons.close_rounded,
-                  color: colors
-                      .onSurfaceVariant,
+                  color: colors.onSurfaceVariant,
                 ),
               )
             : null,
-
         filled: true,
-
-        fillColor: colors
-            .surfaceContainerHighest
-            .withValues(
+        fillColor: colors.surfaceContainerHighest.withValues(
           alpha: 0.55,
         ),
-
-        contentPadding:
-            const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 16,
         ),
-
         border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
-
-        enabledBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
-            color: colors
-                .outlineVariant
-                .withValues(
+            color: colors.outlineVariant.withValues(
               alpha: 0.35,
             ),
           ),
         ),
-
-        focusedBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
-            color: colors.primary
-                .withValues(
+            color: colors.primary.withValues(
               alpha: 0.65,
             ),
             width: 1.3,
@@ -376,49 +300,34 @@ class _NotesScreenState extends State<NotesScreen> {
           size: 18,
           color: colors.primary,
         ),
-
         const SizedBox(
           width: 8,
         ),
-
         Text(
           title,
-          style: theme
-              .textTheme
-              .titleSmall
-              ?.copyWith(
-            fontWeight:
-                FontWeight.w800,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w800,
           ),
         ),
-
         const SizedBox(
           width: 7,
         ),
-
         Container(
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 7,
             vertical: 3,
           ),
           decoration: BoxDecoration(
-            color: colors.primary
-                .withValues(
+            color: colors.primary.withValues(
               alpha: 0.09,
             ),
-            borderRadius:
-                BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             '$count',
-            style: theme
-                .textTheme
-                .labelSmall
-                ?.copyWith(
+            style: theme.textTheme.labelSmall?.copyWith(
               color: colors.primary,
-              fontWeight:
-                  FontWeight.w800,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),
@@ -439,23 +348,17 @@ class _NotesScreenState extends State<NotesScreen> {
 
     return Container(
       width: double.infinity,
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 24,
         vertical: 42,
       ),
       decoration: BoxDecoration(
-        color: colors
-            .surfaceContainerHighest
-            .withValues(
+        color: colors.surfaceContainerHighest.withValues(
           alpha: 0.35,
         ),
-        borderRadius:
-            BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors
-              .outlineVariant
-              .withValues(
+          color: colors.outlineVariant.withValues(
             alpha: 0.45,
           ),
         ),
@@ -466,65 +369,44 @@ class _NotesScreenState extends State<NotesScreen> {
             width: 76,
             height: 76,
             decoration: BoxDecoration(
-              color: colors.primary
-                  .withValues(
+              color: colors.primary.withValues(
                 alpha: 0.10,
               ),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              isSearching
-                  ? Icons.search_off_rounded
-                  : Icons.edit_note_rounded,
+              isSearching ? Icons.search_off_rounded : Icons.edit_note_rounded,
               size: 36,
               color: colors.primary,
             ),
           ),
-
           const SizedBox(
             height: 18,
           ),
-
           Text(
-            isSearching
-                ? 'No notes found'
-                : 'Your notes are empty',
-            textAlign:
-                TextAlign.center,
-            style: theme
-                .textTheme
-                .titleLarge
-                ?.copyWith(
-              fontWeight:
-                  FontWeight.w800,
+            isSearching ? 'No notes found' : 'Your notes are empty',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w800,
             ),
           ),
-
           const SizedBox(
             height: 7,
           ),
-
           Text(
             isSearching
                 ? 'Try a different search term.'
                 : 'Start writing down your thoughts, ideas, and important moments.',
-            textAlign:
-                TextAlign.center,
-            style: theme
-                .textTheme
-                .bodyMedium
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
               height: 1.45,
             ),
           ),
-
           if (!isSearching) ...[
             const SizedBox(
               height: 22,
             ),
-
             FilledButton.icon(
               onPressed: _openNewNote,
               icon: const Icon(
@@ -556,8 +438,7 @@ class _NotesScreenState extends State<NotesScreen> {
       label: const Text(
         'New Note',
         style: TextStyle(
-          fontWeight:
-              FontWeight.w700,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -581,24 +462,17 @@ class _NoteTile extends StatelessWidget {
 
     return Dismissible(
       key: ValueKey(note.id),
-
-      direction:
-          DismissDirection.endToStart,
-
+      direction: DismissDirection.endToStart,
       confirmDismiss: (_) {
         return _confirmDelete(
           context,
           note,
         );
       },
-
       background: const SizedBox(),
-
-      secondaryBackground:
-          _buildDeleteBackground(
+      secondaryBackground: _buildDeleteBackground(
         context,
       ),
-
       onDismissed: (_) {
         final removed = note;
 
@@ -608,33 +482,24 @@ class _NoteTile extends StatelessWidget {
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
-              behavior:
-                  SnackBarBehavior.floating,
-
-              margin:
-                  const EdgeInsets.fromLTRB(
+              behavior: SnackBarBehavior.floating,
+              margin: const EdgeInsets.fromLTRB(
                 16,
                 0,
                 16,
                 90,
               ),
-
-              shape:
-                  RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
                   14,
                 ),
               ),
-
               content: Text(
                 removed.title.trim().isEmpty
                     ? 'Note deleted'
                     : 'Deleted "${removed.title.trim()}"',
               ),
-
-              action:
-                  SnackBarAction(
+              action: SnackBarAction(
                 label: 'Undo',
                 onPressed: () {
                   app.addNote(removed);
@@ -643,7 +508,6 @@ class _NoteTile extends StatelessWidget {
             ),
           );
       },
-
       child: _buildCard(
         context,
         app,
@@ -658,26 +522,19 @@ class _NoteTile extends StatelessWidget {
   Widget _buildDeleteBackground(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      padding:
-          const EdgeInsets.only(
+      padding: const EdgeInsets.only(
         right: 22,
       ),
-
       decoration: BoxDecoration(
         color: colors.error.withValues(
           alpha: 0.12,
         ),
-        borderRadius:
-            BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20),
       ),
-
-      alignment:
-          Alignment.centerRight,
-
+      alignment: Alignment.centerRight,
       child: Container(
         width: 44,
         height: 44,
@@ -706,222 +563,144 @@ class _NoteTile extends StatelessWidget {
     final colors = theme.colorScheme;
 
     final title =
-        note.title.trim().isEmpty
-            ? 'Untitled note'
-            : note.title.trim();
+        note.title.trim().isEmpty ? 'Untitled note' : note.title.trim();
 
-    final content =
-        note.content.trim();
+    final content = note.content.trim();
 
-    final preview = content.isEmpty
-        ? 'No additional text'
-        : content;
+    final preview = content.isEmpty ? 'No additional text' : content;
 
     return Material(
       color: Colors.transparent,
-
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(20),
-
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  AddNoteScreen(
+              builder: (_) => AddNoteScreen(
                 existing: note,
               ),
             ),
           );
         },
-
         child: Ink(
-          decoration:
-              BoxDecoration(
+          decoration: BoxDecoration(
             color: colors.surface,
-
-            borderRadius:
-                BorderRadius.circular(20),
-
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: note.pinned
-                  ? colors.primary
-                      .withValues(
-                    alpha: 0.28,
-                  )
-                  : colors.outlineVariant
-                      .withValues(
-                    alpha: 0.55,
-                  ),
+                  ? colors.primary.withValues(
+                      alpha: 0.28,
+                    )
+                  : colors.outlineVariant.withValues(
+                      alpha: 0.55,
+                    ),
             ),
-
             boxShadow: [
               BoxShadow(
-                color: Colors.black
-                    .withValues(
+                color: Colors.black.withValues(
                   alpha: 0.035,
                 ),
                 blurRadius: 16,
-                offset:
-                    const Offset(0, 5),
+                offset: const Offset(0, 5),
               ),
             ],
           ),
-
           child: Padding(
-            padding:
-                const EdgeInsets.all(16),
-
+            padding: const EdgeInsets.all(16),
             child: Row(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildNoteIcon(
                   context,
                 ),
-
                 const SizedBox(
                   width: 13,
                 ),
-
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
-
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
-
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: Text(
                               title,
                               maxLines: 2,
-                              overflow:
-                                  TextOverflow
-                                      .ellipsis,
-                              style: theme
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                fontWeight:
-                                    FontWeight
-                                        .w800,
-                                letterSpacing:
-                                    -0.15,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.15,
                               ),
                             ),
                           ),
-
                           const SizedBox(
                             width: 8,
                           ),
-
                           _buildPinButton(
                             context,
                             app,
                           ),
                         ],
                       ),
-
                       const SizedBox(
                         height: 7,
                       ),
-
                       Text(
                         preview,
                         maxLines: 2,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style: theme
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
-                          color: colors
-                              .onSurfaceVariant,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
                           height: 1.4,
                         ),
                       ),
-
                       const SizedBox(
                         height: 12,
                       ),
-
                       Row(
                         children: [
                           Icon(
-                            Icons
-                                .schedule_rounded,
+                            Icons.schedule_rounded,
                             size: 14,
-                            color: colors
-                                .onSurfaceVariant,
+                            color: colors.onSurfaceVariant,
                           ),
-
                           const SizedBox(
                             width: 5,
                           ),
-
                           Flexible(
                             child: Text(
                               formatDate(
                                 note.updatedAt,
                               ),
-                              overflow:
-                                  TextOverflow
-                                      .ellipsis,
-                              style: theme
-                                  .textTheme
-                                  .labelMedium
-                                  ?.copyWith(
-                                color: colors
-                                    .onSurfaceVariant,
-                                fontWeight:
-                                    FontWeight
-                                        .w500,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
-
                           if (note.pinned) ...[
                             const SizedBox(
                               width: 10,
                             ),
-
                             Container(
                               width: 4,
                               height: 4,
-                              decoration:
-                                  BoxDecoration(
-                                color: colors
-                                    .primary,
-                                shape:
-                                    BoxShape
-                                        .circle,
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                shape: BoxShape.circle,
                               ),
                             ),
-
                             const SizedBox(
                               width: 10,
                             ),
-
                             Text(
                               'Pinned',
-                              style: theme
-                                  .textTheme
-                                  .labelMedium
-                                  ?.copyWith(
-                                color: colors
-                                    .primary,
-                                fontWeight:
-                                    FontWeight
-                                        .w700,
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: colors.primary,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ],
@@ -945,40 +724,28 @@ class _NoteTile extends StatelessWidget {
   Widget _buildNoteIcon(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       width: 46,
       height: 46,
-
-      decoration:
-          BoxDecoration(
-        gradient:
-            LinearGradient(
-          begin:
-              Alignment.topLeft,
-          end:
-              Alignment.bottomRight,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            colors.primary
-                .withValues(
+            colors.primary.withValues(
               alpha: 0.16,
             ),
-            colors.secondary
-                .withValues(
+            colors.secondary.withValues(
               alpha: 0.08,
             ),
           ],
         ),
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
       ),
-
       child: Icon(
-        note.pinned
-            ? Icons.push_pin_rounded
-            : Icons.description_outlined,
+        note.pinned ? Icons.push_pin_rounded : Icons.description_outlined,
         color: colors.primary,
         size: 22,
       ),
@@ -993,16 +760,12 @@ class _NoteTile extends StatelessWidget {
     BuildContext context,
     dynamic app,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Material(
       color: Colors.transparent,
-
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(10),
-
+        borderRadius: BorderRadius.circular(10),
         onTap: () {
           // ---------------------------------------------------------
           // FIX:
@@ -1016,21 +779,12 @@ class _NoteTile extends StatelessWidget {
 
           app.updateNote(note);
         },
-
         child: Padding(
-          padding:
-              const EdgeInsets.all(5),
-
+          padding: const EdgeInsets.all(5),
           child: Icon(
-            note.pinned
-                ? Icons.push_pin_rounded
-                : Icons.push_pin_outlined,
-
+            note.pinned ? Icons.push_pin_rounded : Icons.push_pin_outlined,
             size: 21,
-
-            color: note.pinned
-                ? colors.primary
-                : colors.onSurfaceVariant,
+            color: note.pinned ? colors.primary : colors.onSurfaceVariant,
           ),
         ),
       ),
@@ -1045,62 +799,43 @@ class _NoteTile extends StatelessWidget {
     BuildContext context,
     AppNote note,
   ) async {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    final result =
-        await showDialog<bool>(
+    final result = await showDialog<bool>(
       context: context,
-
       builder: (dialogContext) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
               24,
             ),
           ),
-
           icon: Container(
             width: 52,
             height: 52,
-
-            decoration:
-                BoxDecoration(
-              color: colors.error
-                  .withValues(
+            decoration: BoxDecoration(
+              color: colors.error.withValues(
                 alpha: 0.10,
               ),
-              shape:
-                  BoxShape.circle,
+              shape: BoxShape.circle,
             ),
-
             child: Icon(
-              Icons
-                  .delete_outline_rounded,
+              Icons.delete_outline_rounded,
               color: colors.error,
               size: 26,
             ),
           ),
-
           title: const Text(
             'Delete note?',
-            textAlign:
-                TextAlign.center,
+            textAlign: TextAlign.center,
           ),
-
           content: Text(
             note.title.trim().isEmpty
                 ? 'This note will be removed. You can undo this immediately after deleting.'
-                : '“${note.title.trim()}” will be removed. You can undo this immediately after deleting.',
-            textAlign:
-                TextAlign.center,
+                : 'â€œ${note.title.trim()}â€ will be removed. You can undo this immediately after deleting.',
+            textAlign: TextAlign.center,
           ),
-
-          actionsAlignment:
-              MainAxisAlignment.center,
-
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
             TextButton(
               onPressed: () {
@@ -1109,26 +844,20 @@ class _NoteTile extends StatelessWidget {
                   false,
                 );
               },
-
               child: const Text(
                 'Cancel',
               ),
             ),
-
             FilledButton(
-              style:
-                  FilledButton.styleFrom(
-                backgroundColor:
-                    colors.error,
+              style: FilledButton.styleFrom(
+                backgroundColor: colors.error,
               ),
-
               onPressed: () {
                 Navigator.pop(
                   dialogContext,
                   true,
                 );
               },
-
               child: const Text(
                 'Delete',
               ),

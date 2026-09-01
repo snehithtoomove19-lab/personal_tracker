@@ -412,7 +412,7 @@ void showQuickAddSheet(BuildContext context) {
 
                 Container(
                   decoration: BoxDecoration(
-                    color: colors.surfaceVariant.withOpacity(
+                    color: colors.surfaceContainerHighest.withOpacity(
                       isDark ? 0.55 : 0.48,
                     ),
                     borderRadius: BorderRadius.circular(19),
@@ -472,7 +472,7 @@ void showQuickAddSheet(BuildContext context) {
 
                 Center(
                   child: Text(
-                    'Quick Add â€¢ Personal Tracker',
+                    'Quick Add ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Personal Tracker',
                     style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w600,
@@ -748,7 +748,7 @@ Widget _toolTile({
           vertical: 12,
         ),
         decoration: BoxDecoration(
-          color: colors.surfaceVariant.withOpacity(0.46),
+          color: colors.surfaceContainerHighest.withOpacity(0.46),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: colors.outline.withOpacity(0.05),
@@ -895,7 +895,7 @@ void _showGymDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            'ðŸ‹ï¸ $selectedWorkout workout added',
+                            'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚ÂÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¹ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â $selectedWorkout workout added',
                           ),
                         ),
                       );
@@ -1019,7 +1019,7 @@ void _showSleepDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            'ðŸ˜´ Sleep recorded â€¢ Quality: $quality',
+                            'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¹Ã…â€œÃƒâ€šÃ‚Â´ Sleep recorded ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Quality: $quality',
                           ),
                         ),
                       );
@@ -1116,7 +1116,7 @@ void _showCookDialog(BuildContext context) {
                         SnackBar(
                           behavior: SnackBarBehavior.floating,
                           content: Text(
-                            'ðŸ³ $mealType added',
+                            'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚ÂÃƒâ€šÃ‚Â³ $mealType added',
                           ),
                         ),
                       );
@@ -1174,7 +1174,7 @@ void _showGitHubDialog(BuildContext context) {
         content: Container(
           padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
-            color: colors.surfaceVariant.withOpacity(0.5),
+            color: colors.surfaceContainerHighest.withOpacity(0.5),
             borderRadius: BorderRadius.circular(14),
           ),
           child: const SelectableText(

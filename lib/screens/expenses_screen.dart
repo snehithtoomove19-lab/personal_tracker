@@ -74,8 +74,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     var items = app.transactions.where((transaction) {
       final query = _query.trim().toLowerCase();
 
-      final matchesQuery =
-          query.isEmpty ||
+      final matchesQuery = query.isEmpty ||
           transaction.category.toLowerCase().contains(query) ||
           transaction.note.toLowerCase().contains(query) ||
           transaction.paymentMethod.toLowerCase().contains(query);
@@ -83,8 +82,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       final matchesType =
           _typeFilter == null || transaction.type == _typeFilter;
 
-      final matchesDate =
-          _dateFilter == null ||
+      final matchesDate = _dateFilter == null ||
           (transaction.date.year == _dateFilter!.year &&
               transaction.date.month == _dateFilter!.month &&
               transaction.date.day == _dateFilter!.day);
@@ -97,11 +95,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       (a, b) => b.date.compareTo(a.date),
     );
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 110;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
 
-    final monthNet =
-        app.monthIncome - app.monthExpense;
+    final monthNet = app.monthIncome - app.monthExpense;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -288,13 +284,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             size: 28,
           ),
         ),
-
         const SizedBox(width: 14),
-
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Expenses',
@@ -314,7 +307,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ],
           ),
         ),
-
         if (resultCount > 0)
           Container(
             padding: const EdgeInsets.symmetric(
@@ -396,41 +388,34 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   size: 27,
                 ),
               ),
-
               const SizedBox(width: 13),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Add a new expense',
-                      style:
-                          theme.textTheme.titleSmall?.copyWith(
+                      style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 3),
                     Text(
                       'Record your spending quickly',
-                      style:
-                          theme.textTheme.bodySmall?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: kExpenseColorLocal.withValues(
                     alpha: 0.10,
                   ),
-                  borderRadius:
-                      BorderRadius.circular(11),
+                  borderRadius: BorderRadius.circular(11),
                 ),
                 child: const Icon(
                   Icons.arrow_forward_rounded,
@@ -466,13 +451,13 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withValues(alpha: 0.11),
-            colors.secondary.withValues(alpha: 0.045),
+            colors.primary.withOpacity(0.11),
+            colors.secondary.withOpacity(0.045),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: colors.primary.withValues(alpha: 0.11),
+          color: colors.primary.withOpacity(0.11),
         ),
         boxShadow: [
           BoxShadow(
@@ -485,8 +470,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         ],
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -496,8 +480,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   color: colors.primary.withValues(
                     alpha: 0.10,
                   ),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.calendar_month_rounded,
@@ -505,21 +488,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   color: colors.primary,
                 ),
               ),
-
               const SizedBox(width: 10),
-
               Text(
                 'This Month',
-                style:
-                    theme.textTheme.titleSmall?.copyWith(
+                style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 17),
-
           Row(
             children: [
               Expanded(
@@ -533,9 +511,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   icon: Icons.arrow_downward_rounded,
                 ),
               ),
-
               _buildVerticalDivider(context),
-
               Expanded(
                 child: _SummaryItem(
                   label: 'Expense',
@@ -547,9 +523,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   icon: Icons.arrow_upward_rounded,
                 ),
               ),
-
               _buildVerticalDivider(context),
-
               Expanded(
                 child: _SummaryItem(
                   label: 'Net',
@@ -557,9 +531,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     monthNet,
                     app.currency,
                   ),
-                  color: isPositive
-                      ? kIncomeColorLocal
-                      : kExpenseColorLocal,
+                  color: isPositive ? kIncomeColorLocal : kExpenseColorLocal,
                   icon: isPositive
                       ? Icons.trending_up_rounded
                       : Icons.trending_down_rounded,
@@ -575,8 +547,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildVerticalDivider(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       width: 1,
@@ -594,8 +565,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildSearchField(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return TextField(
       onChanged: (value) {
@@ -605,8 +575,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       },
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText:
-            'Search expenses, notes or payment...',
+        hintText: 'Search expenses, notes or payment...',
         hintStyle: TextStyle(
           color: colors.onSurfaceVariant,
         ),
@@ -627,35 +596,29 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
               )
             : null,
         filled: true,
-        fillColor:
-            colors.surfaceContainerHighest.withValues(
+        fillColor: colors.surfaceContainerHighest.withValues(
           alpha: 0.55,
         ),
         border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(17),
+          borderRadius: BorderRadius.circular(17),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(17),
+          borderRadius: BorderRadius.circular(17),
           borderSide: BorderSide(
-            color:
-                colors.outlineVariant.withValues(
+            color: colors.outlineVariant.withValues(
               alpha: 0.45,
             ),
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(17),
+          borderRadius: BorderRadius.circular(17),
           borderSide: BorderSide(
             color: colors.primary,
             width: 1.3,
           ),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 14,
         ),
@@ -670,24 +633,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildFilters(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
         Expanded(
           child: SingleChildScrollView(
-            scrollDirection:
-                Axis.horizontal,
-            physics:
-                const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
             child: Row(
               children: [
                 _buildFilterChip(
                   context,
                   label: 'All',
-                  selected:
-                      _typeFilter == null,
+                  selected: _typeFilter == null,
                   icon: Icons.apps_rounded,
                   onTap: () {
                     setState(() {
@@ -695,41 +654,29 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                     });
                   },
                 ),
-
                 const SizedBox(width: 8),
-
                 _buildFilterChip(
                   context,
                   label: 'Income',
-                  selected:
-                      _typeFilter ==
-                          TxType.income,
-                  icon:
-                      Icons.arrow_downward_rounded,
+                  selected: _typeFilter == TxType.income,
+                  icon: Icons.arrow_downward_rounded,
                   color: kIncomeColorLocal,
                   onTap: () {
                     setState(() {
-                      _typeFilter =
-                          TxType.income;
+                      _typeFilter = TxType.income;
                     });
                   },
                 ),
-
                 const SizedBox(width: 8),
-
                 _buildFilterChip(
                   context,
                   label: 'Expense',
-                  selected:
-                      _typeFilter ==
-                          TxType.expense,
-                  icon:
-                      Icons.arrow_upward_rounded,
+                  selected: _typeFilter == TxType.expense,
+                  icon: Icons.arrow_upward_rounded,
                   color: kExpenseColorLocal,
                   onTap: () {
                     setState(() {
-                      _typeFilter =
-                          TxType.expense;
+                      _typeFilter = TxType.expense;
                     });
                   },
                 ),
@@ -737,25 +684,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ),
           ),
         ),
-
         const SizedBox(width: 8),
-
         _buildDateButton(context),
-
         if (_dateFilter != null) ...[
           const SizedBox(width: 5),
-
           Container(
             decoration: BoxDecoration(
-              color:
-                  colors.surfaceContainerHighest,
+              color: colors.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              tooltip:
-                  'Clear date filter',
-              visualDensity:
-                  VisualDensity.compact,
+              tooltip: 'Clear date filter',
+              visualDensity: VisualDensity.compact,
               icon: const Icon(
                 Icons.close_rounded,
                 size: 19,
@@ -780,82 +720,57 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     required VoidCallback onTap,
     Color? color,
   }) {
-    final theme =
-        Theme.of(context);
-    final colors =
-        theme.colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
-    final accent =
-        color ?? colors.primary;
+    final accent = color ?? colors.primary;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         child: AnimatedContainer(
-          duration:
-              const Duration(
+          duration: const Duration(
             milliseconds: 180,
           ),
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 12,
             vertical: 9,
           ),
-          decoration:
-              BoxDecoration(
+          decoration: BoxDecoration(
             color: selected
                 ? accent.withValues(
                     alpha: 0.12,
                   )
-                : colors
-                    .surfaceContainerHighest
-                    .withValues(
+                : colors.surfaceContainerHighest.withValues(
                     alpha: 0.55,
                   ),
-            borderRadius:
-                BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: selected
                   ? accent.withValues(
                       alpha: 0.24,
                     )
-                  : colors
-                      .outlineVariant
-                      .withValues(
+                  : colors.outlineVariant.withValues(
                       alpha: 0.45,
                     ),
             ),
           ),
           child: Row(
-            mainAxisSize:
-                MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
                 icon,
                 size: 16,
-                color: selected
-                    ? accent
-                    : colors
-                        .onSurfaceVariant,
+                color: selected ? accent : colors.onSurfaceVariant,
               ),
-
               const SizedBox(width: 6),
-
               Text(
                 label,
-                style: theme
-                    .textTheme
-                    .labelMedium
-                    ?.copyWith(
-                  fontWeight:
-                      FontWeight.w700,
-                  color: selected
-                      ? accent
-                      : colors
-                          .onSurfaceVariant,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: selected ? accent : colors.onSurfaceVariant,
                 ),
               ),
             ],
@@ -872,11 +787,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildDateButton(
     BuildContext context,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    final selected =
-        _dateFilter != null;
+    final selected = _dateFilter != null;
 
     return Container(
       decoration: BoxDecoration(
@@ -884,51 +797,37 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             ? colors.primary.withValues(
                 alpha: 0.11,
               )
-            : colors
-                .surfaceContainerHighest
-                .withValues(
+            : colors.surfaceContainerHighest.withValues(
                 alpha: 0.55,
               ),
-        borderRadius:
-            BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: selected
               ? colors.primary.withValues(
                   alpha: 0.23,
                 )
-              : colors
-                  .outlineVariant
-                  .withValues(
+              : colors.outlineVariant.withValues(
                   alpha: 0.45,
                 ),
         ),
       ),
       child: IconButton(
         tooltip: 'Filter by date',
-        visualDensity:
-            VisualDensity.compact,
+        visualDensity: VisualDensity.compact,
         icon: Icon(
           Icons.calendar_today_rounded,
           size: 18,
-          color: selected
-              ? colors.primary
-              : colors.onSurfaceVariant,
+          color: selected ? colors.primary : colors.onSurfaceVariant,
         ),
         onPressed: () async {
-          final picked =
-              await showDatePicker(
+          final picked = await showDatePicker(
             context: context,
-            initialDate:
-                _dateFilter ??
-                    DateTime.now(),
-            firstDate:
-                DateTime(2020),
-            lastDate:
-                DateTime(2100),
+            initialDate: _dateFilter ?? DateTime.now(),
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2100),
           );
 
-          if (!mounted ||
-              picked == null) {
+          if (!mounted || picked == null) {
             return;
           }
 
@@ -947,37 +846,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Widget _buildEmptyState(
     BuildContext context,
   ) {
-    final theme =
-        Theme.of(context);
-    final colors =
-        theme.colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     final hasFilters =
-        _query.trim().isNotEmpty ||
-        _typeFilter != null ||
-        _dateFilter != null;
+        _query.trim().isNotEmpty || _typeFilter != null || _dateFilter != null;
 
     return Container(
       width: double.infinity,
-      margin:
-          const EdgeInsets.only(top: 6),
-      padding:
-          const EdgeInsets.symmetric(
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.symmetric(
         horizontal: 22,
         vertical: 34,
       ),
       decoration: BoxDecoration(
-        color: colors
-            .surfaceContainerHighest
-            .withValues(
+        color: colors.surfaceContainerHighest.withValues(
           alpha: 0.35,
         ),
-        borderRadius:
-            BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: colors
-              .outlineVariant
-              .withValues(
+          color: colors.outlineVariant.withValues(
             alpha: 0.45,
           ),
         ),
@@ -985,97 +873,64 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       child: Column(
         children: [
           Container(
-            padding:
-                const EdgeInsets.all(15),
-            decoration:
-                BoxDecoration(
-              color:
-                  kExpenseColorLocal
-                      .withValues(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: kExpenseColorLocal.withValues(
                 alpha: 0.10,
               ),
               shape: BoxShape.circle,
             ),
             child: Icon(
               hasFilters
-                  ? Icons
-                      .search_off_rounded
-                  : Icons
-                      .receipt_long_rounded,
+                  ? Icons.search_off_rounded
+                  : Icons.receipt_long_rounded,
               size: 34,
-              color:
-                  kExpenseColorLocal,
+              color: kExpenseColorLocal,
             ),
           ),
-
           const SizedBox(height: 14),
-
           Text(
-            hasFilters
-                ? 'No transactions found'
-                : 'No expenses yet',
-            style: theme
-                .textTheme
-                .titleMedium
-                ?.copyWith(
-              fontWeight:
-                  FontWeight.w800,
+            hasFilters ? 'No transactions found' : 'No expenses yet',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
             ),
           ),
-
           const SizedBox(height: 5),
-
           Text(
             hasFilters
                 ? 'Try changing your search or filters.'
                 : 'Start tracking your spending by adding your first expense.',
-            textAlign:
-                TextAlign.center,
-            style: theme
-                .textTheme
-                .bodySmall
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
               height: 1.4,
             ),
           ),
-
           if (!hasFilters) ...[
             const SizedBox(height: 18),
-
             FilledButton.icon(
-              style:
-                  FilledButton.styleFrom(
-                backgroundColor:
-                    kExpenseColorLocal,
-                foregroundColor:
-                    Colors.white,
-                padding:
-                    const EdgeInsets
-                        .symmetric(
+              style: FilledButton.styleFrom(
+                backgroundColor: kExpenseColorLocal,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
                   horizontal: 18,
                   vertical: 12,
                 ),
               ),
-              onPressed:
-                  _openAddExpense,
+              onPressed: _openAddExpense,
               icon: const Icon(
                 Icons.add_rounded,
               ),
               label: const Text(
                 'Add Expense',
                 style: TextStyle(
-                  fontWeight:
-                      FontWeight.w800,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
             ),
           ],
-
           if (hasFilters) ...[
             const SizedBox(height: 15),
-
             OutlinedButton.icon(
               onPressed: () {
                 setState(() {
@@ -1103,8 +958,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 // SUMMARY ITEM
 // ===================================================================
 
-class _SummaryItem
-    extends StatelessWidget {
+class _SummaryItem extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
@@ -1121,23 +975,18 @@ class _SummaryItem
   Widget build(
     BuildContext context,
   ) {
-    final theme =
-        Theme.of(context);
-    final colors =
-        theme.colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 5,
       ),
       child: Column(
         children: [
           Container(
-            padding:
-                const EdgeInsets.all(7),
-            decoration:
-                BoxDecoration(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
               color: color.withValues(
                 alpha: 0.10,
               ),
@@ -1149,41 +998,25 @@ class _SummaryItem
               color: color,
             ),
           ),
-
           const SizedBox(height: 7),
-
           Text(
             label,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            style: theme
-                .textTheme
-                .labelSmall
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
-              fontWeight:
-                  FontWeight.w600,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colors.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
             ),
           ),
-
           const SizedBox(height: 3),
-
           Text(
             value,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
-            textAlign:
-                TextAlign.center,
-            style: theme
-                .textTheme
-                .bodySmall
-                ?.copyWith(
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
               color: color,
-              fontWeight:
-                  FontWeight.w800,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -1196,8 +1029,7 @@ class _SummaryItem
 // TRANSACTION TILE
 // ===================================================================
 
-class _TransactionTile
-    extends StatelessWidget {
+class _TransactionTile extends StatelessWidget {
   final AppTransaction transaction;
   final VoidCallback onEdit;
 
@@ -1210,73 +1042,50 @@ class _TransactionTile
   Widget build(
     BuildContext context,
   ) {
-    final theme =
-        Theme.of(context);
-    final colors =
-        theme.colorScheme;
-    final app =
-        AppScope.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final app = AppScope.of(context);
 
-    final isIncome =
-        transaction.type ==
-            TxType.income;
+    final isIncome = transaction.type == TxType.income;
 
-    final accent = isIncome
-        ? kIncomeColorLocal
-        : kExpenseColorLocal;
+    final accent = isIncome ? kIncomeColorLocal : kExpenseColorLocal;
 
-    final icon = isIncome
-        ? Icons.arrow_downward_rounded
-        : Icons.arrow_upward_rounded;
+    final icon =
+        isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
 
     return Dismissible(
       key: ValueKey(
         transaction.id,
       ),
-
-      direction:
-          DismissDirection.endToStart,
-
-      movementDuration:
-          const Duration(
+      direction: DismissDirection.endToStart,
+      movementDuration: const Duration(
         milliseconds: 250,
       ),
-
-      resizeDuration:
-          const Duration(
+      resizeDuration: const Duration(
         milliseconds: 250,
       ),
-
       background: Container(
-        margin:
-            const EdgeInsets.only(
+        margin: const EdgeInsets.only(
           bottom: 10,
         ),
-        padding:
-            const EdgeInsets.only(
+        padding: const EdgeInsets.only(
           right: 22,
         ),
-        decoration:
-            BoxDecoration(
-          gradient:
-              const LinearGradient(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
             colors: [
               Color(0xFFE2574C),
               Color(0xFFD94338),
             ],
           ),
-          borderRadius:
-              BorderRadius.circular(19),
+          borderRadius: BorderRadius.circular(19),
         ),
-        alignment:
-            Alignment.centerRight,
+        alignment: Alignment.centerRight,
         child: const Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons
-                  .delete_outline_rounded,
+              Icons.delete_outline_rounded,
               color: Colors.white,
               size: 24,
             ),
@@ -1286,24 +1095,20 @@ class _TransactionTile
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 11,
-                fontWeight:
-                    FontWeight.w700,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
         ),
       ),
-
       confirmDismiss: (_) async {
         return await _confirmDelete(
           context,
           transaction,
         );
       },
-
       onDismissed: (_) {
-        final removed =
-            transaction;
+        final removed = transaction;
 
         app.deleteTransaction(
           transaction.id,
@@ -1317,47 +1122,38 @@ class _TransactionTile
           context,
         ).showSnackBar(
           SnackBar(
-            behavior:
-                SnackBarBehavior.floating,
-            margin:
-                const EdgeInsets.fromLTRB(
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.fromLTRB(
               16,
               0,
               16,
               90,
             ),
-            shape:
-                RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
                 14,
               ),
             ),
             content: Row(
               children: [
                 const Icon(
-                  Icons
-                      .delete_outline_rounded,
+                  Icons.delete_outline_rounded,
                   color: Colors.white,
                   size: 20,
                 ),
-
                 const SizedBox(
                   width: 10,
                 ),
-
                 Expanded(
                   child: Text(
                     'Deleted "${removed.category}"',
                     maxLines: 1,
-                    overflow:
-                        TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            action:
-                SnackBarAction(
+            action: SnackBarAction(
               label: 'UNDO',
               onPressed: () {
                 app.addTransaction(
@@ -1368,52 +1164,40 @@ class _TransactionTile
           ),
         );
       },
-
       child: Container(
-        margin:
-            const EdgeInsets.only(
+        margin: const EdgeInsets.only(
           bottom: 10,
         ),
-        decoration:
-            BoxDecoration(
+        decoration: BoxDecoration(
           color: colors.surface,
-          borderRadius:
-              BorderRadius.circular(19),
+          borderRadius: BorderRadius.circular(19),
           border: Border.all(
-            color: colors
-                .outlineVariant
-                .withValues(
+            color: colors.outlineVariant.withValues(
               alpha: 0.55,
             ),
           ),
           boxShadow: [
             BoxShadow(
-              color:
-                  Colors.black.withValues(
+              color: Colors.black.withValues(
                 alpha: 0.025,
               ),
               blurRadius: 12,
-              offset:
-                  const Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: Material(
           color: Colors.transparent,
-          borderRadius:
-              BorderRadius.circular(19),
+          borderRadius: BorderRadius.circular(19),
           child: InkWell(
-            borderRadius:
-                BorderRadius.circular(19),
+            borderRadius: BorderRadius.circular(19),
 
             // IMPORTANT:
             // Open AddTransactionScreen in edit mode.
             onTap: onEdit,
 
             child: Padding(
-              padding:
-                  const EdgeInsets
-                      .symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 13,
                 vertical: 12,
               ),
@@ -1426,14 +1210,11 @@ class _TransactionTile
                   Container(
                     width: 48,
                     height: 48,
-                    decoration:
-                        BoxDecoration(
-                      color: accent
-                          .withValues(
+                    decoration: BoxDecoration(
+                      color: accent.withValues(
                         alpha: 0.11,
                       ),
-                      borderRadius:
-                          BorderRadius.circular(
+                      borderRadius: BorderRadius.circular(
                         15,
                       ),
                     ),
@@ -1454,126 +1235,78 @@ class _TransactionTile
 
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment
-                              .start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          transaction
-                              .category,
+                          transaction.category,
                           maxLines: 1,
-                          overflow:
-                              TextOverflow
-                                  .ellipsis,
-                          style: theme
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontWeight:
-                                FontWeight
-                                    .w800,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-
                         const SizedBox(
                           height: 4,
                         ),
-
                         Row(
                           children: [
                             Icon(
-                              Icons
-                                  .calendar_today_rounded,
+                              Icons.calendar_today_rounded,
                               size: 11,
-                              color: colors
-                                  .onSurfaceVariant,
+                              color: colors.onSurfaceVariant,
                             ),
-
                             const SizedBox(
                               width: 4,
                             ),
-
                             Flexible(
                               child: Text(
                                 formatDate(
-                                  transaction
-                                      .date,
+                                  transaction.date,
                                 ),
                                 maxLines: 1,
-                                overflow:
-                                    TextOverflow
-                                        .ellipsis,
-                                style: theme
-                                    .textTheme
-                                    .labelSmall
-                                    ?.copyWith(
-                                  color: colors
-                                      .onSurfaceVariant,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
                                 ),
                               ),
                             ),
-
                             const SizedBox(
                               width: 7,
                             ),
-
                             Container(
                               width: 3,
                               height: 3,
-                              decoration:
-                                  BoxDecoration(
-                                color: colors
-                                    .onSurfaceVariant,
-                                shape: BoxShape
-                                    .circle,
+                              decoration: BoxDecoration(
+                                color: colors.onSurfaceVariant,
+                                shape: BoxShape.circle,
                               ),
                             ),
-
                             const SizedBox(
                               width: 7,
                             ),
-
                             Flexible(
                               child: Text(
-                                transaction
-                                    .paymentMethod,
+                                transaction.paymentMethod,
                                 maxLines: 1,
-                                overflow:
-                                    TextOverflow
-                                        .ellipsis,
-                                style: theme
-                                    .textTheme
-                                    .labelSmall
-                                    ?.copyWith(
-                                  color: colors
-                                      .onSurfaceVariant,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colors.onSurfaceVariant,
                                 ),
                               ),
                             ),
                           ],
                         ),
-
-                        if (transaction
-                            .note
-                            .isNotEmpty) ...[
+                        if (transaction.note.isNotEmpty) ...[
                           const SizedBox(
                             height: 4,
                           ),
                           Text(
                             transaction.note,
                             maxLines: 1,
-                            overflow:
-                                TextOverflow
-                                    .ellipsis,
-                            style: theme
-                                .textTheme
-                                .labelSmall
-                                ?.copyWith(
-                              color: colors
-                                  .onSurfaceVariant,
-                              fontStyle:
-                                  FontStyle
-                                      .italic,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colors.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
                             ),
                           ),
                         ],
@@ -1590,9 +1323,7 @@ class _TransactionTile
                   // =================================================
 
                   Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment
-                            .end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         '${isIncome ? '+' : '-'}${formatMoney(
@@ -1600,29 +1331,19 @@ class _TransactionTile
                           app.currency,
                         )}',
                         maxLines: 1,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style: theme
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: accent,
-                          fontWeight:
-                              FontWeight.w900,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
-
                       const SizedBox(
                         height: 4,
                       ),
-
                       Icon(
-                        Icons
-                            .chevron_right_rounded,
+                        Icons.chevron_right_rounded,
                         size: 17,
-                        color: colors
-                            .onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -1643,77 +1364,56 @@ class _TransactionTile
     BuildContext context,
     AppTransaction transaction,
   ) async {
-    final theme =
-        Theme.of(context);
-    final colors =
-        theme.colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
-    final result =
-        await showDialog<bool>(
+    final result = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          shape:
-              RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
               22,
             ),
           ),
-
           title: Row(
             children: [
               Container(
-                padding:
-                    const EdgeInsets.all(
+                padding: const EdgeInsets.all(
                   9,
                 ),
-                decoration:
-                    BoxDecoration(
-                  color:
-                      kExpenseColorLocal
-                          .withValues(
+                decoration: BoxDecoration(
+                  color: kExpenseColorLocal.withValues(
                     alpha: 0.10,
                   ),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
-                  Icons
-                      .delete_outline_rounded,
-                  color:
-                      kExpenseColorLocal,
+                  Icons.delete_outline_rounded,
+                  color: kExpenseColorLocal,
                   size: 21,
                 ),
               ),
-
               const SizedBox(
                 width: 11,
               ),
-
               const Expanded(
                 child: Text(
                   'Delete transaction?',
                   style: TextStyle(
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
             ],
           ),
-
           content: Text(
             'This will remove "${transaction.category}" from your transactions.',
-            style: theme
-                .textTheme
-                .bodyMedium
-                ?.copyWith(
-              color:
-                  colors.onSurfaceVariant,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
               height: 1.4,
             ),
           ),
-
           actions: [
             TextButton(
               onPressed: () {
@@ -1722,15 +1422,11 @@ class _TransactionTile
                   false,
                 );
               },
-              child:
-                  const Text('Cancel'),
+              child: const Text('Cancel'),
             ),
-
             FilledButton(
-              style:
-                  FilledButton.styleFrom(
-                backgroundColor:
-                    kExpenseColorLocal,
+              style: FilledButton.styleFrom(
+                backgroundColor: kExpenseColorLocal,
               ),
               onPressed: () {
                 Navigator.pop(
@@ -1741,8 +1437,7 @@ class _TransactionTile
               child: const Text(
                 'Delete',
                 style: TextStyle(
-                  fontWeight:
-                      FontWeight.w700,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -1759,8 +1454,6 @@ class _TransactionTile
 // LOCAL COLORS
 // ===================================================================
 
-const kIncomeColorLocal =
-    Color(0xFF2FB380);
+const kIncomeColorLocal = Color(0xFF2FB380);
 
-const kExpenseColorLocal =
-    Color(0xFFE2574C);
+const kExpenseColorLocal = Color(0xFFE2574C);

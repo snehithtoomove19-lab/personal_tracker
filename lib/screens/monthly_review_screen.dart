@@ -68,9 +68,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
 
     final topMood = _getTopMood(moodSummary);
 
-    final topMoodOption = topMood == null
-        ? null
-        : moodOptionFor(topMood.key);
+    final topMoodOption = topMood == null ? null : moodOptionFor(topMood.key);
 
     final totalSpent = _toDouble(
       review['totalSpent'],
@@ -113,9 +111,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 delegate: SliverChildListDelegate(
                   [
                     _buildTopBar(context),
-
                     const SizedBox(height: 18),
-
                     _buildHero(
                       context,
                       totalSpent,
@@ -124,21 +120,15 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                       savingsPositive,
                       app.currency,
                     ),
-
                     const SizedBox(height: 18),
-
                     _buildMonthSelector(context),
-
                     const SizedBox(height: 26),
-
                     _buildSectionTitle(
                       context,
                       'Money snapshot',
                       Icons.account_balance_wallet_rounded,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildMoneyGrid(
                       context,
                       totalSpent,
@@ -147,43 +137,33 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                       savingsPositive,
                       app.currency,
                     ),
-
                     const SizedBox(height: 28),
-
                     _buildSectionTitle(
                       context,
                       'Life at a glance',
                       Icons.auto_awesome_rounded,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildActivityCard(
                       context,
                       tasksCompleted,
                       goalsAchieved,
                       productiveDay,
                     ),
-
                     const SizedBox(height: 28),
-
                     _buildSectionTitle(
                       context,
                       'Mood of the month',
                       Icons.mood_rounded,
                     ),
-
                     const SizedBox(height: 12),
-
                     _buildMoodCard(
                       context,
                       topMood,
                       topMoodOption,
                       moodSummary,
                     ),
-
                     const SizedBox(height: 28),
-
                     _buildInsightCard(
                       context,
                       totalSpent,
@@ -222,8 +202,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                colors.primary.withValues(alpha: 0.16),
-                colors.secondary.withValues(alpha: 0.10),
+                colors.primary.withOpacity(0.16),
+                colors.secondary.withOpacity(0.10),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
@@ -234,9 +214,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             size: 24,
           ),
         ),
-
         const SizedBox(width: 13),
-
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,7 +269,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(alpha: 0.22),
+            color: colors.primary.withOpacity(0.22),
             blurRadius: 26,
             offset: const Offset(0, 11),
           ),
@@ -306,7 +284,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.16),
+              color: Colors.white.withOpacity(0.16),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -329,9 +307,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 18),
-
           Text(
             savingsPositive
                 ? 'You finished the month in the green.'
@@ -343,21 +319,17 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               height: 1.12,
             ),
           ),
-
           const SizedBox(height: 9),
-
           Text(
             savingsPositive
                 ? 'Great work keeping your finances under control.'
                 : 'Review your expenses and find opportunities to save.',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.82),
+              color: Colors.white.withOpacity(0.82),
               height: 1.45,
             ),
           ),
-
           const SizedBox(height: 22),
-
           Row(
             children: [
               Expanded(
@@ -369,9 +341,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   ),
                 ),
               ),
-
               _heroDivider(),
-
               Expanded(
                 child: _HeroMetric(
                   label: 'Spent',
@@ -381,9 +351,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                   ),
                 ),
               ),
-
               _heroDivider(),
-
               Expanded(
                 child: _HeroMetric(
                   label: savingsPositive ? 'Saved' : 'Deficit',
@@ -404,7 +372,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     return Container(
       width: 1,
       height: 38,
-      color: Colors.white.withValues(alpha: 0.20),
+      color: Colors.white.withOpacity(0.20),
     );
   }
 
@@ -424,7 +392,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
         ),
         borderRadius: BorderRadius.circular(19),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.35),
+          color: colors.outlineVariant.withOpacity(0.35),
         ),
       ),
       child: Row(
@@ -436,7 +404,6 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               Icons.chevron_left_rounded,
             ),
           ),
-
           Expanded(
             child: Column(
               children: [
@@ -449,9 +416,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _isCurrentMonth
-                      ? 'Current month'
-                      : 'Monthly overview',
+                  _isCurrentMonth ? 'Current month' : 'Monthly overview',
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: colors.onSurfaceVariant,
                   ),
@@ -459,11 +424,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               ],
             ),
           ),
-
           IconButton(
-            tooltip: _isCurrentMonth
-                ? 'Current month'
-                : 'Next month',
+            tooltip: _isCurrentMonth ? 'Current month' : 'Next month',
             onPressed: _isCurrentMonth ? null : _nextMonth,
             icon: const Icon(
               Icons.chevron_right_rounded,
@@ -492,7 +454,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           width: 34,
           height: 34,
           decoration: BoxDecoration(
-            color: colors.primary.withValues(alpha: 0.10),
+            color: colors.primary.withOpacity(0.10),
             borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(
@@ -501,9 +463,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             color: colors.primary,
           ),
         ),
-
         const SizedBox(width: 9),
-
         Text(
           title,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -527,8 +487,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
     bool savingsPositive,
     String currency,
   ) {
-    final balancePercentage =
-        income == 0 ? null : (savings / income) * 100;
+    final balancePercentage = income == 0 ? null : (savings / income) * 100;
 
     return GridView.count(
       crossAxisCount: 2,
@@ -554,7 +513,6 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           description: 'Expenses this month',
           iconColor: const Color(0xFFE2574C),
         ),
-
         _MetricCard(
           icon: Icons.arrow_downward_rounded,
           title: 'Total Income',
@@ -565,29 +523,21 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           description: 'Income this month',
           iconColor: const Color(0xFF2FB380),
         ),
-
         _MetricCard(
-          icon: savingsPositive
-              ? Icons.savings_rounded
-              : Icons.warning_rounded,
+          icon: savingsPositive ? Icons.savings_rounded : Icons.warning_rounded,
           title: savingsPositive ? 'Saved' : 'Deficit',
           value: formatMoney(
             savings.abs(),
             currency,
           ),
-          description: savingsPositive
-              ? 'Money remaining'
-              : 'Over income',
-          iconColor: savingsPositive
-              ? Colors.teal
-              : Colors.red,
+          description: savingsPositive ? 'Money remaining' : 'Over income',
+          iconColor: savingsPositive ? Colors.teal : Colors.red,
         ),
-
         _MetricCard(
           icon: Icons.percent_rounded,
           title: 'Balance',
           value: balancePercentage == null
-              ? '—'
+              ? 'â€”'
               : '${balancePercentage.clamp(-999.0, 999.0).toStringAsFixed(0)}%',
           description: 'Income retained',
           iconColor: Colors.deepPurple,
@@ -618,9 +568,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             value: '$tasksCompleted',
             subtitle: 'Finished this month',
           ),
-
           _activityDivider(context),
-
           _ActivityRow(
             icon: Icons.flag_rounded,
             color: Colors.deepPurple,
@@ -628,16 +576,12 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             value: '$goalsAchieved',
             subtitle: 'Milestones reached',
           ),
-
           _activityDivider(context),
-
           _ActivityRow(
             icon: Icons.bolt_rounded,
             color: Colors.orange,
             title: 'Most productive day',
-            value: productiveDay != null
-                ? productiveDay.toString()
-                : '—',
+            value: productiveDay != null ? productiveDay.toString() : 'â€”',
             subtitle: productiveDay != null
                 ? '${_monthName(_month)} productivity'
                 : 'No activity recorded',
@@ -688,9 +632,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 icon: Icons.sentiment_neutral_rounded,
                 color: colors.onSurfaceVariant,
               ),
-
               const SizedBox(width: 14),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -701,9 +643,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       'Log your mood throughout the month to see your emotional trend here.',
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -738,13 +678,13 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            moodColor.withValues(alpha: 0.13),
+            moodColor.withOpacity(0.13),
             colors.surface,
           ],
         ),
         borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: moodColor.withValues(alpha: 0.20),
+          color: moodColor.withOpacity(0.20),
         ),
       ),
       child: Row(
@@ -754,9 +694,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             color: moodColor,
             large: true,
           ),
-
           const SizedBox(width: 15),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -768,9 +706,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   topMoodOption.label.toString(),
                   maxLines: 1,
@@ -779,11 +715,9 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
-                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} • $percentage% of logged moods',
+                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} â€¢ $percentage% of logged moods',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -793,9 +727,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               ],
             ),
           ),
-
           const SizedBox(width: 8),
-
           Icon(
             Icons.trending_up_rounded,
             color: moodColor,
@@ -887,9 +819,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
               size: 22,
             ),
           ),
-
           const SizedBox(width: 13),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -900,9 +830,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-
                 const SizedBox(height: 5),
-
                 Text(
                   message,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -910,10 +838,8 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                     height: 1.45,
                   ),
                 ),
-
                 if (topMoodOption != null) ...[
                   const SizedBox(height: 10),
-
                   Row(
                     children: [
                       Icon(
@@ -921,9 +847,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                         size: 15,
                         color: topMoodOption.color,
                       ),
-
                       const SizedBox(width: 5),
-
                       Expanded(
                         child: Text(
                           'Mood trend: ${topMoodOption.label}',
@@ -1062,9 +986,7 @@ class _HeroMetric extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-
           const SizedBox(height: 3),
-
           Text(
             value,
             maxLines: 1,
@@ -1143,9 +1065,7 @@ class _MetricCard extends StatelessWidget {
               color: iconColor,
             ),
           ),
-
           const Spacer(),
-
           Text(
             title,
             maxLines: 1,
@@ -1155,9 +1075,7 @@ class _MetricCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-
           const SizedBox(height: 2),
-
           Text(
             value,
             maxLines: 1,
@@ -1167,9 +1085,7 @@ class _MetricCard extends StatelessWidget {
               letterSpacing: -0.3,
             ),
           ),
-
           const SizedBox(height: 2),
-
           Text(
             description,
             maxLines: 1,
@@ -1225,9 +1141,7 @@ class _ActivityRow extends StatelessWidget {
             size: 21,
           ),
         ),
-
         const SizedBox(width: 13),
-
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1240,9 +1154,7 @@ class _ActivityRow extends StatelessWidget {
                   fontWeight: FontWeight.w800,
                 ),
               ),
-
               const SizedBox(height: 2),
-
               Text(
                 subtitle,
                 maxLines: 1,
@@ -1254,9 +1166,7 @@ class _ActivityRow extends StatelessWidget {
             ],
           ),
         ),
-
         const SizedBox(width: 8),
-
         Flexible(
           child: Text(
             value,

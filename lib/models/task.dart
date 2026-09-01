@@ -1,7 +1,16 @@
 enum TaskPriority { low, medium, high }
+
 enum TaskRepeat { none, daily, weekly, monthly }
 
-const List<String> kTaskCategories = ['Personal', 'Work', 'Health', 'Study', 'Shopping', 'Home', 'Other'];
+const List<String> kTaskCategories = [
+  'Personal',
+  'Work',
+  'Health',
+  'Study',
+  'Shopping',
+  'Home',
+  'Other'
+];
 
 /// A small checklist item within a task (e.g. "Buy flour" inside a
 /// "Bake a cake" task).
@@ -12,7 +21,8 @@ class SubTask {
 
   SubTask({required this.id, required this.title, this.completed = false});
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'completed': completed};
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'title': title, 'completed': completed};
 
   factory SubTask.fromJson(Map<String, dynamic> json) => SubTask(
         id: json['id'],
@@ -72,7 +82,8 @@ class AppTask {
         id: json['id'],
         title: json['title'],
         description: json['description'] ?? '',
-        dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
+        dueDate:
+            json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
         dueTimeMinutes: json['dueTimeMinutes'],
         completed: json['completed'] ?? false,
         createdAt: DateTime.parse(json['createdAt']),

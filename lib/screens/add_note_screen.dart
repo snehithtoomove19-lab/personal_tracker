@@ -61,7 +61,8 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             Expanded(
               child: TextField(
                 controller: _contentCtrl,
-                decoration: const InputDecoration(labelText: 'Note', alignLabelWithHint: true),
+                decoration: const InputDecoration(
+                    labelText: 'Note', alignLabelWithHint: true),
                 maxLines: null,
                 expands: true,
                 textAlignVertical: TextAlignVertical.top,
@@ -72,14 +73,17 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () {
-                  if (_titleCtrl.text.trim().isEmpty && _contentCtrl.text.trim().isEmpty) {
+                  if (_titleCtrl.text.trim().isEmpty &&
+                      _contentCtrl.text.trim().isEmpty) {
                     Navigator.pop(context);
                     return;
                   }
                   final now = DateTime.now();
                   if (isEditing) {
                     final updated = widget.existing!
-                      ..title = _titleCtrl.text.trim().isEmpty ? 'Untitled' : _titleCtrl.text.trim()
+                      ..title = _titleCtrl.text.trim().isEmpty
+                          ? 'Untitled'
+                          : _titleCtrl.text.trim()
                       ..content = _contentCtrl.text.trim()
                       ..pinned = _pinned
                       ..updatedAt = now;
@@ -87,7 +91,9 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   } else {
                     app.addNote(AppNote(
                       id: app.newId(),
-                      title: _titleCtrl.text.trim().isEmpty ? 'Untitled' : _titleCtrl.text.trim(),
+                      title: _titleCtrl.text.trim().isEmpty
+                          ? 'Untitled'
+                          : _titleCtrl.text.trim(),
                       content: _contentCtrl.text.trim(),
                       pinned: _pinned,
                       createdAt: now,

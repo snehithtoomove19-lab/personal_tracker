@@ -18,7 +18,8 @@ class GoalsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Goals')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AddGoalScreen())),
+        onPressed: () => Navigator.push(
+            context, MaterialPageRoute(builder: (_) => const AddGoalScreen())),
         child: const Icon(Icons.add),
       ),
       body: ListView(
@@ -27,13 +28,16 @@ class GoalsScreen extends StatelessWidget {
           if (active.isEmpty && completed.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 60),
-              child: Center(child: Text('No goals yet — tap + to add one', style: TextStyle(color: Colors.grey.shade600))),
+              child: Center(
+                  child: Text('No goals yet â€” tap + to add one',
+                      style: TextStyle(color: Colors.grey.shade600))),
             ),
           ...active.map((g) => _GoalCard(goal: g)),
           if (completed.isNotEmpty) ...[
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('Completed', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: Text('Completed',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
             ),
             ...completed.map((g) => _GoalCard(goal: g)),
           ],
@@ -54,7 +58,8 @@ class _GoalCard extends StatelessWidget {
       key: ValueKey(goal.id),
       direction: DismissDirection.endToStart,
       background: Container(
-        decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+            color: Colors.red, borderRadius: BorderRadius.circular(16)),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         margin: const EdgeInsets.only(bottom: 12),
@@ -66,62 +71,74 @@ class _GoalCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Deleted "${removed.title}"'),
-            action: SnackBarAction(label: 'Undo', onPressed: () => app.addGoal(removed)),
+            action: SnackBarAction(
+                label: 'Undo', onPressed: () => app.addGoal(removed)),
           ),
         );
       },
       child: Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => AddGoalScreen(existing: goal))),
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(goal.title,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: goal.completed ? TextDecoration.lineThrough : null)),
-                  ),
-                  if (goal.completed) const Icon(Icons.check_circle, color: Colors.green),
-                ],
-              ),
-              if (goal.targetDate != null) ...[
-                const SizedBox(height: 4),
-                Builder(builder: (context) {
-                  final days = goal.targetDate!.difference(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)).inDays;
-                  final daysLabel = goal.completed
-                      ? ''
-                      : days < 0
-                          ? ' · ${-days} day${-days == 1 ? '' : 's'} overdue'
-                          : days == 0
-                              ? ' · due today'
-                              : ' · $days day${days == 1 ? '' : 's'} left';
-                  return Text(
-                    'Target: ${formatDate(goal.targetDate!)}$daysLabel',
-                    style: TextStyle(
-                      color: (!goal.completed && days < 0) ? Colors.red : Colors.grey.shade600,
-                      fontSize: 12,
+        margin: const EdgeInsets.only(bottom: 12),
+        child: InkWell(
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) => AddGoalScreen(existing: goal))),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(goal.title,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: goal.completed
+                                  ? TextDecoration.lineThrough
+                                  : null)),
                     ),
-                  );
-                }),
+                    if (goal.completed)
+                      const Icon(Icons.check_circle, color: Colors.green),
+                  ],
+                ),
+                if (goal.targetDate != null) ...[
+                  const SizedBox(height: 4),
+                  Builder(builder: (context) {
+                    final days = goal.targetDate!
+                        .difference(DateTime(DateTime.now().year,
+                            DateTime.now().month, DateTime.now().day))
+                        .inDays;
+                    final daysLabel = goal.completed
+                        ? ''
+                        : days < 0
+                            ? ' Â· ${-days} day${-days == 1 ? '' : 's'} overdue'
+                            : days == 0
+                                ? ' Â· due today'
+                                : ' Â· $days day${days == 1 ? '' : 's'} left';
+                    return Text(
+                      'Target: ${formatDate(goal.targetDate!)}$daysLabel',
+                      style: TextStyle(
+                        color: (!goal.completed && days < 0)
+                            ? Colors.red
+                            : Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    );
+                  }),
+                ],
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: LinearProgressIndicator(
+                      value: goal.progress / 100, minHeight: 10),
+                ),
+                const SizedBox(height: 6),
+                Text('${goal.progress}%',
+                    style: const TextStyle(fontWeight: FontWeight.w600)),
               ],
-              const SizedBox(height: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(value: goal.progress / 100, minHeight: 10),
-              ),
-              const SizedBox(height: 6),
-              Text('${goal.progress}%', style: const TextStyle(fontWeight: FontWeight.w600)),
-            ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

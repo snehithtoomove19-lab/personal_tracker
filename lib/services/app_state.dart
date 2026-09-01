@@ -16,11 +16,21 @@ import 'storage_service.dart';
 const _uuid = Uuid();
 
 const List<String> kDefaultExpenseCategories = [
-  'Food', 'Transport', 'Shopping', 'Bills', 'Health',
-  'Entertainment', 'Education', 'Other',
+  'Food',
+  'Transport',
+  'Shopping',
+  'Bills',
+  'Health',
+  'Entertainment',
+  'Education',
+  'Other',
 ];
 const List<String> kDefaultIncomeCategories = [
-  'Salary', 'Allowance', 'Gift', 'Freelance', 'Other',
+  'Salary',
+  'Allowance',
+  'Gift',
+  'Freelance',
+  'Other',
 ];
 
 const List<String> kMotivationalQuotes = [
@@ -31,7 +41,7 @@ const List<String> kMotivationalQuotes = [
   "Your future self will thank you for today's discipline.",
   "Consistency beats intensity.",
   "Every entry you log is a step toward clarity.",
-  "Mood, money, and tasks — small logs, big awareness.",
+  "Mood, money, and tasks â€” small logs, big awareness.",
 ];
 
 class AppState extends ChangeNotifier {
@@ -46,7 +56,7 @@ class AppState extends ChangeNotifier {
 
   String userName = 'Friend';
   double savingsGoal = 0;
-  String currency = '₹';
+  String currency = 'â‚¹';
   bool darkMode = false;
   bool pinEnabled = false;
   String? pin;
@@ -62,7 +72,7 @@ class AppState extends ChangeNotifier {
   bool get loaded => _loaded;
 
   /// Marks the app as loaded without going through the normal [load]
-  /// sequence — used as a fallback if loading saved data throws, so the UI
+  /// sequence â€” used as a fallback if loading saved data throws, so the UI
   /// can still open (with whatever defaults are already set) instead of
   /// being stuck on a loading spinner forever.
   void forceMarkLoaded() {
@@ -70,8 +80,10 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> get expenseCategories => [...kDefaultExpenseCategories, ...customExpenseCategories];
-  List<String> get incomeCategories => [...kDefaultIncomeCategories, ...customIncomeCategories];
+  List<String> get expenseCategories =>
+      [...kDefaultExpenseCategories, ...customExpenseCategories];
+  List<String> get incomeCategories =>
+      [...kDefaultIncomeCategories, ...customIncomeCategories];
 
   Future<void> load() async {
     final s = StorageService.instance;
@@ -82,7 +94,7 @@ class AppState extends ChangeNotifier {
       } catch (e, st) {
         // A single corrupted saved record should never permanently block
         // the app from opening. Log it and move on with whatever loaded
-        // successfully so far — this section just falls back to empty/
+        // successfully so far â€” this section just falls back to empty/
         // default rather than taking the whole app down.
         debugPrint('Failed to load $label: $e\n$st');
       }
@@ -155,7 +167,7 @@ class AppState extends ChangeNotifier {
 
     await safely('settings', () async {
       userName = await s.readString(StoreKeys.userName) ?? 'Friend';
-      currency = await s.readString(StoreKeys.currency) ?? '₹';
+      currency = await s.readString(StoreKeys.currency) ?? 'â‚¹';
       darkMode = await s.readBool(StoreKeys.darkMode) ?? false;
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
@@ -206,7 +218,8 @@ class AppState extends ChangeNotifier {
         ..addAll(loaded);
     });
 
-    await safely('recurring transactions', () => _processRecurringTransactions());
+    await safely(
+        'recurring transactions', () => _processRecurringTransactions());
     await safely('streak', () => _updateStreak());
 
     _loaded = true;
@@ -254,8 +267,10 @@ class AppState extends ChangeNotifier {
     return hasTx || hasMood;
   }
 
-  String _dateKey(DateTime d) => DateTime(d.year, d.month, d.day).toIso8601String();
-  bool _isSameDay(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
+  String _dateKey(DateTime d) =>
+      DateTime(d.year, d.month, d.day).toIso8601String();
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   // ---------------- Transactions ----------------
   Future<void> addTransaction(AppTransaction t) async {
@@ -278,15 +293,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveTransactions() =>
-      StorageService.instance.writeList(StoreKeys.transactions, transactions.map((e) => e.toJson()).toList());
+  Future<void> _saveTransactions() => StorageService.instance.writeList(
+      StoreKeys.transactions, transactions.map((e) => e.toJson()).toList());
 
   /// On each app open, catches up any recurring transactions (e.g. monthly
   /// rent, weekly allowance) that are due, by finding the latest entry in
   /// each recurring "series" and adding new occurrences up to today. Capped
   /// per series so a long-unused app doesn't flood the list.
   Future<void> _processRecurringTransactions() async {
-    final series = transactions.where((t) => t.repeat != TxRepeat.none).toList();
+    final series =
+        transactions.where((t) => t.repeat != TxRepeat.none).toList();
     if (series.isEmpty) return;
 
     final seen = <String>{};
@@ -294,19 +310,22 @@ class AppState extends ChangeNotifier {
     final today = DateTime.now();
 
     for (final t in series) {
-      final key = '${t.type.name}|${t.category}|${t.amount}|${t.paymentMethod}|${t.repeat.name}';
+      final key =
+          '${t.type.name}|${t.category}|${t.amount}|${t.paymentMethod}|${t.repeat.name}';
       if (seen.contains(key)) continue;
       seen.add(key);
 
       final sameSeries = series.where((e) =>
-          '${e.type.name}|${e.category}|${e.amount}|${e.paymentMethod}|${e.repeat.name}' == key);
+          '${e.type.name}|${e.category}|${e.amount}|${e.paymentMethod}|${e.repeat.name}' ==
+          key);
       var latest = sameSeries.reduce((a, b) => a.date.isAfter(b.date) ? a : b);
 
       var guard = 0;
       while (guard < 24) {
         final next = latest.repeat == TxRepeat.weekly
             ? latest.date.add(const Duration(days: 7))
-            : DateTime(latest.date.year, latest.date.month + 1, latest.date.day);
+            : DateTime(
+                latest.date.year, latest.date.month + 1, latest.date.day);
         if (next.isAfter(today)) break;
         final created = AppTransaction(
           id: newId(),
@@ -338,15 +357,21 @@ class AppState extends ChangeNotifier {
     return bal;
   }
 
-  double get todayExpense => _sumExpense(transactions.where((t) => _isSameDay(t.date, DateTime.now())));
+  double get todayExpense => _sumExpense(
+      transactions.where((t) => _isSameDay(t.date, DateTime.now())));
   double get monthExpense {
     final now = DateTime.now();
-    return _sumExpense(transactions.where((t) => t.date.year == now.year && t.date.month == now.month));
+    return _sumExpense(transactions
+        .where((t) => t.date.year == now.year && t.date.month == now.month));
   }
+
   double get monthIncome {
     final now = DateTime.now();
     return transactions
-        .where((t) => t.type == TxType.income && t.date.year == now.year && t.date.month == now.month)
+        .where((t) =>
+            t.type == TxType.income &&
+            t.date.year == now.year &&
+            t.date.month == now.month)
         .fold(0.0, (p, e) => p + e.amount);
   }
 
@@ -363,7 +388,8 @@ class AppState extends ChangeNotifier {
     for (final t in transactions) {
       final key = '${t.date.year}-${t.date.month}';
       if (monthlyTotals.containsKey(key)) {
-        monthlyTotals[key] = monthlyTotals[key]! + (t.type == TxType.income ? t.amount : -t.amount);
+        monthlyTotals[key] = monthlyTotals[key]! +
+            (t.type == TxType.income ? t.amount : -t.amount);
       }
     }
     final monthsWithData = monthlyTotals.values.where((v) => v != 0).toList();
@@ -384,14 +410,17 @@ class AppState extends ChangeNotifier {
     return (remaining / rate).ceil();
   }
 
-  double _sumExpense(Iterable<AppTransaction> items) =>
-      items.where((t) => t.type == TxType.expense).fold(0.0, (p, e) => p + e.amount);
+  double _sumExpense(Iterable<AppTransaction> items) => items
+      .where((t) => t.type == TxType.expense)
+      .fold(0.0, (p, e) => p + e.amount);
 
   Map<String, double> categorySpending({DateTime? month}) {
     final m = month ?? DateTime.now();
     final map = <String, double>{};
     for (final t in transactions.where((t) =>
-        t.type == TxType.expense && t.date.year == m.year && t.date.month == m.month)) {
+        t.type == TxType.expense &&
+        t.date.year == m.year &&
+        t.date.month == m.month)) {
       map[t.category] = (map[t.category] ?? 0) + t.amount;
     }
     return map;
@@ -431,7 +460,9 @@ class AppState extends ChangeNotifier {
     final m = month ?? DateTime.now();
     final map = <String, double>{};
     for (final t in transactions.where((t) =>
-        t.type == TxType.expense && t.date.year == m.year && t.date.month == m.month)) {
+        t.type == TxType.expense &&
+        t.date.year == m.year &&
+        t.date.month == m.month)) {
       map[t.paymentMethod] = (map[t.paymentMethod] ?? 0) + t.amount;
     }
     return map;
@@ -444,7 +475,8 @@ class AppState extends ChangeNotifier {
     } else {
       categoryBudgets[category] = amount;
     }
-    await StorageService.instance.writeString(StoreKeys.budgets, jsonEncode(categoryBudgets));
+    await StorageService.instance
+        .writeString(StoreKeys.budgets, jsonEncode(categoryBudgets));
     notifyListeners();
   }
 
@@ -465,7 +497,8 @@ class AppState extends ChangeNotifier {
   double get lastMonthExpense {
     final now = DateTime.now();
     final lastMonth = DateTime(now.year, now.month - 1);
-    return _sumExpense(transactions.where((t) => t.date.year == lastMonth.year && t.date.month == lastMonth.month));
+    return _sumExpense(transactions.where((t) =>
+        t.date.year == lastMonth.year && t.date.month == lastMonth.month));
   }
 
   /// Percentage change of this month's spending vs last month's. Null if
@@ -495,8 +528,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveMoods() =>
-      StorageService.instance.writeList(StoreKeys.moods, moods.map((e) => e.toJson()).toList());
+  Future<void> _saveMoods() => StorageService.instance
+      .writeList(StoreKeys.moods, moods.map((e) => e.toJson()).toList());
 
   MoodEntry? moodForDay(DateTime day) {
     try {
@@ -517,7 +550,8 @@ class AppState extends ChangeNotifier {
   Future<void> setBirthday(DateTime? date) async {
     birthday = date;
     if (date != null) {
-      await StorageService.instance.writeString(StoreKeys.birthday, date.toIso8601String());
+      await StorageService.instance
+          .writeString(StoreKeys.birthday, date.toIso8601String());
     }
     notifyListeners();
   }
@@ -553,8 +587,8 @@ class AppState extends ChangeNotifier {
     if (birthday == null) return null;
     final now = DateTime.now();
     int years = now.year - birthday!.year;
-    final hadBirthdayThisYear =
-        (now.month > birthday!.month) || (now.month == birthday!.month && now.day >= birthday!.day);
+    final hadBirthdayThisYear = (now.month > birthday!.month) ||
+        (now.month == birthday!.month && now.day >= birthday!.day);
     if (!hadBirthdayThisYear) years--;
     return years;
   }
@@ -583,10 +617,11 @@ class AppState extends ChangeNotifier {
       ..sort((a, b) => a.name.compareTo(b.name));
   }
 
-  bool get hasBirthdayToday => isMyBirthdayToday || todayBirthdayContacts.isNotEmpty;
+  bool get hasBirthdayToday =>
+      isMyBirthdayToday || todayBirthdayContacts.isNotEmpty;
 
   /// A quick "what needs your attention" summary computed entirely from
-  /// data already on-device — shown once per app open as a lightweight
+  /// data already on-device â€” shown once per app open as a lightweight
   /// substitute for push notifications (which need native platform setup).
   LaunchDigest get launchDigest => LaunchDigest(
         overdueTaskCount: overdueTasks.length,
@@ -596,7 +631,7 @@ class AppState extends ChangeNotifier {
         overBudgetCategoryCount: overBudgetCategories.length,
       );
 
-  /// Days so far this month (up to yesterday) that have no mood entry —
+  /// Days so far this month (up to yesterday) that have no mood entry â€”
   /// used to nudge the person to keep every day logged.
   List<DateTime> get missedMoodDaysThisMonth {
     final now = DateTime.now();
@@ -611,7 +646,8 @@ class AppState extends ChangeNotifier {
   Map<String, int> monthMoodSummary({DateTime? month}) {
     final m = month ?? DateTime.now();
     final map = <String, int>{};
-    for (final mo in moods.where((e) => e.date.year == m.year && e.date.month == m.month)) {
+    for (final mo in moods
+        .where((e) => e.date.year == m.year && e.date.month == m.month)) {
       map[mo.mood] = (map[mo.mood] ?? 0) + 1;
     }
     return map;
@@ -641,7 +677,8 @@ class AppState extends ChangeNotifier {
       // If a repeating task was just completed, spin up its next occurrence
       // automatically (e.g. "Water plants" daily, "Pay rent" monthly).
       if (justCompleted && task.repeat != TaskRepeat.none) {
-        final nextDue = _nextDueDate(task.dueDate ?? DateTime.now(), task.repeat);
+        final nextDue =
+            _nextDueDate(task.dueDate ?? DateTime.now(), task.repeat);
         final nextTask = AppTask(
           id: newId(),
           title: task.title,
@@ -681,19 +718,23 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveTasks() =>
-      StorageService.instance.writeList(StoreKeys.tasks, tasks.map((e) => e.toJson()).toList());
+  Future<void> _saveTasks() => StorageService.instance
+      .writeList(StoreKeys.tasks, tasks.map((e) => e.toJson()).toList());
 
   List<AppTask> get todayTasks {
     final now = DateTime.now();
-    return tasks.where((t) => !t.completed && t.dueDate != null && _isSameDay(t.dueDate!, now)).toList();
+    return tasks
+        .where((t) =>
+            !t.completed && t.dueDate != null && _isSameDay(t.dueDate!, now))
+        .toList();
   }
 
   List<AppTask> get overdueTasks {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     return tasks
-        .where((t) => !t.completed && t.dueDate != null && t.dueDate!.isBefore(today))
+        .where((t) =>
+            !t.completed && t.dueDate != null && t.dueDate!.isBefore(today))
         .toList();
   }
 
@@ -717,8 +758,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveNotes() =>
-      StorageService.instance.writeList(StoreKeys.notes, notes.map((e) => e.toJson()).toList());
+  Future<void> _saveNotes() => StorageService.instance
+      .writeList(StoreKeys.notes, notes.map((e) => e.toJson()).toList());
 
   // ---------------- Goals ----------------
   Future<void> addGoal(AppGoal g) async {
@@ -740,8 +781,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveGoals() =>
-      StorageService.instance.writeList(StoreKeys.goals, goals.map((e) => e.toJson()).toList());
+  Future<void> _saveGoals() => StorageService.instance
+      .writeList(StoreKeys.goals, goals.map((e) => e.toJson()).toList());
 
   // ---------------- Settings ----------------
   Future<void> setUserName(String name) async {
@@ -752,7 +793,8 @@ class AppState extends ChangeNotifier {
 
   Future<void> setSavingsGoal(double amount) async {
     savingsGoal = amount;
-    await StorageService.instance.writeString(StoreKeys.savingsGoal, amount.toString());
+    await StorageService.instance
+        .writeString(StoreKeys.savingsGoal, amount.toString());
     notifyListeners();
   }
 
@@ -780,9 +822,11 @@ class AppState extends ChangeNotifier {
 
   Future<void> addCustomCategory(String name, {required bool isExpense}) async {
     if (isExpense) {
-      if (!customExpenseCategories.contains(name)) customExpenseCategories.add(name);
+      if (!customExpenseCategories.contains(name))
+        customExpenseCategories.add(name);
     } else {
-      if (!customIncomeCategories.contains(name)) customIncomeCategories.add(name);
+      if (!customIncomeCategories.contains(name))
+        customIncomeCategories.add(name);
     }
     notifyListeners();
   }
@@ -807,9 +851,11 @@ class AppState extends ChangeNotifier {
     final buffer = StringBuffer();
     buffer.writeln('Date,Type,Category,Amount,Payment Method,Note');
     for (final t in transactions) {
-      final dateStr = '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}-${t.date.day.toString().padLeft(2, '0')}';
+      final dateStr =
+          '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}-${t.date.day.toString().padLeft(2, '0')}';
       final noteEscaped = t.note.replaceAll(',', ';');
-      buffer.writeln('$dateStr,${t.type.name},${t.category},${t.amount},${t.paymentMethod},$noteEscaped');
+      buffer.writeln(
+          '$dateStr,${t.type.name},${t.category},${t.amount},${t.paymentMethod},$noteEscaped');
     }
     await file.writeAsString(buffer.toString());
     return file;
@@ -835,7 +881,7 @@ class AppState extends ChangeNotifier {
       'currency': currency,
       'birthday': birthday?.toIso8601String(),
       'birthdayContacts': birthdayContacts.map((e) => e.toJson()).toList(),
-      // Deliberately excluded: aiApiKey — backups may be pasted/shared, and
+      // Deliberately excluded: aiApiKey â€” backups may be pasted/shared, and
       // a secret API key should never end up in that text.
     };
     return const JsonEncoder.withIndent('  ').convert(payload);
@@ -854,7 +900,8 @@ class AppState extends ChangeNotifier {
   Future<void> restoreFromBackup(String jsonText) async {
     final decoded = jsonDecode(jsonText);
     if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('That doesn\'t look like a valid backup file.');
+      throw const FormatException(
+          'That doesn\'t look like a valid backup file.');
     }
 
     final newTransactions = (decoded['transactions'] as List? ?? [])
@@ -890,17 +937,21 @@ class AppState extends ChangeNotifier {
       ..addAll(newGoals);
     birthdayContacts
       ..clear()
-      ..addAll((decoded['birthdayContacts'] as List? ?? []).map((e) => BirthdayContact.fromJson(e as Map<String, dynamic>)));
+      ..addAll((decoded['birthdayContacts'] as List? ?? [])
+          .map((e) => BirthdayContact.fromJson(e as Map<String, dynamic>)));
 
     customExpenseCategories
       ..clear()
-      ..addAll((decoded['customExpenseCategories'] as List? ?? []).cast<String>());
+      ..addAll(
+          (decoded['customExpenseCategories'] as List? ?? []).cast<String>());
     customIncomeCategories
       ..clear()
-      ..addAll((decoded['customIncomeCategories'] as List? ?? []).cast<String>());
+      ..addAll(
+          (decoded['customIncomeCategories'] as List? ?? []).cast<String>());
 
     categoryBudgets.clear();
-    final budgetsMap = decoded['categoryBudgets'] as Map<String, dynamic>? ?? {};
+    final budgetsMap =
+        decoded['categoryBudgets'] as Map<String, dynamic>? ?? {};
     budgetsMap.forEach((k, v) => categoryBudgets[k] = (v as num).toDouble());
 
     userName = decoded['userName'] as String? ?? userName;
@@ -914,12 +965,15 @@ class AppState extends ChangeNotifier {
     await _saveTasks();
     await _saveNotes();
     await _saveGoals();
-    await StorageService.instance.writeString(StoreKeys.budgets, jsonEncode(categoryBudgets));
+    await StorageService.instance
+        .writeString(StoreKeys.budgets, jsonEncode(categoryBudgets));
     await StorageService.instance.writeString(StoreKeys.userName, userName);
-    await StorageService.instance.writeString(StoreKeys.savingsGoal, savingsGoal.toString());
+    await StorageService.instance
+        .writeString(StoreKeys.savingsGoal, savingsGoal.toString());
     await StorageService.instance.writeString(StoreKeys.currency, currency);
     if (birthday != null) {
-      await StorageService.instance.writeString(StoreKeys.birthday, birthday!.toIso8601String());
+      await StorageService.instance
+          .writeString(StoreKeys.birthday, birthday!.toIso8601String());
     }
 
     notifyListeners();
@@ -928,15 +982,28 @@ class AppState extends ChangeNotifier {
   // ---------------- Monthly Review ----------------
   Map<String, dynamic> monthlyReview({DateTime? month}) {
     final m = month ?? DateTime.now();
-    final monthTx = transactions.where((t) => t.date.year == m.year && t.date.month == m.month);
-    final totalSpent = monthTx.where((t) => t.type == TxType.expense).fold(0.0, (p, e) => p + e.amount);
-    final totalIncome = monthTx.where((t) => t.type == TxType.income).fold(0.0, (p, e) => p + e.amount);
+    final monthTx = transactions
+        .where((t) => t.date.year == m.year && t.date.month == m.month);
+    final totalSpent = monthTx
+        .where((t) => t.type == TxType.expense)
+        .fold(0.0, (p, e) => p + e.amount);
+    final totalIncome = monthTx
+        .where((t) => t.type == TxType.income)
+        .fold(0.0, (p, e) => p + e.amount);
     final moodSummary = monthMoodSummary(month: m);
     final tasksCompleted = tasks
-        .where((t) => t.completed && t.dueDate != null && t.dueDate!.year == m.year && t.dueDate!.month == m.month)
+        .where((t) =>
+            t.completed &&
+            t.dueDate != null &&
+            t.dueDate!.year == m.year &&
+            t.dueDate!.month == m.month)
         .length;
     final goalsAchieved = goals
-        .where((g) => g.completed && g.targetDate != null && g.targetDate!.year == m.year && g.targetDate!.month == m.month)
+        .where((g) =>
+            g.completed &&
+            g.targetDate != null &&
+            g.targetDate!.year == m.year &&
+            g.targetDate!.month == m.month)
         .length;
 
     // Most productive day = day with most completed tasks + transactions logged
@@ -944,12 +1011,17 @@ class AppState extends ChangeNotifier {
     for (final t in monthTx) {
       dayCounts[t.date.day] = (dayCounts[t.date.day] ?? 0) + 1;
     }
-    for (final t in tasks.where((t) => t.completed && t.dueDate != null && t.dueDate!.year == m.year && t.dueDate!.month == m.month)) {
+    for (final t in tasks.where((t) =>
+        t.completed &&
+        t.dueDate != null &&
+        t.dueDate!.year == m.year &&
+        t.dueDate!.month == m.month)) {
       dayCounts[t.dueDate!.day] = (dayCounts[t.dueDate!.day] ?? 0) + 1;
     }
     int? mostProductiveDay;
     if (dayCounts.isNotEmpty) {
-      mostProductiveDay = dayCounts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
+      mostProductiveDay =
+          dayCounts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
     }
 
     return {
@@ -975,11 +1047,15 @@ class AppState extends ChangeNotifier {
     }
     return {
       'transactions': transactions
-          .where((t) => t.category.toLowerCase().contains(q) || t.note.toLowerCase().contains(q))
+          .where((t) =>
+              t.category.toLowerCase().contains(q) ||
+              t.note.toLowerCase().contains(q))
           .toList(),
       'tasks': tasks.where((t) => t.title.toLowerCase().contains(q)).toList(),
       'notes': notes
-          .where((n) => n.title.toLowerCase().contains(q) || n.content.toLowerCase().contains(q))
+          .where((n) =>
+              n.title.toLowerCase().contains(q) ||
+              n.content.toLowerCase().contains(q))
           .toList(),
       'goals': goals.where((g) => g.title.toLowerCase().contains(q)).toList(),
     };
@@ -998,8 +1074,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _saveChatHistory() =>
-      StorageService.instance.writeList(StoreKeys.chatHistory, chatMessages.map((e) => e.toJson()).toList());
+  Future<void> _saveChatHistory() => StorageService.instance.writeList(
+      StoreKeys.chatHistory, chatMessages.map((e) => e.toJson()).toList());
 
   String newId() => _uuid.v4();
 }
@@ -1022,5 +1098,8 @@ class LaunchDigest {
   });
 
   bool get hasAnything =>
-      overdueTaskCount > 0 || todayTaskCount > 0 || !moodLoggedToday || overBudgetCategoryCount > 0;
+      overdueTaskCount > 0 ||
+      todayTaskCount > 0 ||
+      !moodLoggedToday ||
+      overBudgetCategoryCount > 0;
 }

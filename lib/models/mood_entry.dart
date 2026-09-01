@@ -29,7 +29,9 @@ class MoodEntry {
         date: DateTime.parse(json['date']),
         // Backward-compatible: older backups may still have raw emoji;
         // fall back to "okay" if the value isn't a recognised key.
-        mood: kMoodOptions.any((m) => m.key == json['mood']) ? json['mood'] : 'okay',
+        mood: kMoodOptions.any((m) => m.key == json['mood'])
+            ? json['mood']
+            : 'okay',
         note: json['note'] ?? '',
       );
 
@@ -42,16 +44,40 @@ class MoodOption {
   final String label;
   final IconData icon;
   final Color color;
-  const MoodOption({required this.key, required this.label, required this.icon, required this.color});
+  const MoodOption(
+      {required this.key,
+      required this.label,
+      required this.icon,
+      required this.color});
 }
 
 /// Standard mood options used across the app.
 const List<MoodOption> kMoodOptions = [
-  MoodOption(key: 'great', label: 'Great', icon: Icons.sentiment_very_satisfied, color: Color(0xFF2FB380)),
-  MoodOption(key: 'good', label: 'Good', icon: Icons.sentiment_satisfied, color: Color(0xFF7CB342)),
-  MoodOption(key: 'okay', label: 'Okay', icon: Icons.sentiment_neutral, color: Color(0xFFFFA726)),
-  MoodOption(key: 'low', label: 'Low', icon: Icons.sentiment_dissatisfied, color: Color(0xFFEF6C00)),
-  MoodOption(key: 'bad', label: 'Bad', icon: Icons.sentiment_very_dissatisfied, color: Color(0xFFE2574C)),
+  MoodOption(
+      key: 'great',
+      label: 'Great',
+      icon: Icons.sentiment_very_satisfied,
+      color: Color(0xFF2FB380)),
+  MoodOption(
+      key: 'good',
+      label: 'Good',
+      icon: Icons.sentiment_satisfied,
+      color: Color(0xFF7CB342)),
+  MoodOption(
+      key: 'okay',
+      label: 'Okay',
+      icon: Icons.sentiment_neutral,
+      color: Color(0xFFFFA726)),
+  MoodOption(
+      key: 'low',
+      label: 'Low',
+      icon: Icons.sentiment_dissatisfied,
+      color: Color(0xFFEF6C00)),
+  MoodOption(
+      key: 'bad',
+      label: 'Bad',
+      icon: Icons.sentiment_very_dissatisfied,
+      color: Color(0xFFE2574C)),
 ];
 
 MoodOption moodOptionFor(String key) =>

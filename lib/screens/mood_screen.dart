@@ -18,9 +18,7 @@ class _MoodScreenState extends State<MoodScreen> {
   );
 
   bool _isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year &&
-        a.month == b.month &&
-        a.day == b.day;
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   DateTime _dateOnly(DateTime date) {
@@ -34,8 +32,7 @@ class _MoodScreenState extends State<MoodScreen> {
   bool _isCurrentMonth(DateTime month) {
     final now = DateTime.now();
 
-    return month.year == now.year &&
-        month.month == now.month;
+    return month.year == now.year && month.month == now.month;
   }
 
   void _goToPreviousMonth() {
@@ -82,11 +79,9 @@ class _MoodScreenState extends State<MoodScreen> {
     );
 
     // Only show missed days for the current month.
-    final missedDays =
-        isCurrentMonth ? app.missedMoodDaysThisMonth : [];
+    final missedDays = isCurrentMonth ? app.missedMoodDaysThisMonth : [];
 
-    final bottomInset =
-        MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return ListView(
       padding: EdgeInsets.fromLTRB(
@@ -100,33 +95,24 @@ class _MoodScreenState extends State<MoodScreen> {
           context,
           todayMood,
         ),
-
         const SizedBox(height: 16),
-
         if (missedDays.isNotEmpty)
           _buildMissedDaysCard(
             context,
             missedDays.length,
           ),
-
-        if (missedDays.isNotEmpty)
-          const SizedBox(height: 14),
-
+        if (missedDays.isNotEmpty) const SizedBox(height: 14),
         _buildTodayMoodCard(
           context,
           todayMood,
         ),
-
         const SizedBox(height: 14),
-
         _buildCalendarCard(
           context,
           app,
           isCurrentMonth,
         ),
-
         const SizedBox(height: 14),
-
         _buildSummaryCard(
           context,
           summary,
@@ -148,40 +134,32 @@ class _MoodScreenState extends State<MoodScreen> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final option = todayMood != null
-        ? moodOptionFor(todayMood.mood)
-        : null;
+    final option = todayMood != null ? moodOptionFor(todayMood.mood) : null;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Mood',
-                style: theme.textTheme.headlineSmall
-                    ?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.5,
                 ),
               ),
-
               const SizedBox(height: 4),
-
               Text(
                 'Understand how you feel over time.',
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
-
         if (option != null)
           Container(
             padding: const EdgeInsets.all(10),
@@ -215,20 +193,19 @@ class _MoodScreenState extends State<MoodScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: color.withOpacity(0.08),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: color.withValues(alpha: 0.18),
+          color: color.withOpacity(0.18),
         ),
       ),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(9),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.14),
+              color: color.withOpacity(0.14),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -237,31 +214,23 @@ class _MoodScreenState extends State<MoodScreen> {
               size: 20,
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   '$missedCount day${missedCount == 1 ? '' : 's'} not logged',
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: Colors.orange.shade800,
                   ),
                 ),
-
                 const SizedBox(height: 4),
-
                 Text(
                   'Tap a day in the calendar below to record how you felt.',
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(
-                    color: Colors.orange.shade900
-                        .withValues(alpha: 0.75),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Colors.orange.shade900.withOpacity(0.75),
                     height: 1.35,
                   ),
                 ),
@@ -290,8 +259,8 @@ class _MoodScreenState extends State<MoodScreen> {
         borderRadius: BorderRadius.circular(22),
         gradient: LinearGradient(
           colors: [
-            colors.primary.withValues(alpha: 0.10),
-            colors.secondary.withValues(alpha: 0.05),
+            colors.primary.withOpacity(0.10),
+            colors.secondary.withOpacity(0.05),
           ],
         ),
         border: Border.all(
@@ -301,8 +270,7 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -312,8 +280,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   color: colors.primary.withValues(
                     alpha: 0.12,
                   ),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.favorite_outline,
@@ -321,30 +288,23 @@ class _MoodScreenState extends State<MoodScreen> {
                   size: 20,
                 ),
               ),
-
               const SizedBox(width: 11),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'How are you feeling today?',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-
                     const SizedBox(height: 2),
-
                     Text(
                       todayMood == null
                           ? 'Choose a mood to start your day'
                           : 'Your mood has been recorded',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                     ),
@@ -353,21 +313,17 @@ class _MoodScreenState extends State<MoodScreen> {
               ),
             ],
           ),
-
           const SizedBox(height: 18),
-
           Wrap(
             spacing: 9,
             runSpacing: 10,
             children: kMoodOptions.map((mood) {
-              final selected =
-                  todayMood?.mood == mood.key;
+              final selected = todayMood?.mood == mood.key;
 
               return Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius:
-                      BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15),
                   onTap: () {
                     _logMood(
                       context,
@@ -380,8 +336,7 @@ class _MoodScreenState extends State<MoodScreen> {
                       milliseconds: 220,
                     ),
                     curve: Curves.easeOut,
-                    padding:
-                        const EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 11,
                     ),
@@ -393,24 +348,19 @@ class _MoodScreenState extends State<MoodScreen> {
                           : colors.surface.withValues(
                               alpha: 0.5,
                             ),
-                      borderRadius:
-                          BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(15),
                       border: Border.all(
-                        color: selected
-                            ? mood.color
-                            : colors.outlineVariant,
+                        color: selected ? mood.color : colors.outlineVariant,
                         width: selected ? 1.5 : 1,
                       ),
                       boxShadow: selected
                           ? [
                               BoxShadow(
-                                color: mood.color
-                                    .withValues(
+                                color: mood.color.withValues(
                                   alpha: 0.12,
                                 ),
                                 blurRadius: 10,
-                                offset:
-                                    const Offset(
+                                offset: const Offset(
                                   0,
                                   4,
                                 ),
@@ -419,13 +369,11 @@ class _MoodScreenState extends State<MoodScreen> {
                           : null,
                     ),
                     child: Column(
-                      mainAxisSize:
-                          MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         AnimatedScale(
                           scale: selected ? 1.12 : 1,
-                          duration:
-                              const Duration(
+                          duration: const Duration(
                             milliseconds: 220,
                           ),
                           child: Icon(
@@ -434,16 +382,13 @@ class _MoodScreenState extends State<MoodScreen> {
                             color: mood.color,
                           ),
                         ),
-
                         const SizedBox(height: 5),
-
                         Text(
                           mood.label,
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                            fontWeight:
+                                selected ? FontWeight.w700 : FontWeight.w500,
                             color: mood.color,
                           ),
                         ),
@@ -502,33 +447,26 @@ class _MoodScreenState extends State<MoodScreen> {
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       formatMonthYear(
                         _visibleMonth,
                       ),
-                      style: theme.textTheme.titleLarge
-                          ?.copyWith(
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-
                     const SizedBox(height: 3),
-
                     Text(
                       'Tap a day to log or edit your mood',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(
-                        color:
-                            colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-
               IconButton(
                 tooltip: 'Previous month',
                 onPressed: _goToPreviousMonth,
@@ -536,23 +474,16 @@ class _MoodScreenState extends State<MoodScreen> {
                   Icons.chevron_left_rounded,
                 ),
               ),
-
               IconButton(
-                tooltip: isCurrentMonth
-                    ? 'Current month'
-                    : 'Next month',
-                onPressed: isCurrentMonth
-                    ? null
-                    : _goToNextMonth,
+                tooltip: isCurrentMonth ? 'Current month' : 'Next month',
+                onPressed: isCurrentMonth ? null : _goToNextMonth,
                 icon: const Icon(
                   Icons.chevron_right_rounded,
                 ),
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
           _MoodCalendarGrid(
             month: _visibleMonth,
             app: app,
@@ -592,8 +523,7 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -603,8 +533,7 @@ class _MoodScreenState extends State<MoodScreen> {
                   color: colors.primary.withValues(
                     alpha: 0.10,
                   ),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.bar_chart_rounded,
@@ -612,28 +541,21 @@ class _MoodScreenState extends State<MoodScreen> {
                   size: 20,
                 ),
               ),
-
               const SizedBox(width: 11),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Monthly Summary',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-
                     Text(
                       '$totalLogged mood${totalLogged == 1 ? '' : 's'} logged',
-                      style: theme.textTheme.bodySmall
-                          ?.copyWith(
-                        color:
-                            colors.onSurfaceVariant,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -641,9 +563,7 @@ class _MoodScreenState extends State<MoodScreen> {
               ),
             ],
           ),
-
           const SizedBox(height: 18),
-
           if (totalLogged == 0)
             _buildEmptySummary(context)
           else
@@ -652,12 +572,10 @@ class _MoodScreenState extends State<MoodScreen> {
                 entry.key,
               );
 
-              final percentage =
-                  entry.value / totalLogged;
+              final percentage = entry.value / totalLogged;
 
               return Padding(
-                padding:
-                    const EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   bottom: 14,
                 ),
                 child: Column(
@@ -665,12 +583,9 @@ class _MoodScreenState extends State<MoodScreen> {
                     Row(
                       children: [
                         Container(
-                          padding:
-                              const EdgeInsets.all(7),
-                          decoration:
-                              BoxDecoration(
-                            color: mood.color
-                                .withValues(
+                          padding: const EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            color: mood.color.withValues(
                               alpha: 0.12,
                             ),
                             shape: BoxShape.circle,
@@ -681,61 +596,39 @@ class _MoodScreenState extends State<MoodScreen> {
                             color: mood.color,
                           ),
                         ),
-
                         const SizedBox(width: 10),
-
                         Expanded(
                           child: Text(
                             mood.label,
-                            style: theme
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                              fontWeight:
-                                  FontWeight.w600,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
-
                         Text(
                           '${entry.value}',
-                          style: theme
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                            fontWeight:
-                                FontWeight.w800,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
                             color: mood.color,
                           ),
                         ),
-
                         const SizedBox(width: 8),
-
                         Text(
                           '${(percentage * 100).round()}%',
-                          style: theme
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(
-                            color: colors
-                                .onSurfaceVariant,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
                     ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(10),
-                      child:
-                          LinearProgressIndicator(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
                         value: percentage,
                         minHeight: 8,
                         color: mood.color,
-                        backgroundColor:
-                            mood.color.withValues(
+                        backgroundColor: mood.color.withValues(
                           alpha: 0.10,
                         ),
                       ),
@@ -762,8 +655,7 @@ class _MoodScreenState extends State<MoodScreen> {
         horizontal: 16,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest
-            .withValues(alpha: 0.45),
+        color: colors.surfaceContainerHighest.withOpacity(0.45),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -773,24 +665,18 @@ class _MoodScreenState extends State<MoodScreen> {
             size: 38,
             color: colors.onSurfaceVariant,
           ),
-
           const SizedBox(height: 10),
-
           Text(
             'No moods logged yet',
-            style: theme.textTheme.titleSmall
-                ?.copyWith(
+            style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
-
           const SizedBox(height: 4),
-
           Text(
             'Start logging your mood to see your monthly pattern.',
             textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(
+            style: theme.textTheme.bodySmall?.copyWith(
               color: colors.onSurfaceVariant,
             ),
           ),
@@ -832,8 +718,7 @@ class _MoodScreenState extends State<MoodScreen> {
         ),
       ),
       builder: (ctx) {
-        final colors =
-            Theme.of(ctx).colorScheme;
+        final colors = Theme.of(ctx).colorScheme;
 
         return SafeArea(
           child: SingleChildScrollView(
@@ -845,8 +730,7 @@ class _MoodScreenState extends State<MoodScreen> {
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _isSameDay(
@@ -855,45 +739,31 @@ class _MoodScreenState extends State<MoodScreen> {
                   )
                       ? 'Today'
                       : formatDate(selectedDate),
-                  style: Theme.of(ctx)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                 ),
-
                 const SizedBox(height: 5),
-
                 Text(
                   existing == null
                       ? 'How were you feeling?'
                       : 'Choose a mood to edit this entry',
-                  style: Theme.of(ctx)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(
-                    color:
-                        colors.onSurfaceVariant,
-                  ),
+                  style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
                 ),
-
                 const SizedBox(height: 14),
-
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: kMoodOptions.map(
                     (mood) {
-                      final selected =
-                          existing?.mood ==
-                              mood.key;
+                      final selected = existing?.mood == mood.key;
 
                       return Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          borderRadius:
-                              BorderRadius.circular(
+                          borderRadius: BorderRadius.circular(
                             15,
                           ),
                           onTap: () {
@@ -905,61 +775,47 @@ class _MoodScreenState extends State<MoodScreen> {
                               selectedDate,
                             );
                           },
-                          child:
-                              AnimatedContainer(
-                            duration:
-                                const Duration(
+                          child: AnimatedContainer(
+                            duration: const Duration(
                               milliseconds: 180,
                             ),
-                            padding:
-                                const EdgeInsets
-                                    .symmetric(
+                            padding: const EdgeInsets.symmetric(
                               horizontal: 13,
                               vertical: 10,
                             ),
-                            decoration:
-                                BoxDecoration(
+                            decoration: BoxDecoration(
                               color: selected
-                                  ? mood.color
-                                      .withValues(
+                                  ? mood.color.withValues(
                                       alpha: 0.14,
                                     )
                                   : colors.surface,
-                              borderRadius:
-                                  BorderRadius.circular(
+                              borderRadius: BorderRadius.circular(
                                 15,
                               ),
                               border: Border.all(
                                 color: selected
                                     ? mood.color
-                                    : colors
-                                        .outlineVariant,
-                                width:
-                                    selected ? 1.5 : 1,
+                                    : colors.outlineVariant,
+                                width: selected ? 1.5 : 1,
                               ),
                             ),
                             child: Column(
-                              mainAxisSize:
-                                  MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   mood.icon,
                                   size: 27,
                                   color: mood.color,
                                 ),
-
                                 const SizedBox(
                                   height: 4,
                                 ),
-
                                 Text(
                                   mood.label,
                                   style: TextStyle(
                                     fontSize: 10,
-                                    fontWeight:
-                                        FontWeight.w600,
-                                    color:
-                                        mood.color,
+                                    fontWeight: FontWeight.w600,
+                                    color: mood.color,
                                   ),
                                 ),
                               ],
@@ -1011,16 +867,14 @@ class _MoodScreenState extends State<MoodScreen> {
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
-      backgroundColor:
-          Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(24),
         ),
       ),
       builder: (ctx) {
-        final colors =
-            Theme.of(ctx).colorScheme;
+        final colors = Theme.of(ctx).colorScheme;
 
         return AnimatedPadding(
           duration: const Duration(
@@ -1028,14 +882,10 @@ class _MoodScreenState extends State<MoodScreen> {
           ),
           curve: Curves.easeOut,
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx)
-                .viewInsets
-                .bottom,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
           ),
           child: SingleChildScrollView(
-            keyboardDismissBehavior:
-                ScrollViewKeyboardDismissBehavior
-                    .onDrag,
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: const EdgeInsets.fromLTRB(
               18,
               4,
@@ -1044,17 +894,14 @@ class _MoodScreenState extends State<MoodScreen> {
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding:
-                          const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: option.color
-                            .withValues(
+                        color: option.color.withValues(
                           alpha: 0.13,
                         ),
                         shape: BoxShape.circle,
@@ -1065,13 +912,10 @@ class _MoodScreenState extends State<MoodScreen> {
                         size: 24,
                       ),
                     ),
-
                     const SizedBox(width: 11),
-
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             isToday
@@ -1079,24 +923,17 @@ class _MoodScreenState extends State<MoodScreen> {
                                 : formatDate(
                                     selectedDate,
                                   ),
-                            style: Theme.of(ctx)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                              fontWeight:
-                                  FontWeight.w800,
-                            ),
+                            style:
+                                Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                    ),
                           ),
-
                           const SizedBox(height: 2),
-
                           Text(
                             option.label,
                             style: TextStyle(
-                              color:
-                                  option.color,
-                              fontWeight:
-                                  FontWeight.w700,
+                              color: option.color,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -1104,44 +941,33 @@ class _MoodScreenState extends State<MoodScreen> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 14),
-
                 TextField(
                   controller: noteCtrl,
                   maxLines: 3,
                   minLines: 2,
-                  textCapitalization:
-                      TextCapitalization.sentences,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     labelText: 'Mood note',
-                    hintText:
-                        'What made you feel this way?',
+                    hintText: 'What made you feel this way?',
                     prefixIcon: const Icon(
                       Icons.edit_note_rounded,
                     ),
                     alignLabelWithHint: true,
                     filled: true,
-                    fillColor: colors
-                        .surfaceContainerHighest
-                        .withValues(
+                    fillColor: colors.surfaceContainerHighest.withValues(
                       alpha: 0.45,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
                     ),
-                    enabledBorder:
-                        OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
                     ),
-                    focusedBorder:
-                        OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
                         color: colors.primary,
                         width: 1.2,
@@ -1149,20 +975,16 @@ class _MoodScreenState extends State<MoodScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 14),
-
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () {
-                      final note =
-                          noteCtrl.text.trim();
+                      final note = noteCtrl.text.trim();
 
                       app.upsertMood(
                         MoodEntry(
-                          id: existing?.id ??
-                              app.newId(),
+                          id: existing?.id ?? app.newId(),
                           date: selectedDate,
                           mood: key,
                           note: note,
@@ -1175,15 +997,13 @@ class _MoodScreenState extends State<MoodScreen> {
                       Icons.check_rounded,
                     ),
                     label: const Padding(
-                      padding:
-                          EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         vertical: 12,
                       ),
                       child: Text(
                         'Save Mood',
                         style: TextStyle(
-                          fontWeight:
-                              FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -1204,8 +1024,7 @@ class _MoodScreenState extends State<MoodScreen> {
 // MOOD CALENDAR
 // =================================================================
 
-class _MoodCalendarGrid
-    extends StatelessWidget {
+class _MoodCalendarGrid extends StatelessWidget {
   final DateTime month;
   final dynamic app;
   final void Function(DateTime date) onDayTap;
@@ -1218,8 +1037,7 @@ class _MoodCalendarGrid
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     final firstDay = DateTime(
       month.year,
@@ -1234,8 +1052,7 @@ class _MoodCalendarGrid
     ).day;
 
     // Sunday = 0, Monday = 1, ..., Saturday = 6.
-    final leadingBlanks =
-        firstDay.weekday % 7;
+    final leadingBlanks = firstDay.weekday % 7;
 
     final today = DateTime.now();
 
@@ -1270,8 +1087,7 @@ class _MoodCalendarGrid
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
-                  color:
-                      colors.onSurfaceVariant,
+                  color: colors.onSurfaceVariant,
                 ),
               ),
             ),
@@ -1294,11 +1110,7 @@ class _MoodCalendarGrid
     }
 
     // Actual dates.
-    for (
-      int day = 1;
-      day <= daysInMonth;
-      day++
-    ) {
+    for (int day = 1; day <= daysInMonth; day++) {
       final date = DateTime(
         month.year,
         month.month,
@@ -1307,15 +1119,11 @@ class _MoodCalendarGrid
 
       final mood = app.moodForDay(date);
 
-      final moodOption = mood != null
-          ? moodOptionFor(mood.mood)
-          : null;
+      final moodOption = mood != null ? moodOptionFor(mood.mood) : null;
 
-      final isFuture =
-          date.isAfter(todayOnly);
+      final isFuture = date.isAfter(todayOnly);
 
-      final isToday =
-          date.year == todayOnly.year &&
+      final isToday = date.year == todayOnly.year &&
           date.month == todayOnly.month &&
           date.day == todayOnly.day;
 
@@ -1326,9 +1134,7 @@ class _MoodCalendarGrid
           isToday: isToday,
           isFuture: isFuture,
           colors: colors,
-          onTap: isFuture
-              ? null
-              : () => onDayTap(date),
+          onTap: isFuture ? null : () => onDayTap(date),
         ),
       );
     }
@@ -1336,16 +1142,12 @@ class _MoodCalendarGrid
     return Column(
       children: [
         weekdayHeader,
-
         const SizedBox(height: 4),
-
         GridView.builder(
           shrinkWrap: true,
-          physics:
-              const NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: dayCells.length,
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
 
             // Fixed height prevents calendar overflow.
@@ -1392,8 +1194,7 @@ class _MoodDayCell extends StatelessWidget {
         ? moodOption.color.withValues(
             alpha: 0.08,
           )
-        : colors.surfaceContainerHighest
-            .withValues(
+        : colors.surfaceContainerHighest.withValues(
             alpha: 0.25,
           );
 
@@ -1425,16 +1226,14 @@ class _MoodDayCell extends StatelessWidget {
           margin: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             color: backgroundColor,
-            borderRadius:
-                BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: borderColor,
               width: isToday ? 1.5 : 1,
             ),
           ),
           child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
@@ -1442,15 +1241,11 @@ class _MoodDayCell extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   height: 1,
-                  fontWeight: isToday
-                      ? FontWeight.w800
-                      : FontWeight.w500,
+                  fontWeight: isToday ? FontWeight.w800 : FontWeight.w500,
                   color: textColor,
                 ),
               ),
-
               const SizedBox(height: 3),
-
               if (hasMood)
                 Icon(
                   moodOption.icon,
@@ -1462,12 +1257,10 @@ class _MoodDayCell extends StatelessWidget {
                   Icons.circle_outlined,
                   size: 10,
                   color: isFuture
-                      ? colors.onSurface
-                          .withValues(
+                      ? colors.onSurface.withValues(
                           alpha: 0.10,
                         )
-                      : colors.onSurfaceVariant
-                          .withValues(
+                      : colors.onSurfaceVariant.withValues(
                           alpha: 0.45,
                         ),
                 ),

@@ -24,7 +24,9 @@ class BudgetsScreen extends StatelessWidget {
             final budget = app.categoryBudgets[cat];
             final spent = spending[cat] ?? 0;
             final over = budget != null && spent > budget;
-            final pct = budget != null && budget > 0 ? (spent / budget).clamp(0, 1.5) : 0.0;
+            final pct = budget != null && budget > 0
+                ? (spent / budget).clamp(0, 1.5)
+                : 0.0;
 
             return Card(
               margin: const EdgeInsets.only(bottom: 12),
@@ -35,14 +37,22 @@ class BudgetsScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Expanded(child: Text(cat, style: const TextStyle(fontWeight: FontWeight.bold))),
+                        Expanded(
+                            child: Text(cat,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold))),
                         Text(
-                          budget != null ? '${formatMoney(spent, app.currency)} / ${formatMoney(budget, app.currency)}' : 'No budget set',
-                          style: TextStyle(color: over ? Colors.red : Colors.grey.shade700, fontWeight: over ? FontWeight.bold : null),
+                          budget != null
+                              ? '${formatMoney(spent, app.currency)} / ${formatMoney(budget, app.currency)}'
+                              : 'No budget set',
+                          style: TextStyle(
+                              color: over ? Colors.red : Colors.grey.shade700,
+                              fontWeight: over ? FontWeight.bold : null),
                         ),
                         IconButton(
                           icon: const Icon(Icons.edit_outlined, size: 18),
-                          onPressed: () => _editBudget(context, app, cat, budget),
+                          onPressed: () =>
+                              _editBudget(context, app, cat, budget),
                         ),
                       ],
                     ),
@@ -53,15 +63,22 @@ class BudgetsScreen extends StatelessWidget {
                         child: LinearProgressIndicator(
                           value: pct.toDouble() > 1 ? 1 : pct.toDouble(),
                           minHeight: 8,
-                          color: over ? Colors.red : Theme.of(context).colorScheme.primary,
-                          backgroundColor: (over ? Colors.red : Theme.of(context).colorScheme.primary).withValues(alpha: 0.12),
+                          color: over
+                              ? Colors.red
+                              : Theme.of(context).colorScheme.primary,
+                          backgroundColor: (over
+                                  ? Colors.red
+                                  : Theme.of(context).colorScheme.primary)
+                              .withOpacity(0.12),
                         ),
                       ),
                       if (over)
                         Padding(
                           padding: const EdgeInsets.only(top: 6),
-                          child: Text('Over budget by ${formatMoney(spent - budget, app.currency)}',
-                              style: const TextStyle(color: Colors.red, fontSize: 12)),
+                          child: Text(
+                              'Over budget by ${formatMoney(spent - budget, app.currency)}',
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 12)),
                         ),
                     ],
                   ],
@@ -74,8 +91,10 @@ class BudgetsScreen extends StatelessWidget {
     );
   }
 
-  void _editBudget(BuildContext context, app, String category, double? current) {
-    final ctrl = TextEditingController(text: current != null ? current.toString() : '');
+  void _editBudget(
+      BuildContext context, app, String category, double? current) {
+    final ctrl =
+        TextEditingController(text: current != null ? current.toString() : '');
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -84,10 +103,13 @@ class BudgetsScreen extends StatelessWidget {
           controller: ctrl,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           autofocus: true,
-          decoration: InputDecoration(prefixText: app.currency, hintText: 'e.g. 5000 (leave blank to remove)'),
+          decoration: InputDecoration(
+              prefixText: app.currency,
+              hintText: 'e.g. 5000 (leave blank to remove)'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           FilledButton(
             onPressed: () {
               final v = double.tryParse(ctrl.text) ?? 0;

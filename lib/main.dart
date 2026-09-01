@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/foundation.dart';
 import 'services/app_state.dart';
 import 'services/app_scope.dart';
 import 'theme.dart';
@@ -16,7 +15,7 @@ import 'widgets/app_drawer.dart';
 
 void main() {
   // Makes any widget-build error show its actual message on-screen instead
-  // of a blank grey box — Flutter's default error widget only shows details
+  // of a blank grey box â€” Flutter's default error widget only shows details
   // in debug mode, so on a release build a crash can otherwise look exactly
   // like "the app won't open" with zero information to go on.
   ErrorWidget.builder = (FlutterErrorDetails details) {
@@ -31,9 +30,13 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text('Something went wrong',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red)),
                 const SizedBox(height: 12),
-                Text(details.exceptionAsString(), style: const TextStyle(fontSize: 12)),
+                Text(details.exceptionAsString(),
+                    style: const TextStyle(fontSize: 12)),
               ],
             ),
           ),
@@ -101,7 +104,8 @@ class _AppRootState extends State<AppRoot> {
             darkTheme: buildDarkTheme(),
             themeMode: appState.darkMode ? ThemeMode.dark : ThemeMode.light,
             home: !appState.loaded
-                ? const Scaffold(body: Center(child: CircularProgressIndicator()))
+                ? const Scaffold(
+                    body: Center(child: CircularProgressIndicator()))
                 : (appState.pinEnabled
                     ? LockScreen(child: RootShell(startupError: _startupError))
                     : RootShell(startupError: _startupError)),
@@ -153,7 +157,8 @@ class _RootShellState extends State<RootShell> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Some saved data could not be loaded: ${widget.startupError}'),
+        content:
+            Text('Some saved data could not be loaded: ${widget.startupError}'),
         duration: const Duration(seconds: 6),
         backgroundColor: Colors.red,
       ),
@@ -175,19 +180,25 @@ class _RootShellState extends State<RootShell> {
       builder: (ctx) {
         final children = <Widget>[];
         if (app.isMyBirthdayToday) {
-          children.add(const Text('Happy birthday! 🎉', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)));
+          children.add(const Text('Happy birthday! ðŸŽ‰',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 10));
-          children.add(Text('Today is your special day, ${app.userName}.', style: const TextStyle(fontSize: 14)));
+          children.add(Text('Today is your special day, ${app.userName}.',
+              style: const TextStyle(fontSize: 14)));
           if (app.age != null) {
             children.add(const SizedBox(height: 8));
-            children.add(Text('You are ${app.age} years young today.', style: const TextStyle(fontSize: 14)));
+            children.add(Text('You are ${app.age} years young today.',
+                style: const TextStyle(fontSize: 14)));
           }
         }
         if (todaysContacts.isNotEmpty) {
           if (children.isNotEmpty) children.add(const SizedBox(height: 14));
-          children.add(const Text('Today is also a birthday for:', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)));
+          children.add(const Text('Today is also a birthday for:',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 8));
-          children.addAll(todaysContacts.map((c) => Text('• ${c.name} (${c.relation})', style: const TextStyle(fontSize: 14))));
+          children.addAll(todaysContacts.map((c) => Text(
+              'â€¢ ${c.name} (${c.relation})',
+              style: const TextStyle(fontSize: 14))));
         }
 
         return AlertDialog(
@@ -226,13 +237,17 @@ class _RootShellState extends State<RootShell> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (digest.overdueTaskCount > 0)
-              _digestRow(Icons.warning_amber, Colors.red, '${digest.overdueTaskCount} overdue task${digest.overdueTaskCount == 1 ? '' : 's'}'),
+              _digestRow(Icons.warning_amber, Colors.red,
+                  '${digest.overdueTaskCount} overdue task${digest.overdueTaskCount == 1 ? '' : 's'}'),
             if (digest.todayTaskCount > 0)
-              _digestRow(Icons.check_circle_outline, Colors.blue, '${digest.todayTaskCount} task${digest.todayTaskCount == 1 ? '' : 's'} due today'),
+              _digestRow(Icons.check_circle_outline, Colors.blue,
+                  '${digest.todayTaskCount} task${digest.todayTaskCount == 1 ? '' : 's'} due today'),
             if (!digest.moodLoggedToday)
-              _digestRow(Icons.sentiment_neutral, Colors.orange, "You haven't logged today's mood yet"),
+              _digestRow(Icons.sentiment_neutral, Colors.orange,
+                  "You haven't logged today's mood yet"),
             if (digest.overBudgetCategoryCount > 0)
-              _digestRow(Icons.pie_chart_outline, Colors.red, '${digest.overBudgetCategoryCount} categor${digest.overBudgetCategoryCount == 1 ? 'y is' : 'ies are'} over budget'),
+              _digestRow(Icons.pie_chart_outline, Colors.red,
+                  '${digest.overBudgetCategoryCount} categor${digest.overBudgetCategoryCount == 1 ? 'y is' : 'ies are'} over budget'),
           ],
         ),
         actions: [
@@ -243,7 +258,8 @@ class _RootShellState extends State<RootShell> {
             },
             child: const Text("Don't show this again"),
           ),
-          FilledButton(onPressed: () => Navigator.pop(ctx), child: const Text('Got it')),
+          FilledButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Got it')),
         ],
       ),
     );
@@ -277,7 +293,10 @@ class _RootShellState extends State<RootShell> {
                 IconButton(
                   icon: const Icon(Icons.notifications_outlined),
                   tooltip: 'Reminders',
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RemindersScreen())),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const RemindersScreen())),
                 ),
                 if (count > 0)
                   Positioned(
@@ -285,11 +304,16 @@ class _RootShellState extends State<RootShell> {
                     top: 6,
                     child: Container(
                       padding: const EdgeInsets.all(3),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                      decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
+                      constraints:
+                          const BoxConstraints(minWidth: 16, minHeight: 16),
+                      decoration: const BoxDecoration(
+                          color: Colors.red, shape: BoxShape.circle),
                       child: Text(
                         count > 9 ? '9+' : '$count',
-                        style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -305,11 +329,26 @@ class _RootShellState extends State<RootShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Expenses'),
-          NavigationDestination(icon: Icon(Icons.emoji_emotions_outlined), selectedIcon: Icon(Icons.emoji_emotions), label: 'Mood'),
-          NavigationDestination(icon: Icon(Icons.check_circle_outline), selectedIcon: Icon(Icons.check_circle), label: 'Tasks'),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
+          NavigationDestination(
+              icon: Icon(Icons.home_outlined),
+              selectedIcon: Icon(Icons.home),
+              label: 'Home'),
+          NavigationDestination(
+              icon: Icon(Icons.account_balance_wallet_outlined),
+              selectedIcon: Icon(Icons.account_balance_wallet),
+              label: 'Expenses'),
+          NavigationDestination(
+              icon: Icon(Icons.emoji_emotions_outlined),
+              selectedIcon: Icon(Icons.emoji_emotions),
+              label: 'Mood'),
+          NavigationDestination(
+              icon: Icon(Icons.check_circle_outline),
+              selectedIcon: Icon(Icons.check_circle),
+              label: 'Tasks'),
+          NavigationDestination(
+              icon: Icon(Icons.person_outline),
+              selectedIcon: Icon(Icons.person),
+              label: 'Profile'),
         ],
       ),
     );

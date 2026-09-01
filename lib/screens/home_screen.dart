@@ -19,15 +19,12 @@ class HomeScreen extends StatelessWidget {
     final app = AppScope.of(context);
 
     final now = DateTime.now();
-    final quote =
-        kMotivationalQuotes[now.day % kMotivationalQuotes.length];
+    final quote = kMotivationalQuotes[now.day % kMotivationalQuotes.length];
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 90;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 90;
 
     final hasBirthday =
-        app.isMyBirthdayToday ||
-        app.todayBirthdayContacts.isNotEmpty;
+        app.isMyBirthdayToday || app.todayBirthdayContacts.isNotEmpty;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -197,9 +194,7 @@ class HomeScreen extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                 ),
               ),
-
               const SizedBox(height: 3),
-
               Text(
                 app.userName,
                 maxLines: 1,
@@ -209,9 +204,7 @@ class HomeScreen extends StatelessWidget {
                   letterSpacing: -0.6,
                 ),
               ),
-
               const SizedBox(height: 5),
-
               Row(
                 children: [
                   Icon(
@@ -330,14 +323,12 @@ class HomeScreen extends StatelessWidget {
                   size: 21,
                 ),
               ),
-
               const SizedBox(width: 11),
-
               Expanded(
                 child: Text(
                   app.isMyBirthdayToday
-                      ? 'Happy Birthday! 🎉'
-                      : 'Today’s Birthdays',
+                      ? 'Happy Birthday! ðŸŽ‰'
+                      : 'Todayâ€™s Birthdays',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -345,17 +336,14 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 13),
-
           if (app.isMyBirthdayToday) ...[
             Text(
-              'Happy birthday, ${app.userName}! 🎉',
+              'Happy birthday, ${app.userName}! ðŸŽ‰',
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
-
             if (app.age != null) ...[
               const SizedBox(height: 4),
               Text(
@@ -366,11 +354,8 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ],
-
           if (app.todayBirthdayContacts.isNotEmpty) ...[
-            if (app.isMyBirthdayToday)
-              const SizedBox(height: 14),
-
+            if (app.isMyBirthdayToday) const SizedBox(height: 14),
             Text(
               app.isMyBirthdayToday
                   ? 'Also celebrating today'
@@ -380,9 +365,7 @@ class HomeScreen extends StatelessWidget {
                 color: colors.onSurfaceVariant,
               ),
             ),
-
             const SizedBox(height: 8),
-
             ...app.todayBirthdayContacts.map(
               (contact) {
                 return Padding(
@@ -397,27 +380,21 @@ class HomeScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                       ),
-
                       const SizedBox(width: 9),
-
                       Expanded(
                         child: Text(
                           '${contact.name} (${contact.relation})',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style:
-                              theme.textTheme.bodySmall?.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
-
                       const SizedBox(width: 8),
-
                       Text(
                         'turns ${contact.ageOn(now)}',
-                        style:
-                            theme.textTheme.labelSmall?.copyWith(
+                        style: theme.textTheme.labelSmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),
@@ -445,9 +422,7 @@ class HomeScreen extends StatelessWidget {
 
     final isPositive = app.totalBalance >= 0;
 
-    final balanceColor = isPositive
-        ? kIncomeColorLocal
-        : kExpenseColorLocal;
+    final balanceColor = isPositive ? kIncomeColorLocal : kExpenseColorLocal;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -486,9 +461,7 @@ class HomeScreen extends StatelessWidget {
               size: 24,
             ),
           ),
-
           const SizedBox(width: 13),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -500,9 +473,7 @@ class HomeScreen extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-
                 const SizedBox(height: 3),
-
                 Text(
                   formatMoney(
                     app.totalBalance,
@@ -570,9 +541,7 @@ class HomeScreen extends StatelessWidget {
               size: 19,
             ),
           ),
-
           const Spacer(),
-
           Text(
             label,
             maxLines: 1,
@@ -582,9 +551,7 @@ class HomeScreen extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-
           const SizedBox(height: 3),
-
           Text(
             value,
             maxLines: 1,
@@ -612,16 +579,12 @@ class HomeScreen extends StatelessWidget {
 
     final increased = change > 0;
 
-    final accent = increased
-        ? kExpenseColorLocal
-        : kIncomeColorLocal;
+    final accent = increased ? kExpenseColorLocal : kIncomeColorLocal;
 
-    final icon = increased
-        ? Icons.trending_up_rounded
-        : Icons.trending_down_rounded;
+    final icon =
+        increased ? Icons.trending_up_rounded : Icons.trending_down_rounded;
 
-    final text =
-        '${change.abs().toStringAsFixed(0)}% '
+    final text = '${change.abs().toStringAsFixed(0)}% '
         '${increased ? 'more' : 'less'} spending vs last month';
 
     return Container(
@@ -650,9 +613,7 @@ class HomeScreen extends StatelessWidget {
               color: accent,
             ),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(
             child: Text(
               text,
@@ -679,8 +640,7 @@ class HomeScreen extends StatelessWidget {
 
     const accent = Colors.red;
 
-    final categoryText =
-        count == 1 ? 'category is' : 'categories are';
+    final categoryText = count == 1 ? 'category is' : 'categories are';
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -708,9 +668,7 @@ class HomeScreen extends StatelessWidget {
               color: accent,
             ),
           ),
-
           const SizedBox(width: 10),
-
           Expanded(
             child: Text(
               '$count $categoryText over budget this month',
@@ -740,8 +698,7 @@ class HomeScreen extends StatelessWidget {
     // Keep the nullable MoodEntry and MoodOption properly promoted.
     final mood = todayMood;
 
-    final moodOption =
-        mood == null ? null : moodOptionFor(mood.mood);
+    final moodOption = mood == null ? null : moodOptionFor(mood.mood);
 
     final hasMood = mood != null && moodOption != null;
 
@@ -777,61 +734,44 @@ class HomeScreen extends StatelessWidget {
               padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
                 color: hasMood
-                    ? moodOption!.color.withOpacity(0.13)
+                    ? moodOption.color.withOpacity(0.13)
                     : colors.primary.withOpacity(0.11),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Icon(
-                hasMood
-                    ? moodOption!.icon
-                    : Icons.favorite_outline_rounded,
-                color: hasMood
-                    ? moodOption!.color
-                    : colors.primary,
+                hasMood ? moodOption.icon : Icons.favorite_outline_rounded,
+                color: hasMood ? moodOption.color : colors.primary,
                 size: 25,
               ),
             ),
-
             const SizedBox(width: 13),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "Today's Mood",
-                    style:
-                        theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-
                   const SizedBox(height: 3),
-
                   Text(
                     hasMood
-                        ? (mood!.note.isEmpty
-                            ? moodOption!.label
-                            : mood.note)
+                        ? (mood.note.isEmpty ? moodOption.label : mood.note)
                         : "Tap to log today's mood",
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        theme.textTheme.bodySmall?.copyWith(
-                      color: hasMood
-                          ? moodOption!.color
-                          : colors.onSurfaceVariant,
-                      fontWeight: hasMood
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color:
+                          hasMood ? moodOption.color : colors.onSurfaceVariant,
+                      fontWeight: hasMood ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(width: 8),
-
             Icon(
               Icons.chevron_right_rounded,
               color: colors.onSurfaceVariant,
@@ -854,10 +794,7 @@ class HomeScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final pending = app.tasks
-        .where((task) => !task.completed)
-        .take(4)
-        .toList();
+    final pending = app.tasks.where((task) => !task.completed).take(4).toList();
 
     return Container(
       padding: const EdgeInsets.all(17),
@@ -884,18 +821,14 @@ class HomeScreen extends StatelessWidget {
                   size: 20,
                 ),
               ),
-
               const SizedBox(width: 11),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Pending Tasks',
-                      style:
-                          theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -903,15 +836,13 @@ class HomeScreen extends StatelessWidget {
                       pending.isEmpty
                           ? 'You are all caught up'
                           : '${pending.length} task${pending.length == 1 ? '' : 's'} waiting',
-                      style:
-                          theme.textTheme.bodySmall?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
               ),
-
               TextButton(
                 onPressed: () {
                   Navigator.push(
@@ -925,9 +856,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 10),
-
           if (pending.isEmpty)
             _buildEmptyTasks(context)
           else
@@ -960,7 +889,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 7),
       decoration: BoxDecoration(
-        color: colors.surfaceVariant.withOpacity(0.35),
+        color: colors.surfaceContainerHighest.withOpacity(0.35),
         borderRadius: BorderRadius.circular(14),
       ),
       child: InkWell(
@@ -980,27 +909,21 @@ class HomeScreen extends StatelessWidget {
                 },
                 visualDensity: VisualDensity.compact,
               ),
-
               const SizedBox(width: 4),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       task.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style:
-                          theme.textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                     if (task.dueDate != null) ...[
                       const SizedBox(height: 2),
-
                       Row(
                         children: [
                           Icon(
@@ -1008,21 +931,14 @@ class HomeScreen extends StatelessWidget {
                             size: 12,
                             color: colors.onSurfaceVariant,
                           ),
-
                           const SizedBox(width: 4),
-
                           Expanded(
                             child: Text(
                               formatDate(task.dueDate!),
                               maxLines: 1,
-                              overflow:
-                                  TextOverflow.ellipsis,
-                              style: theme
-                                  .textTheme
-                                  .labelSmall
-                                  ?.copyWith(
-                                color:
-                                    colors.onSurfaceVariant,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -1054,7 +970,7 @@ class HomeScreen extends StatelessWidget {
         horizontal: 15,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceVariant.withOpacity(0.35),
+        color: colors.surfaceContainerHighest.withOpacity(0.35),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
@@ -1064,18 +980,14 @@ class HomeScreen extends StatelessWidget {
             size: 34,
             color: colors.primary,
           ),
-
           const SizedBox(height: 8),
-
           Text(
             'No pending tasks',
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
           ),
-
           const SizedBox(height: 3),
-
           Text(
             'Nice work. You are all caught up.',
             textAlign: TextAlign.center,
@@ -1136,37 +1048,29 @@ class HomeScreen extends StatelessWidget {
                 size: 23,
               ),
             ),
-
             const SizedBox(width: 12),
-
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Ask AI',
-                    style:
-                        theme.textTheme.titleSmall?.copyWith(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
                   ),
-
                   const SizedBox(height: 3),
-
                   Text(
                     'Got a question? Ask anything.',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        theme.textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: colors.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-
             Icon(
               Icons.chevron_right_rounded,
               color: colors.onSurfaceVariant,
@@ -1212,28 +1116,21 @@ class HomeScreen extends StatelessWidget {
               size: 21,
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'Daily thought',
-                  style:
-                      theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.labelLarge?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-
                 const SizedBox(height: 5),
-
                 Text(
                   quote,
-                  style:
-                      theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontStyle: FontStyle.italic,
                     height: 1.4,
                     color: colors.onSurfaceVariant,

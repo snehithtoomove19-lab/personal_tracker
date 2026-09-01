@@ -87,7 +87,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
     } on AiChatException catch (e) {
       if (mounted) setState(() => _error = e.message);
     } catch (_) {
-      if (mounted) setState(() => _error = 'Something went wrong. Please try again.');
+      if (mounted)
+        setState(() => _error = 'Something went wrong. Please try again.');
     } finally {
       if (mounted) setState(() => _sending = false);
     }
@@ -104,7 +105,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'AI Settings',
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            onPressed: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen())),
           ),
           if (app.chatMessages.isNotEmpty)
             IconButton(
@@ -121,20 +123,25 @@ class _AiChatScreenState extends State<AiChatScreen> {
           if (app.aiApiKey.trim().isEmpty)
             Container(
               width: double.infinity,
-              color: Colors.orange.withValues(alpha: 0.1),
+              color: Colors.orange.withOpacity(0.1),
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: Colors.orange.shade800),
+                  Icon(Icons.info_outline,
+                      size: 18, color: Colors.orange.shade800),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       'Add your OpenAI API key in Settings to start chatting.',
-                      style: TextStyle(fontSize: 12, color: Colors.orange.shade900),
+                      style: TextStyle(
+                          fontSize: 12, color: Colors.orange.shade900),
                     ),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const SettingsScreen())),
                     child: const Text('Settings'),
                   ),
                 ],
@@ -146,17 +153,19 @@ class _AiChatScreenState extends State<AiChatScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.chat_bubble_outline, size: 48, color: Colors.grey.shade400),
+                  Icon(Icons.chat_bubble_outline,
+                      size: 48, color: Colors.grey.shade400),
                   const SizedBox(height: 12),
                   Text(
-                    'Ask anything — questions about your finances, general knowledge, advice, or just to chat.',
+                    'Ask anything â€” questions about your finances, general knowledge, advice, or just to chat.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey.shade600),
                   ),
                 ],
               ),
             ),
-          ...app.chatMessages.map((message) => _MessageBubble(message: message)),
+          ...app.chatMessages
+              .map((message) => _MessageBubble(message: message)),
           const SizedBox(height: 12),
         ],
       ),
@@ -173,7 +182,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2)),
+                      SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2)),
                       SizedBox(width: 8),
                       Text('Thinking...', style: TextStyle(fontSize: 12)),
                     ],
@@ -181,8 +193,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
                 ),
               if (_error != null)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.red, fontSize: 12)),
                 ),
               Row(
                 children: [
@@ -191,7 +205,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       controller: _inputCtrl,
                       minLines: 1,
                       maxLines: 4,
-                      decoration: const InputDecoration(hintText: 'Type your question...'),
+                      decoration: const InputDecoration(
+                          hintText: 'Type your question...'),
                       onSubmitted: (_) => _send(),
                     ),
                   ),
@@ -214,9 +229,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Clear conversation?'),
-        content: const Text('This deletes your chat history with the AI assistant.'),
+        content:
+            const Text('This deletes your chat history with the AI assistant.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               app.clearChatHistory();
@@ -241,7 +258,8 @@ class _MessageBubble extends StatelessWidget {
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(

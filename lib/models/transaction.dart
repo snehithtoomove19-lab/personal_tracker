@@ -1,7 +1,14 @@
 enum TxType { income, expense }
+
 enum TxRepeat { none, weekly, monthly }
 
-const List<String> kPaymentMethods = ['Cash', 'Card', 'UPI', 'Bank Transfer', 'Other'];
+const List<String> kPaymentMethods = [
+  'Cash',
+  'Card',
+  'UPI',
+  'Bank Transfer',
+  'Other'
+];
 
 class AppTransaction {
   String id;

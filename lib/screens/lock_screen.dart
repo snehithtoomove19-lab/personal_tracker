@@ -28,7 +28,8 @@ class _LockScreenState extends State<LockScreen> {
             children: [
               const Icon(Icons.lock_outline, size: 56),
               const SizedBox(height: 16),
-              const Text('Enter PIN', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const Text('Enter PIN',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               TextField(
                 controller: _controller,

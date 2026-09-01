@@ -40,13 +40,16 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
-    final categories = _type == TxType.expense ? app.expenseCategories : app.incomeCategories;
+    final categories =
+        _type == TxType.expense ? app.expenseCategories : app.incomeCategories;
     _category ??= categories.first;
     final isEditing = widget.existing != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Transaction' : (_type == TxType.expense ? 'Add Expense' : 'Add Income')),
+        title: Text(isEditing
+            ? 'Edit Transaction'
+            : (_type == TxType.expense ? 'Add Expense' : 'Add Income')),
         actions: [
           if (isEditing)
             IconButton(
@@ -67,8 +70,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               if (!isEditing)
                 SegmentedButton<TxType>(
                   segments: const [
-                    ButtonSegment(value: TxType.expense, label: Text('Expense'), icon: Icon(Icons.remove)),
-                    ButtonSegment(value: TxType.income, label: Text('Income'), icon: Icon(Icons.add)),
+                    ButtonSegment(
+                        value: TxType.expense,
+                        label: Text('Expense'),
+                        icon: Icon(Icons.remove)),
+                    ButtonSegment(
+                        value: TxType.income,
+                        label: Text('Income'),
+                        icon: Icon(Icons.add)),
                   ],
                   selected: {_type},
                   onSelectionChanged: (s) => setState(() {
@@ -79,8 +88,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _amountCtrl,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: 'Amount', prefixText: app.currency),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                decoration: InputDecoration(
+                    labelText: 'Amount', prefixText: app.currency),
                 validator: (v) {
                   if (v == null || v.isEmpty) return 'Enter an amount';
                   if (double.tryParse(v) == null) return 'Enter a valid number';
@@ -91,7 +102,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _category,
                 decoration: const InputDecoration(labelText: 'Category'),
-                items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                items: categories
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
                 onChanged: (v) => setState(() => _category = v),
               ),
               const SizedBox(height: 8),
@@ -100,7 +113,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   Expanded(
                     child: TextField(
                       controller: _newCategoryCtrl,
-                      decoration: const InputDecoration(hintText: 'Add custom category'),
+                      decoration: const InputDecoration(
+                          hintText: 'Add custom category'),
                     ),
                   ),
                   IconButton(
@@ -108,7 +122,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                     onPressed: () {
                       final name = _newCategoryCtrl.text.trim();
                       if (name.isNotEmpty) {
-                        app.addCustomCategory(name, isExpense: _type == TxType.expense);
+                        app.addCustomCategory(name,
+                            isExpense: _type == TxType.expense);
                         setState(() {
                           _category = name;
                           _newCategoryCtrl.clear();
@@ -143,19 +158,23 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               DropdownButtonFormField<String>(
                 initialValue: _paymentMethod,
                 decoration: const InputDecoration(labelText: 'Payment Method'),
-                items: kPaymentMethods.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
+                items: kPaymentMethods
+                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                    .toList(),
                 onChanged: (v) {
                   if (v != null) setState(() => _paymentMethod = v);
                 },
               ),
               const SizedBox(height: 16),
-              const Text('Repeat', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text('Repeat',
+                  style: TextStyle(fontWeight: FontWeight.w600)),
               const SizedBox(height: 8),
               SegmentedButton<TxRepeat>(
                 segments: const [
                   ButtonSegment(value: TxRepeat.none, label: Text('None')),
                   ButtonSegment(value: TxRepeat.weekly, label: Text('Weekly')),
-                  ButtonSegment(value: TxRepeat.monthly, label: Text('Monthly')),
+                  ButtonSegment(
+                      value: TxRepeat.monthly, label: Text('Monthly')),
                 ],
                 selected: {_repeat},
                 onSelectionChanged: (s) => setState(() => _repeat = s.first),
@@ -174,7 +193,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 onPressed: _save,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: Text(isEditing ? 'Save Changes' : 'Add ${_type == TxType.expense ? 'Expense' : 'Income'}'),
+                  child: Text(isEditing
+                      ? 'Save Changes'
+                      : 'Add ${_type == TxType.expense ? 'Expense' : 'Income'}'),
                 ),
               ),
             ],

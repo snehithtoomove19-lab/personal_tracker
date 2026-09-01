@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
@@ -17,15 +16,11 @@ class ProfileScreen extends StatelessWidget {
 
     final savedPct = app.savingsGoal <= 0
         ? 0.0
-        : (app.totalBalance / app.savingsGoal)
-            .clamp(0.0, 1.0)
-            .toDouble();
+        : (app.totalBalance / app.savingsGoal).clamp(0.0, 1.0).toDouble();
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 32;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32;
 
-    final completedGoals =
-        app.goals.where((g) => g.completed).length;
+    final completedGoals = app.goals.where((g) => g.completed).length;
 
     return ListView(
       physics: const BouncingScrollPhysics(),
@@ -53,7 +48,7 @@ class ProfileScreen extends StatelessWidget {
         // OVERVIEW
         // =========================================================
 
-        _SectionHeading(
+        const _SectionHeading(
           icon: Icons.insights_rounded,
           title: 'Your Overview',
           subtitle: 'A snapshot of your progress',
@@ -71,16 +66,14 @@ class ProfileScreen extends StatelessWidget {
 
             final columns = width >= 700 ? 3 : 2;
 
-            final cardWidth =
-                (width - ((columns - 1) * 10)) / columns;
+            final cardWidth = (width - ((columns - 1) * 10)) / columns;
 
             final cardHeight = cardWidth < 170 ? 112.0 : 105.0;
 
             return GridView.count(
               crossAxisCount: columns,
               shrinkWrap: true,
-              physics:
-                  const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
               mainAxisExtent: cardHeight,
@@ -160,8 +153,7 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.cake_outlined,
                   text: 'Your birthday is not set yet.',
                   action: 'Add birthday',
-                  onTap: () =>
-                      _editBirthday(context, app),
+                  onTap: () => _editBirthday(context, app),
                 )
               : Row(
                   children: [
@@ -169,10 +161,8 @@ class ProfileScreen extends StatelessWidget {
                       width: 46,
                       height: 46,
                       decoration: BoxDecoration(
-                        color:
-                            Colors.pink.withValues(alpha: 0.10),
-                        borderRadius:
-                            BorderRadius.circular(14),
+                        color: Colors.pink.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(
                         Icons.cake_rounded,
@@ -183,8 +173,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             formatDate(app.birthday!),
@@ -200,8 +189,7 @@ class ProfileScreen extends StatelessWidget {
                               'Age ${app.age}',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: colors.onSurface
-                                    .withValues(alpha: 0.5),
+                                color: colors.onSurface.withOpacity(0.5),
                               ),
                             ),
                           ],
@@ -215,10 +203,8 @@ class ProfileScreen extends StatelessWidget {
                           vertical: 7,
                         ),
                         decoration: BoxDecoration(
-                          color: colors.primary
-                              .withValues(alpha: 0.10),
-                          borderRadius:
-                              BorderRadius.circular(10),
+                          color: colors.primary.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           '${app.age} yrs',
@@ -251,8 +237,7 @@ class ProfileScreen extends StatelessWidget {
                   icon: Icons.savings_outlined,
                   text: 'Set a monthly savings target.',
                   action: 'Set goal',
-                  onTap: () =>
-                      _editSavings(context, app),
+                  onTap: () => _editSavings(context, app),
                 )
               : _SavingsContent(
                   app: app,
@@ -268,8 +253,7 @@ class ProfileScreen extends StatelessWidget {
 
         SectionCard(
           title: 'Financial Snapshot',
-          titleIcon:
-              Icons.account_balance_wallet_outlined,
+          titleIcon: Icons.account_balance_wallet_outlined,
           accentColor: Colors.teal,
           child: Column(
             children: [
@@ -300,7 +284,7 @@ class ProfileScreen extends StatelessWidget {
                 label: 'Goal progress',
                 value: app.savingsGoal > 0
                     ? '${(savedPct * 100).toStringAsFixed(0)}%'
-                    : '—',
+                    : 'â€”',
                 color: colors.primary,
               ),
             ],
@@ -322,8 +306,7 @@ class ProfileScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const SettingsScreen(),
+                  builder: (_) => const SettingsScreen(),
                 ),
               );
             },
@@ -342,8 +325,7 @@ class ProfileScreen extends StatelessWidget {
               Icon(
                 Icons.auto_awesome_rounded,
                 size: 18,
-                color:
-                    colors.primary.withValues(alpha: 0.45),
+                color: colors.primary.withOpacity(0.45),
               ),
               const SizedBox(height: 7),
               Text(
@@ -352,8 +334,7 @@ class ProfileScreen extends StatelessWidget {
                   fontSize: 9,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.8,
-                  color: colors.onSurface
-                      .withValues(alpha: 0.28),
+                  color: colors.onSurface.withOpacity(0.28),
                 ),
               ),
               const SizedBox(height: 4),
@@ -361,8 +342,7 @@ class ProfileScreen extends StatelessWidget {
                 'Small progress every day adds up.',
                 style: TextStyle(
                   fontSize: 10,
-                  color: colors.onSurface
-                      .withValues(alpha: 0.35),
+                  color: colors.onSurface.withOpacity(0.35),
                 ),
               ),
             ],
@@ -380,8 +360,7 @@ class ProfileScreen extends StatelessWidget {
   // =============================================================
 
   void _editName(BuildContext context, dynamic app) {
-    final controller =
-        TextEditingController(text: app.userName);
+    final controller = TextEditingController(text: app.userName);
 
     showDialog(
       context: context,
@@ -400,8 +379,7 @@ class ProfileScreen extends StatelessWidget {
           content: TextField(
             controller: controller,
             autofocus: true,
-            textCapitalization:
-                TextCapitalization.words,
+            textCapitalization: TextCapitalization.words,
             decoration: InputDecoration(
               labelText: 'Your name',
               hintText: 'Enter your name',
@@ -409,21 +387,18 @@ class ProfileScreen extends StatelessWidget {
                 Icons.person_outline_rounded,
               ),
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext),
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel'),
             ),
             FilledButton.icon(
               onPressed: () {
-                final name =
-                    controller.text.trim();
+                final name = controller.text.trim();
 
                 if (name.isNotEmpty) {
                   app.setUserName(name);
@@ -452,8 +427,7 @@ class ProfileScreen extends StatelessWidget {
 
     final picked = await showDatePicker(
       context: context,
-      initialDate:
-          app.birthday ?? DateTime(now.year - 20),
+      initialDate: app.birthday ?? DateTime(now.year - 20),
       firstDate: DateTime(1920),
       lastDate: now,
       helpText: 'Select your birthday',
@@ -464,8 +438,7 @@ class ProfileScreen extends StatelessWidget {
           data: Theme.of(context).copyWith(
             datePickerTheme: DatePickerThemeData(
               shape: RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(24),
               ),
             ),
           ),
@@ -488,9 +461,7 @@ class ProfileScreen extends StatelessWidget {
     dynamic app,
   ) {
     final controller = TextEditingController(
-      text: app.savingsGoal > 0
-          ? app.savingsGoal.toString()
-          : '',
+      text: app.savingsGoal > 0 ? app.savingsGoal.toString() : '',
     );
 
     showDialog(
@@ -498,8 +469,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius:
-                BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(24),
           ),
           title: const Row(
             children: [
@@ -515,8 +485,7 @@ class ProfileScreen extends StatelessWidget {
           content: TextField(
             controller: controller,
             autofocus: true,
-            keyboardType:
-                const TextInputType.numberWithOptions(
+            keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
             ),
             decoration: InputDecoration(
@@ -526,21 +495,18 @@ class ProfileScreen extends StatelessWidget {
                 Icons.currency_rupee_rounded,
               ),
               border: OutlineInputBorder(
-                borderRadius:
-                    BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext),
+              onPressed: () => Navigator.pop(dialogContext),
               child: const Text('Cancel'),
             ),
             FilledButton.icon(
               onPressed: () {
-                final value =
-                    double.tryParse(
+                final value = double.tryParse(
                   controller.text.trim(),
                 );
 
@@ -579,8 +545,7 @@ class _ProfileHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -590,15 +555,14 @@ class _ProfileHero extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             colors.primary,
-            colors.primary.withValues(alpha: 0.78),
-            colors.secondary.withValues(alpha: 0.70),
+            colors.primary.withOpacity(0.78),
+            colors.secondary.withOpacity(0.70),
           ],
         ),
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color:
-                colors.primary.withValues(alpha: 0.22),
+            color: colors.primary.withOpacity(0.22),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -614,8 +578,7 @@ class _ProfileHero extends StatelessWidget {
               height: 130,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white
-                    .withValues(alpha: 0.06),
+                color: Colors.white.withOpacity(0.06),
               ),
             ),
           ),
@@ -627,14 +590,12 @@ class _ProfileHero extends StatelessWidget {
               height: 110,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white
-                    .withValues(alpha: 0.05),
+                color: Colors.white.withOpacity(0.05),
               ),
             ),
           ),
           Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -643,15 +604,13 @@ class _ProfileHero extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: Colors.white
-                            .withValues(alpha: 0.45),
+                        color: Colors.white.withOpacity(0.45),
                         width: 2,
                       ),
                     ),
                     child: const CircleAvatar(
                       radius: 31,
-                      backgroundColor:
-                          Colors.white24,
+                      backgroundColor: Colors.white24,
                       child: Icon(
                         Icons.person_rounded,
                         color: Colors.white,
@@ -662,33 +621,26 @@ class _ProfileHero extends StatelessWidget {
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           'YOUR PROFILE',
                           style: TextStyle(
-                            color: Colors.white
-                                .withValues(alpha: 0.65),
+                            color: Colors.white.withOpacity(0.65),
                             fontSize: 10,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                             letterSpacing: 1.5,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          name.isEmpty
-                              ? 'Welcome'
-                              : name,
+                          name.isEmpty ? 'Welcome' : name,
                           maxLines: 1,
-                          overflow:
-                              TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 21,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                             letterSpacing: -0.4,
                           ),
                         ),
@@ -697,8 +649,7 @@ class _ProfileHero extends StatelessWidget {
                           Text(
                             '$age years old',
                             style: TextStyle(
-                              color: Colors.white
-                                  .withValues(alpha: 0.72),
+                              color: Colors.white.withOpacity(0.72),
                               fontSize: 11,
                             ),
                           ),
@@ -709,11 +660,8 @@ class _ProfileHero extends StatelessWidget {
                   IconButton(
                     onPressed: onEdit,
                     style: IconButton.styleFrom(
-                      backgroundColor:
-                          Colors.white
-                              .withValues(alpha: 0.13),
-                      foregroundColor:
-                          Colors.white,
+                      backgroundColor: Colors.white.withOpacity(0.13),
+                      foregroundColor: Colors.white,
                     ),
                     icon: const Icon(
                       Icons.edit_outlined,
@@ -727,17 +675,15 @@ class _ProfileHero extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _HeroMiniStat(
-                      icon: Icons
-                          .local_fire_department_rounded,
+                      icon: Icons.local_fire_department_rounded,
                       label: 'STREAK',
                       value: '$streak days',
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Expanded(
+                  const Expanded(
                     child: _HeroMiniStat(
-                      icon:
-                          Icons.auto_awesome_rounded,
+                      icon: Icons.auto_awesome_rounded,
                       label: 'TRACKER',
                       value: 'Active',
                     ),
@@ -771,36 +717,30 @@ class _HeroMiniStat extends StatelessWidget {
         vertical: 10,
       ),
       decoration: BoxDecoration(
-        color:
-            Colors.white.withValues(alpha: 0.11),
+        color: Colors.white.withOpacity(0.11),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color:
-              Colors.white.withValues(alpha: 0.08),
+          color: Colors.white.withOpacity(0.08),
         ),
       ),
       child: Row(
         children: [
           Icon(
             icon,
-            color: Colors.white
-                .withValues(alpha: 0.85),
+            color: Colors.white.withOpacity(0.85),
             size: 18,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   label,
                   style: TextStyle(
-                    color: Colors.white
-                        .withValues(alpha: 0.55),
+                    color: Colors.white.withOpacity(0.55),
                     fontSize: 8,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                     letterSpacing: 1,
                   ),
                 ),
@@ -810,8 +750,7 @@ class _HeroMiniStat extends StatelessWidget {
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w700,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -840,8 +779,7 @@ class _SectionHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -849,10 +787,8 @@ class _SectionHeading extends StatelessWidget {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: colors.primary
-                .withValues(alpha: 0.10),
-            borderRadius:
-                BorderRadius.circular(12),
+            color: colors.primary.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
@@ -863,15 +799,13 @@ class _SectionHeading extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
                 style: TextStyle(
                   fontSize: 15,
-                  fontWeight:
-                      FontWeight.w800,
+                  fontWeight: FontWeight.w800,
                   color: colors.onSurface,
                 ),
               ),
@@ -880,8 +814,7 @@ class _SectionHeading extends StatelessWidget {
                 subtitle,
                 style: TextStyle(
                   fontSize: 10,
-                  color: colors.onSurface
-                      .withValues(alpha: 0.45),
+                  color: colors.onSurface.withOpacity(0.45),
                 ),
               ),
             ],
@@ -905,19 +838,15 @@ class _StreakCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
-        color:
-            Colors.orange.withValues(alpha: 0.08),
-        borderRadius:
-            BorderRadius.circular(20),
+        color: Colors.orange.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color:
-              Colors.orange.withValues(alpha: 0.12),
+          color: Colors.orange.withOpacity(0.12),
         ),
       ),
       child: Row(
@@ -926,8 +855,7 @@ class _StreakCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.orange
-                  .withValues(alpha: 0.13),
+              color: Colors.orange.withOpacity(0.13),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -939,17 +867,13 @@ class _StreakCard extends StatelessWidget {
           const SizedBox(width: 13),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  streak > 0
-                      ? '$streak day streak 🔥'
-                      : 'Start your streak',
+                  streak > 0 ? '$streak day streak ðŸ”¥' : 'Start your streak',
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                     color: colors.onSurface,
                   ),
                 ),
@@ -960,8 +884,7 @@ class _StreakCard extends StatelessWidget {
                       : 'Complete something today to begin.',
                   style: TextStyle(
                     fontSize: 11,
-                    color: colors.onSurface
-                        .withValues(alpha: 0.48),
+                    color: colors.onSurface.withOpacity(0.48),
                   ),
                 ),
               ],
@@ -970,8 +893,7 @@ class _StreakCard extends StatelessWidget {
           Icon(
             Icons.arrow_forward_ios_rounded,
             size: 13,
-            color: Colors.orange
-                .withValues(alpha: 0.55),
+            color: Colors.orange.withOpacity(0.55),
           ),
         ],
       ),
@@ -994,19 +916,15 @@ class _SavingsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    final months =
-        app.monthsToReachSavingsGoal;
+    final months = app.monthsToReachSavingsGoal;
 
     return Column(
-      crossAxisAlignment:
-          CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: Text(
@@ -1016,8 +934,7 @@ class _SavingsContent extends StatelessWidget {
                 ),
                 style: TextStyle(
                   fontSize: 24,
-                  fontWeight:
-                      FontWeight.w900,
+                  fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
                   color: colors.onSurface,
                 ),
@@ -1028,23 +945,19 @@ class _SavingsContent extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.green,
                 fontSize: 15,
-                fontWeight:
-                    FontWeight.w800,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
         ClipRRect(
-          borderRadius:
-              BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(10),
           child: LinearProgressIndicator(
             value: percentage,
             minHeight: 12,
-            backgroundColor: Colors.green
-                .withValues(alpha: 0.10),
-            valueColor:
-                const AlwaysStoppedAnimation<Color>(
+            backgroundColor: Colors.green.withOpacity(0.10),
+            valueColor: const AlwaysStoppedAnimation<Color>(
               Colors.green,
             ),
           ),
@@ -1053,11 +966,9 @@ class _SavingsContent extends StatelessWidget {
         Row(
           children: [
             Icon(
-              Icons
-                  .account_balance_wallet_outlined,
+              Icons.account_balance_wallet_outlined,
               size: 14,
-              color: colors.onSurface
-                  .withValues(alpha: 0.42),
+              color: colors.onSurface.withOpacity(0.42),
             ),
             const SizedBox(width: 5),
             Expanded(
@@ -1065,8 +976,7 @@ class _SavingsContent extends StatelessWidget {
                 'Based on your current balance',
                 style: TextStyle(
                   fontSize: 10,
-                  color: colors.onSurface
-                      .withValues(alpha: 0.45),
+                  color: colors.onSurface.withOpacity(0.45),
                 ),
               ),
             ),
@@ -1077,11 +987,8 @@ class _SavingsContent extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colors
-                .surfaceContainerHighest
-                .withValues(alpha: 0.45),
-            borderRadius:
-                BorderRadius.circular(13),
+            color: colors.surfaceContainerHighest.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(13),
           ),
           child: _GoalProjection(
             months: months,
@@ -1105,19 +1012,16 @@ class _GoalProjection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     if (months == null) {
       return Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             Icons.info_outline_rounded,
             size: 17,
-            color: colors.onSurface
-                .withValues(alpha: 0.45),
+            color: colors.onSurface.withOpacity(0.45),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -1126,8 +1030,7 @@ class _GoalProjection extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 height: 1.4,
-                color: colors.onSurface
-                    .withValues(alpha: 0.52),
+                color: colors.onSurface.withOpacity(0.52),
               ),
             ),
           ),
@@ -1145,12 +1048,11 @@ class _GoalProjection extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            'Goal reached! 🎉',
+            'Goal reached! ðŸŽ‰',
             style: TextStyle(
               fontSize: 12,
               color: Colors.green,
-              fontWeight:
-                  FontWeight.w800,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -1170,8 +1072,7 @@ class _GoalProjection extends StatelessWidget {
             'At your current pace, about $months month${months == 1 ? '' : 's'} to reach your goal.',
             style: const TextStyle(
               fontSize: 11,
-              fontWeight:
-                  FontWeight.w600,
+              fontWeight: FontWeight.w600,
               height: 1.35,
             ),
           ),
@@ -1200,8 +1101,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -1209,10 +1109,8 @@ class _InfoRow extends StatelessWidget {
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color:
-                color.withValues(alpha: 0.10),
-            borderRadius:
-                BorderRadius.circular(11),
+            color: color.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(11),
           ),
           child: Icon(
             icon,
@@ -1226,10 +1124,8 @@ class _InfoRow extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 12,
-              fontWeight:
-                  FontWeight.w600,
-              color: colors.onSurface
-                  .withValues(alpha: 0.55),
+              fontWeight: FontWeight.w600,
+              color: colors.onSurface.withOpacity(0.55),
             ),
           ),
         ),
@@ -1237,13 +1133,11 @@ class _InfoRow extends StatelessWidget {
           child: Text(
             value,
             maxLines: 1,
-            overflow:
-                TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.end,
             style: TextStyle(
               fontSize: 13,
-              fontWeight:
-                  FontWeight.w800,
+              fontWeight: FontWeight.w800,
               color: colors.onSurface,
             ),
           ),
@@ -1272,8 +1166,7 @@ class _EmptyInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -1281,15 +1174,12 @@ class _EmptyInfo extends StatelessWidget {
           width: 42,
           height: 42,
           decoration: BoxDecoration(
-            color: colors.primary
-                .withValues(alpha: 0.08),
-            borderRadius:
-                BorderRadius.circular(12),
+            color: colors.primary.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
-            color: colors.primary
-                .withValues(alpha: 0.65),
+            color: colors.primary.withOpacity(0.65),
           ),
         ),
         const SizedBox(width: 11),
@@ -1298,8 +1188,7 @@ class _EmptyInfo extends StatelessWidget {
             text,
             style: TextStyle(
               fontSize: 11,
-              color: colors.onSurface
-                  .withValues(alpha: 0.48),
+              color: colors.onSurface.withOpacity(0.48),
             ),
           ),
         ),
@@ -1333,8 +1222,7 @@ class _EditButton extends StatelessWidget {
           vertical: 5,
         ),
         minimumSize: Size.zero,
-        tapTargetSize:
-            MaterialTapTargetSize.shrinkWrap,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       icon: const Icon(
         Icons.edit_outlined,
@@ -1364,16 +1252,13 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return InkWell(
-      borderRadius:
-          BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Padding(
-        padding:
-            const EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 4,
         ),
         child: Row(
@@ -1382,10 +1267,8 @@ class _SettingsTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: Colors.blueGrey
-                    .withValues(alpha: 0.10),
-                borderRadius:
-                    BorderRadius.circular(13),
+                color: Colors.blueGrey.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: const Icon(
                 Icons.settings_outlined,
@@ -1395,17 +1278,14 @@ class _SettingsTile extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'App Settings',
                     style: TextStyle(
                       fontSize: 14,
-                      fontWeight:
-                          FontWeight.w700,
-                      color:
-                          colors.onSurface,
+                      fontWeight: FontWeight.w700,
+                      color: colors.onSurface,
                     ),
                   ),
                   const SizedBox(height: 3),
@@ -1413,8 +1293,7 @@ class _SettingsTile extends StatelessWidget {
                     'Customize your personal tracker',
                     style: TextStyle(
                       fontSize: 10,
-                      color: colors.onSurface
-                          .withValues(alpha: 0.45),
+                      color: colors.onSurface.withOpacity(0.45),
                     ),
                   ),
                 ],
@@ -1422,8 +1301,7 @@ class _SettingsTile extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right_rounded,
-              color: colors.onSurface
-                  .withValues(alpha: 0.30),
+              color: colors.onSurface.withOpacity(0.30),
             ),
           ],
         ),
@@ -1431,4 +1309,3 @@ class _SettingsTile extends StatelessWidget {
     );
   }
 }
-

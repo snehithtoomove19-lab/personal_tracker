@@ -1,4 +1,4 @@
-
+﻿
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -50,7 +50,7 @@ class BirthdayContactsScreen extends StatelessWidget {
               '${contacts.length} contact${contacts.length == 1 ? '' : 's'} saved',
               style: theme.textTheme.bodySmall?.copyWith(
                 fontSize: 10,
-                color: colors.onSurface.withValues(alpha: 0.55),
+                color: colors.onSurface.withOpacity(0.55),
               ),
             ),
           ],
@@ -61,7 +61,7 @@ class BirthdayContactsScreen extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: Colors.pink.withValues(alpha: 0.10),
+              color: Colors.pink.withOpacity(0.10),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -107,7 +107,7 @@ class BirthdayContactsScreen extends StatelessWidget {
           // ----------------------------------------------------------
 
           if (contacts.isNotEmpty)
-            _InfoCard(),
+            const _InfoCard(),
 
           if (contacts.isNotEmpty)
             const SizedBox(height: 18),
@@ -264,7 +264,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                         filled: true,
                         fillColor: colors
                             .surfaceContainerHighest
-                            .withValues(alpha: 0.45),
+                            .withOpacity(0.45),
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(16),
@@ -288,7 +288,7 @@ class BirthdayContactsScreen extends StatelessWidget {
                         filled: true,
                         fillColor: colors
                             .surfaceContainerHighest
-                            .withValues(alpha: 0.45),
+                            .withOpacity(0.45),
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(16),
@@ -382,8 +382,8 @@ class BirthdayContactsScreen extends StatelessWidget {
                             SnackBarBehavior.floating,
                         content: Text(
                           contact == null
-                              ? '🎂 Birthday added for $name'
-                              : '✨ Birthday updated',
+                              ? 'ðŸŽ‚ Birthday added for $name'
+                              : 'âœ¨ Birthday updated',
                         ),
                       ),
                     );
@@ -512,7 +512,7 @@ class _BirthdayHero extends StatelessWidget {
         borderRadius: BorderRadius.circular(26),
         boxShadow: [
           BoxShadow(
-            color: Colors.pink.withValues(alpha: 0.22),
+            color: Colors.pink.withOpacity(0.22),
             blurRadius: 24,
             offset: const Offset(0, 10),
           ),
@@ -529,7 +529,7 @@ class _BirthdayHero extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   color: Colors.white
-                      .withValues(alpha: 0.18),
+                      .withOpacity(0.18),
                   borderRadius:
                       BorderRadius.circular(17),
                 ),
@@ -612,7 +612,7 @@ class _HeroStat extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: Colors.white
-            .withValues(alpha: 0.12),
+            .withOpacity(0.12),
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -667,11 +667,11 @@ class _InfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: colors.surfaceContainerHighest
-            .withValues(alpha: 0.45),
+            .withOpacity(0.45),
         borderRadius: BorderRadius.circular(19),
         border: Border.all(
           color: colors.outline
-              .withValues(alpha: 0.06),
+              .withOpacity(0.06),
         ),
       ),
       child: Row(
@@ -683,7 +683,7 @@ class _InfoCard extends StatelessWidget {
             height: 38,
             decoration: BoxDecoration(
               color: Colors.pink
-                  .withValues(alpha: 0.10),
+                  .withOpacity(0.10),
               borderRadius:
                   BorderRadius.circular(12),
             ),
@@ -699,7 +699,7 @@ class _InfoCard extends StatelessWidget {
               'Add birthdays for friends and family. Your Reminders screen will automatically show upcoming birthdays.',
               style: TextStyle(
                 color: colors.onSurface
-                    .withValues(alpha: 0.60),
+                    .withOpacity(0.60),
                 fontSize: 10,
                 height: 1.45,
               ),
@@ -751,13 +751,13 @@ class _BirthdayCard extends StatelessWidget {
     String statusText;
 
     if (isToday) {
-      statusText = '🎉 Today • turns $age';
+      statusText = 'ðŸŽ‰ Today â€¢ turns $age';
     } else if (days == 1) {
-      statusText = 'Tomorrow • turns $age';
+      statusText = 'Tomorrow â€¢ turns $age';
     } else if (isSoon) {
-      statusText = 'In $days days • turns $age';
+      statusText = 'In $days days â€¢ turns $age';
     } else {
-      statusText = 'In $days days • turns $age';
+      statusText = 'In $days days â€¢ turns $age';
     }
 
     return Material(
@@ -774,14 +774,14 @@ class _BirthdayCard extends StatelessWidget {
             border: Border.all(
               color: isToday
                   ? Colors.pink
-                      .withValues(alpha: 0.20)
+                      .withOpacity(0.20)
                   : colors.outline
-                      .withValues(alpha: 0.08),
+                      .withOpacity(0.08),
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black
-                    .withValues(alpha: 0.025),
+                    .withOpacity(0.025),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -803,7 +803,7 @@ class _BirthdayCard extends StatelessWidget {
                         : [
                             colors.primary,
                             colors.primary
-                                .withValues(alpha: 0.70),
+                                .withOpacity(0.70),
                           ],
                   ),
                   shape: BoxShape.circle,
@@ -884,13 +884,13 @@ class _BirthdayCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '$dateText • $statusText',
+                      '$dateText â€¢ $statusText',
                       maxLines: 2,
                       overflow:
                           TextOverflow.ellipsis,
                       style: TextStyle(
                         color: colors.onSurface
-                            .withValues(alpha: 0.55),
+                            .withOpacity(0.55),
                         fontSize: 10,
                         height: 1.3,
                       ),
@@ -906,7 +906,7 @@ class _BirthdayCard extends StatelessWidget {
                 icon: Icon(
                   Icons.more_vert_rounded,
                   color: colors.onSurface
-                      .withValues(alpha: 0.45),
+                      .withOpacity(0.45),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius:
@@ -984,12 +984,12 @@ class _DatePickerCard extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: colors.primary
-                .withValues(alpha: 0.07),
+                .withOpacity(0.07),
             borderRadius:
                 BorderRadius.circular(17),
             border: Border.all(
               color: colors.primary
-                  .withValues(alpha: 0.12),
+                  .withOpacity(0.12),
             ),
           ),
           child: Row(
@@ -999,7 +999,7 @@ class _DatePickerCard extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: colors.primary
-                      .withValues(alpha: 0.12),
+                      .withOpacity(0.12),
                   borderRadius:
                       BorderRadius.circular(13),
                 ),
@@ -1025,7 +1025,7 @@ class _DatePickerCard extends StatelessWidget {
                       DateFormat.yMMMMd().format(date),
                       style: TextStyle(
                         color: colors.onSurface
-                            .withValues(alpha: 0.55),
+                            .withOpacity(0.55),
                         fontSize: 11,
                       ),
                     ),
@@ -1067,11 +1067,11 @@ class _EmptyBirthdayState extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: colors.primary
-            .withValues(alpha: 0.045),
+            .withOpacity(0.045),
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
           color: colors.primary
-              .withValues(alpha: 0.08),
+              .withOpacity(0.08),
         ),
       ),
       child: Column(
@@ -1090,7 +1090,7 @@ class _EmptyBirthdayState extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: Colors.pink
-                      .withValues(alpha: 0.20),
+                      .withOpacity(0.20),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
@@ -1117,7 +1117,7 @@ class _EmptyBirthdayState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
               color: colors.onSurface
-                  .withValues(alpha: 0.55),
+                  .withOpacity(0.55),
               fontSize: 11,
               height: 1.45,
             ),
@@ -1140,4 +1140,5 @@ class _EmptyBirthdayState extends StatelessWidget {
     );
   }
 }
+
 

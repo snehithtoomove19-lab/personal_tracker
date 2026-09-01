@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
@@ -96,8 +95,7 @@ class RemindersScreen extends StatelessWidget {
     for (final t in app.transactions.where(
       (t) => t.repeat.name != 'none',
     )) {
-      final key =
-          '${t.type.name}|${t.category}|${t.amount}|${t.paymentMethod}';
+      final key = '${t.type.name}|${t.category}|${t.amount}|${t.paymentMethod}';
 
       if (!recurringSeries.containsKey(key) ||
           (recurringSeries[key].date as DateTime).isBefore(t.date)) {
@@ -107,8 +105,7 @@ class RemindersScreen extends StatelessWidget {
 
     final recurringList = recurringSeries.values.toList();
 
-    final hasReminders =
-        overdueTasks.isNotEmpty ||
+    final hasReminders = overdueTasks.isNotEmpty ||
         upcomingTasks.isNotEmpty ||
         upcomingGoals.isNotEmpty ||
         upcomingBirthdayContacts.isNotEmpty ||
@@ -130,17 +127,15 @@ class RemindersScreen extends StatelessWidget {
         final period = h >= 12 ? 'PM' : 'AM';
         final displayHour = h % 12 == 0 ? 12 : h % 12;
 
-        return '$dateStr • $displayHour:${m.toString().padLeft(2, '0')} $period';
+        return '$dateStr â€¢ $displayHour:${m.toString().padLeft(2, '0')} $period';
       }
 
       return dateStr;
     }
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 32;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 32;
 
-    final totalReminders =
-        overdueTasks.length +
+    final totalReminders = overdueTasks.length +
         upcomingTasks.length +
         upcomingGoals.length +
         upcomingBirthdayContacts.length;
@@ -185,13 +180,13 @@ class RemindersScreen extends StatelessWidget {
                   end: Alignment.bottomRight,
                   colors: [
                     colors.primary,
-                    colors.primary.withValues(alpha: 0.72),
+                    colors.primary.withOpacity(0.72),
                   ],
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: colors.primary.withValues(alpha: 0.22),
+                    color: colors.primary.withOpacity(0.22),
                     blurRadius: 12,
                     offset: const Offset(0, 5),
                   ),
@@ -221,8 +216,7 @@ class RemindersScreen extends StatelessWidget {
 
           _ReminderSummary(
             overdueCount: overdueTasks.length,
-            upcomingCount:
-                upcomingTasks.length + upcomingGoals.length,
+            upcomingCount: upcomingTasks.length + upcomingGoals.length,
             birthdayCount: upcomingBirthdayContacts.length,
             totalReminders: totalReminders,
             hasReminders: hasReminders,
@@ -250,8 +244,7 @@ class RemindersScreen extends StatelessWidget {
                   return _ReminderTile(
                     icon: Icons.warning_amber_rounded,
                     title: task.title,
-                    subtitle:
-                        'Was due ${formatDate(task.dueDate!)}',
+                    subtitle: 'Was due ${formatDate(task.dueDate!)}',
                     color: Colors.red,
                     badge: 'OVERDUE',
                   );
@@ -266,7 +259,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (upcomingTasks.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.task_alt_rounded,
               title: 'Upcoming Tasks',
               subtitle: 'Due within the next 30 days',
@@ -280,8 +273,7 @@ class RemindersScreen extends StatelessWidget {
                   return _ReminderTile(
                     icon: Icons.task_alt_rounded,
                     title: task.title,
-                    subtitle:
-                        'Due ${taskDueLabel(task)}',
+                    subtitle: 'Due ${taskDueLabel(task)}',
                     color: Colors.blue,
                     badge: 'UPCOMING',
                   );
@@ -296,7 +288,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (upcomingGoals.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.flag_rounded,
               title: 'Goal Deadlines',
               subtitle: 'Targets coming up soon',
@@ -310,8 +302,7 @@ class RemindersScreen extends StatelessWidget {
                   return _ReminderTile(
                     icon: Icons.flag_rounded,
                     title: goal.title,
-                    subtitle:
-                        'Target ${formatDate(goal.targetDate!)}',
+                    subtitle: 'Target ${formatDate(goal.targetDate!)}',
                     color: Colors.deepPurple,
                     badge: 'GOAL',
                   );
@@ -326,7 +317,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (upcomingBirthdayContacts.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.cake_rounded,
               title: 'Upcoming Birthdays',
               subtitle: 'People you should remember',
@@ -342,17 +333,15 @@ class RemindersScreen extends StatelessWidget {
                   final age = contact.ageOn(next);
 
                   final label = days == 0
-                      ? 'Today • turns $age'
+                      ? 'Today â€¢ turns $age'
                       : days == 1
-                          ? 'Tomorrow • turns $age'
-                          : '$days days • turns $age';
+                          ? 'Tomorrow â€¢ turns $age'
+                          : '$days days â€¢ turns $age';
 
                   return _ReminderTile(
                     icon: Icons.cake_rounded,
-                    title:
-                        '${contact.name} • ${contact.relation}',
-                    subtitle:
-                        '${formatDateShort(contact.date)} • $label',
+                    title: '${contact.name} â€¢ ${contact.relation}',
+                    subtitle: '${formatDateShort(contact.date)} â€¢ $label',
                     color: Colors.pink,
                     badge: days == 0 ? 'TODAY' : '$days DAYS',
                   );
@@ -367,7 +356,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (noDateTasks.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.event_busy_rounded,
               title: 'Tasks Without Dates',
               subtitle: 'Add a due date to get reminders',
@@ -396,7 +385,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (recurringList.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.autorenew_rounded,
               title: 'Recurring Transactions',
               subtitle: 'Your repeating money activity',
@@ -410,9 +399,9 @@ class RemindersScreen extends StatelessWidget {
                   return _ReminderTile(
                     icon: Icons.autorenew_rounded,
                     title:
-                        '${transaction.category} • ${transaction.repeat.name}',
+                        '${transaction.category} â€¢ ${transaction.repeat.name}',
                     subtitle:
-                        'Last on ${formatDate(transaction.date)} • ${app.currency}${transaction.amount}',
+                        'Last on ${formatDate(transaction.date)} â€¢ ${app.currency}${transaction.amount}',
                     color: Colors.indigo,
                     badge: 'REPEAT',
                   );
@@ -427,7 +416,7 @@ class RemindersScreen extends StatelessWidget {
           // ========================================================
 
           if (billCategoryTx.isNotEmpty) ...[
-            _SectionHeader(
+            const _SectionHeader(
               icon: Icons.receipt_long_rounded,
               title: 'Recent Bills',
               subtitle: 'Your latest bill payments',
@@ -501,14 +490,14 @@ class _ReminderSummary extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             colors.primary,
-            colors.primary.withValues(alpha: 0.76),
-            colors.secondary.withValues(alpha: 0.65),
+            colors.primary.withOpacity(0.76),
+            colors.secondary.withOpacity(0.65),
           ],
         ),
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withValues(alpha: 0.24),
+            color: colors.primary.withOpacity(0.24),
             blurRadius: 26,
             offset: const Offset(0, 12),
           ),
@@ -523,10 +512,10 @@ class _ReminderSummary extends StatelessWidget {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.16),
+                  color: Colors.white.withOpacity(0.16),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.10),
+                    color: Colors.white.withOpacity(0.10),
                   ),
                 ),
                 child: const Icon(
@@ -543,7 +532,7 @@ class _ReminderSummary extends StatelessWidget {
                     Text(
                       hasReminders
                           ? '$totalReminders things to watch'
-                          : 'You’re all caught up',
+                          : 'Youâ€™re all caught up',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -554,10 +543,10 @@ class _ReminderSummary extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       hasReminders
-                          ? 'Here’s what deserves your attention'
+                          ? 'Hereâ€™s what deserves your attention'
                           : 'Nothing urgent right now',
                       style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.72),
+                        color: Colors.white.withOpacity(0.72),
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                       ),
@@ -567,9 +556,7 @@ class _ReminderSummary extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 19),
-
           Row(
             children: [
               Expanded(
@@ -622,17 +609,17 @@ class _SummaryItem extends StatelessWidget {
         horizontal: 7,
       ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.11),
+        color: Colors.white.withOpacity(0.11),
         borderRadius: BorderRadius.circular(15),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.07),
+          color: Colors.white.withOpacity(0.07),
         ),
       ),
       child: Column(
         children: [
           Icon(
             icon,
-            color: Colors.white.withValues(alpha: 0.78),
+            color: Colors.white.withOpacity(0.78),
             size: 17,
           ),
           const SizedBox(height: 5),
@@ -648,7 +635,7 @@ class _SummaryItem extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.68),
+              color: Colors.white.withOpacity(0.68),
               fontSize: 9,
               fontWeight: FontWeight.w700,
             ),
@@ -688,8 +675,8 @@ class _SectionHeader extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                color.withValues(alpha: 0.16),
-                color.withValues(alpha: 0.07),
+                color.withOpacity(0.16),
+                color.withOpacity(0.07),
               ],
             ),
             borderRadius: BorderRadius.circular(13),
@@ -752,11 +739,11 @@ class _ReminderCard extends StatelessWidget {
         color: colors.surface,
         borderRadius: BorderRadius.circular(21),
         border: Border.all(
-          color: color.withValues(alpha: 0.10),
+          color: color.withOpacity(0.10),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.035),
+            color: Colors.black.withOpacity(0.035),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -780,7 +767,7 @@ class _ReminderCard extends StatelessWidget {
             height: 1,
             indent: 68,
             endIndent: 16,
-            color: color.withValues(alpha: 0.07),
+            color: color.withOpacity(0.07),
           ),
         );
       }
@@ -827,8 +814,8 @@ class _ReminderTile extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  color.withValues(alpha: 0.14),
-                  color.withValues(alpha: 0.06),
+                  color.withOpacity(0.14),
+                  color.withOpacity(0.06),
                 ],
               ),
               borderRadius: BorderRadius.circular(14),
@@ -839,9 +826,7 @@ class _ReminderTile extends StatelessWidget {
               size: 20,
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -871,9 +856,7 @@ class _ReminderTile extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(width: 8),
-
           Container(
             constraints: const BoxConstraints(
               maxWidth: 72,
@@ -883,10 +866,10 @@ class _ReminderTile extends StatelessWidget {
               vertical: 6,
             ),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.08),
+              color: color.withOpacity(0.08),
               borderRadius: BorderRadius.circular(9),
               border: Border.all(
-                color: color.withValues(alpha: 0.08),
+                color: color.withOpacity(0.08),
               ),
             ),
             child: Text(
@@ -930,13 +913,13 @@ class _AllCaughtUp extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withValues(alpha: 0.07),
-            Colors.green.withValues(alpha: 0.04),
+            colors.primary.withOpacity(0.07),
+            Colors.green.withOpacity(0.04),
           ],
         ),
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: colors.primary.withValues(alpha: 0.08),
+          color: colors.primary.withOpacity(0.08),
         ),
       ),
       child: Column(
@@ -945,11 +928,11 @@ class _AllCaughtUp extends StatelessWidget {
             width: 74,
             height: 74,
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.10),
+              color: Colors.green.withOpacity(0.10),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withValues(alpha: 0.10),
+                  color: Colors.green.withOpacity(0.10),
                   blurRadius: 20,
                 ),
               ],
@@ -1001,10 +984,10 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.42),
+        color: colors.surfaceContainerHighest.withOpacity(0.42),
         borderRadius: BorderRadius.circular(19),
         border: Border.all(
-          color: colors.outline.withValues(alpha: 0.06),
+          color: colors.outline.withOpacity(0.06),
         ),
       ),
       child: Row(
@@ -1014,13 +997,13 @@ class _InfoCard extends StatelessWidget {
             width: 34,
             height: 34,
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.08),
+              color: colors.primary.withOpacity(0.08),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               Icons.lightbulb_outline_rounded,
               size: 18,
-              color: colors.primary.withValues(alpha: 0.72),
+              color: colors.primary.withOpacity(0.72),
             ),
           ),
           const SizedBox(width: 11),
@@ -1028,7 +1011,7 @@ class _InfoCard extends StatelessWidget {
             child: Text(
               'Reminders are automatically generated from your tasks, goals, birthdays, recurring transactions, and bills. Turn on "Welcome-Back Summary" in Settings for a quick overview when you open the app.',
               style: TextStyle(
-                color: colors.onSurface.withValues(alpha: 0.52),
+                color: colors.onSurface.withOpacity(0.52),
                 fontSize: 10,
                 height: 1.5,
                 fontWeight: FontWeight.w500,
@@ -1040,4 +1023,3 @@ class _InfoCard extends StatelessWidget {
     );
   }
 }
-
