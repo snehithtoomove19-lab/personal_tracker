@@ -17,8 +17,7 @@ class _SmsCandidate {
     required this.amount,
     required this.type,
     this.category = 'Other',
-    this.imported = false,
-  });
+  }) : imported = false;
 }
 
 /// Paste one or more bank / UPI SMS messages and detect transactions.

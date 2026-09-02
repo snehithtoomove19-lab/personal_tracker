@@ -144,8 +144,8 @@ class TasksScreen extends StatelessWidget {
       }
 
       return priorityColor(a.priority)
-          .value
-          .compareTo(priorityColor(b.priority).value);
+          .toARGB32()
+          .compareTo(priorityColor(b.priority).toARGB32());
     });
 
     final noDate = _sortByPriority(
@@ -939,7 +939,6 @@ class _TaskTile extends StatelessWidget {
     final app = AppScope.of(context);
 
     final completed = task.completed;
-    final priority = priorityColor(task.priority);
 
     return Dismissible(
       key: ValueKey(task.id),

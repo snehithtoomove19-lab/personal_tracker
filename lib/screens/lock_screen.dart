@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
@@ -100,7 +99,6 @@ class _LockScreenState extends State<LockScreen>
           child: Stack(
             children: [
               _buildBackground(context),
-
               Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.fromLTRB(
@@ -186,9 +184,7 @@ class _LockScreenState extends State<LockScreen>
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildLockIcon(context),
-
           const SizedBox(height: 24),
-
           Text(
             'Welcome back',
             textAlign: TextAlign.center,
@@ -197,9 +193,7 @@ class _LockScreenState extends State<LockScreen>
               letterSpacing: -0.8,
             ),
           ),
-
           const SizedBox(height: 7),
-
           Text(
             'Enter your PIN to continue',
             textAlign: TextAlign.center,
@@ -208,16 +202,12 @@ class _LockScreenState extends State<LockScreen>
               height: 1.4,
             ),
           ),
-
           const SizedBox(height: 28),
-
           _buildLockCard(
             context,
             correctPin,
           ),
-
           const SizedBox(height: 18),
-
           Text(
             'Your personal tracker is protected',
             textAlign: TextAlign.center,
@@ -324,13 +314,9 @@ class _LockScreenState extends State<LockScreen>
               letterSpacing: 1.5,
             ),
           ),
-
           const SizedBox(height: 20),
-
           _buildPinDisplay(context),
-
           const SizedBox(height: 12),
-
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 180),
             child: _error != null
@@ -364,11 +350,8 @@ class _LockScreenState extends State<LockScreen>
                     ),
                   ),
           ),
-
           const SizedBox(height: 22),
-
           _buildHiddenTextField(context),
-
           _buildUnlockButton(
             context,
             correctPin,
@@ -508,18 +491,18 @@ class _LockScreenState extends State<LockScreen>
                     color: colors.onPrimary,
                   ),
                 )
-              : Row(
-                  key: const ValueKey('unlock'),
+              : const Row(
+                  key: ValueKey('unlock'),
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.lock_open_rounded,
                       size: 20,
                     ),
-                    const SizedBox(width: 9),
+                    SizedBox(width: 9),
                     Text(
                       'Unlock',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15,
                       ),
@@ -578,4 +561,3 @@ class _LockScreenState extends State<LockScreen>
     }
   }
 }
-
