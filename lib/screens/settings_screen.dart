@@ -4,13 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import 'birthday_contacts_screen.dart';
 
-const List<String> kCurrencies = [
-  'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹',
-  '\$',
-  'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬',
-  'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£',
-  'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¥'
-];
+const List<String> kCurrencies = ['\u20b9', '\$', '\u20ac', '\u00a3', '\u00a5'];
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

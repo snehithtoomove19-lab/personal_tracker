@@ -979,10 +979,10 @@ class _MoodScreenState extends State<MoodScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       final note = noteCtrl.text.trim();
 
-                      app.upsertMood(
+                      await app.upsertMood(
                         MoodEntry(
                           id: existing?.id ?? app.newId(),
                           date: selectedDate,
@@ -991,7 +991,9 @@ class _MoodScreenState extends State<MoodScreen> {
                         ),
                       );
 
-                      Navigator.pop(ctx);
+                      if (ctx.mounted) {
+                        Navigator.pop(ctx);
+                      }
                     },
                     icon: const Icon(
                       Icons.check_rounded,

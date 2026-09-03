@@ -36,9 +36,8 @@ class BudgetsScreen extends StatelessWidget {
       }
     }
 
-    final overallProgress = totalBudget > 0
-        ? (totalSpent / totalBudget).clamp(0.0, 1.0)
-        : 0.0;
+    final overallProgress =
+        totalBudget > 0 ? (totalSpent / totalBudget).clamp(0.0, 1.0) : 0.0;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -247,9 +246,7 @@ class BudgetsScreen extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 22),
-
           if (hasBudget) ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -305,24 +302,19 @@ class BudgetsScreen extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 16),
-
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 10,
-                backgroundColor:
-                    Colors.white.withValues(alpha: 0.18),
+                backgroundColor: Colors.white.withValues(alpha: 0.18),
                 valueColor: const AlwaysStoppedAnimation<Color>(
                   Colors.white,
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
             Row(
               children: [
                 Expanded(
@@ -370,9 +362,7 @@ class BudgetsScreen extends StatelessWidget {
               ),
             ),
           ],
-
           const SizedBox(height: 18),
-
           Row(
             children: [
               _heroStat(
@@ -449,13 +439,10 @@ class BudgetsScreen extends StatelessWidget {
     final colors = theme.colorScheme;
 
     final hasBudget = budget != null && budget > 0;
-    final over = hasBudget && spent > budget!;
-    final percentage = hasBudget
-        ? (spent / budget!).clamp(0.0, 1.0)
-        : 0.0;
+    final over = hasBudget && spent > budget;
+    final percentage = hasBudget ? (spent / budget).clamp(0.0, 1.0) : 0.0;
 
-    final remaining =
-        hasBudget ? budget! - spent : 0.0;
+    final remaining = hasBudget ? budget - spent : 0.0;
 
     final progressColor = over
         ? const Color(0xFFE2574C)
@@ -499,13 +486,10 @@ class BudgetsScreen extends StatelessWidget {
                     size: 21,
                   ),
                 ),
-
                 const SizedBox(width: 11),
-
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         category,
@@ -528,16 +512,13 @@ class BudgetsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 if (hasBudget)
                   _statusBadge(
                     context,
                     over: over,
                     percentage: percentage,
                   ),
-
                 const SizedBox(width: 4),
-
                 IconButton(
                   tooltip: 'Edit budget',
                   visualDensity: VisualDensity.compact,
@@ -554,9 +535,7 @@ class BudgetsScreen extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 14),
-
             if (hasBudget) ...[
               Row(
                 children: [
@@ -573,7 +552,7 @@ class BudgetsScreen extends StatelessWidget {
                   ),
                   Text(
                     formatMoney(
-                      budget!,
+                      budget,
                       app.currency,
                     ),
                     style: theme.textTheme.bodySmall?.copyWith(
@@ -583,22 +562,17 @@ class BudgetsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 8),
-
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: LinearProgressIndicator(
                   value: percentage,
                   minHeight: 9,
                   color: progressColor,
-                  backgroundColor:
-                      progressColor.withValues(alpha: 0.10),
+                  backgroundColor: progressColor.withValues(alpha: 0.10),
                 ),
               ),
-
               const SizedBox(height: 9),
-
               Row(
                 children: [
                   Icon(
@@ -641,8 +615,7 @@ class BudgetsScreen extends StatelessWidget {
                   vertical: 11,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.surfaceContainerHighest
-                      .withValues(alpha: 0.35),
+                  color: colors.surfaceContainerHighest.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(13),
                 ),
                 child: Row(
@@ -734,18 +707,15 @@ class BudgetsScreen extends StatelessWidget {
       return Icons.directions_car_rounded;
     }
 
-    if (value.contains('shop') ||
-        value.contains('clothes')) {
+    if (value.contains('shop') || value.contains('clothes')) {
       return Icons.shopping_bag_rounded;
     }
 
-    if (value.contains('bill') ||
-        value.contains('utility')) {
+    if (value.contains('bill') || value.contains('utility')) {
       return Icons.receipt_long_rounded;
     }
 
-    if (value.contains('health') ||
-        value.contains('medical')) {
+    if (value.contains('health') || value.contains('medical')) {
       return Icons.favorite_rounded;
     }
 
@@ -753,13 +723,11 @@ class BudgetsScreen extends StatelessWidget {
       return Icons.movie_rounded;
     }
 
-    if (value.contains('education') ||
-        value.contains('school')) {
+    if (value.contains('education') || value.contains('school')) {
       return Icons.school_rounded;
     }
 
-    if (value.contains('home') ||
-        value.contains('rent')) {
+    if (value.contains('home') || value.contains('rent')) {
       return Icons.home_rounded;
     }
 
@@ -781,8 +749,7 @@ class BudgetsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest
-            .withValues(alpha: 0.35),
+        color: colors.surfaceContainerHighest.withValues(alpha: 0.35),
         borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
@@ -861,8 +828,7 @@ class BudgetsScreen extends StatelessWidget {
           content: TextField(
             controller: ctrl,
             autofocus: true,
-            keyboardType:
-                const TextInputType.numberWithOptions(
+            keyboardType: const TextInputType.numberWithOptions(
               decimal: true,
             ),
             decoration: InputDecoration(

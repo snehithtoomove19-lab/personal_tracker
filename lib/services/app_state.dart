@@ -56,7 +56,7 @@ class AppState extends ChangeNotifier {
 
   String userName = 'Friend';
   double savingsGoal = 0;
-  String currency = 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹';
+  String currency = '\u20b9';
   bool darkMode = false;
   bool pinEnabled = false;
   String? pin;
@@ -167,8 +167,10 @@ class AppState extends ChangeNotifier {
 
     await safely('settings', () async {
       userName = await s.readString(StoreKeys.userName) ?? 'Friend';
-      currency = await s.readString(StoreKeys.currency) ??
-          'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹';
+      final storedCurrency = await s.readString(StoreKeys.currency);
+      currency = storedCurrency == null || storedCurrency.contains('\u00c3')
+          ? '\u20b9'
+          : storedCurrency;
       darkMode = await s.readBool(StoreKeys.darkMode) ?? false;
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
