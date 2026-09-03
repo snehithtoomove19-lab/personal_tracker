@@ -22,15 +22,21 @@ class ProfileScreen extends StatelessWidget {
 
     final completedGoals = app.goals.where((g) => g.completed).length;
 
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      padding: EdgeInsets.fromLTRB(
-        16,
-        12,
-        16,
-        bottomPadding,
-      ),
-      children: [
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            12,
+            16,
+            bottomPadding,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
         // =========================================================
         // PROFILE HERO
         // =========================================================
@@ -351,7 +357,11 @@ class ProfileScreen extends StatelessWidget {
 
         // Extra breathing room at the absolute bottom.
         const SizedBox(height: 12),
-      ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
