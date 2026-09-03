@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/mood_entry.dart';
 import '../services/app_scope.dart';
 import '../utils/formatters.dart';
+import '../utils/app_navigation.dart';
 
 class MoodScreen extends StatefulWidget {
   const MoodScreen({super.key});
@@ -838,11 +839,11 @@ class _MoodScreenState extends State<MoodScreen> {
   // LOG MOOD
   // ===============================================================
 
-  void _logMood(
+  Future<void> _logMood(
     BuildContext context,
     String key,
     DateTime date,
-  ) {
+  ) async {
     final app = AppScope.of(context);
 
     final selectedDate = _dateOnly(date);
@@ -861,164 +862,184 @@ class _MoodScreenState extends State<MoodScreen> {
       selectedDate,
       DateTime.now(),
     );
+    var saving = false;
 
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
         ),
-      ),
-      builder: (ctx) {
-        final colors = Theme.of(ctx).colorScheme;
+        builder: (ctx) {
+          final colors = Theme.of(ctx).colorScheme;
 
-        return AnimatedPadding(
-          duration: const Duration(
-            milliseconds: 180,
-          ),
-          curve: Curves.easeOut,
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-          ),
-          child: SingleChildScrollView(
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            padding: const EdgeInsets.fromLTRB(
-              18,
-              4,
-              18,
-              18,
+          return AnimatedPadding(
+            duration: const Duration(
+              milliseconds: 180,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: option.color.withValues(
-                          alpha: 0.13,
+            curve: Curves.easeOut,
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(
+                18,
+                4,
+                18,
+                18,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: option.color.withValues(
+                            alpha: 0.13,
+                          ),
+                          shape: BoxShape.circle,
                         ),
-                        shape: BoxShape.circle,
+                        child: Icon(
+                          option.icon,
+                          color: option.color,
+                          size: 24,
+                        ),
                       ),
-                      child: Icon(
-                        option.icon,
-                        color: option.color,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 11),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isToday
-                                ? 'Today'
-                                : formatDate(
-                                    selectedDate,
-                                  ),
-                            style:
-                                Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                                      fontWeight: FontWeight.w800,
+                      const SizedBox(width: 11),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isToday
+                                  ? 'Today'
+                                  : formatDate(
+                                      selectedDate,
                                     ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            option.label,
-                            style: TextStyle(
-                              color: option.color,
-                              fontWeight: FontWeight.w700,
+                              style:
+                                  Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w800,
+                                      ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 2),
+                            Text(
+                              option.label,
+                              style: TextStyle(
+                                color: option.color,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: noteCtrl,
-                  maxLines: 3,
-                  minLines: 2,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    labelText: 'Mood note',
-                    hintText: 'What made you feel this way?',
-                    prefixIcon: const Icon(
-                      Icons.edit_note_rounded,
-                    ),
-                    alignLabelWithHint: true,
-                    filled: true,
-                    fillColor: colors.surface.withValues(
-                      alpha: 0.45,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide(
-                        color: colors.primary,
-                        width: 1.2,
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: noteCtrl,
+                    maxLines: 3,
+                    minLines: 2,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      labelText: 'Mood note',
+                      hintText: 'What made you feel this way?',
+                      prefixIcon: const Icon(
+                        Icons.edit_note_rounded,
+                      ),
+                      alignLabelWithHint: true,
+                      filled: true,
+                      fillColor: colors.surface.withValues(
+                        alpha: 0.45,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: colors.primary,
+                          width: 1.2,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () async {
-                      final note = noteCtrl.text.trim();
+                  const SizedBox(height: 14),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () async {
+                        if (saving) return;
 
-                      await app.upsertMood(
-                        MoodEntry(
+                        final mood = MoodEntry(
                           id: existing?.id ?? app.newId(),
                           date: selectedDate,
                           mood: key,
-                          note: note,
-                        ),
-                      );
+                          note: noteCtrl.text.trim(),
+                        );
 
-                      if (ctx.mounted) {
-                        Navigator.pop(ctx);
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.check_rounded,
-                    ),
-                    label: const Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 12,
+                        saving = true;
+
+                        try {
+                          await app.upsertMood(mood);
+                        } catch (error) {
+                          saving = false;
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            final messenger = appMessengerKey.currentState;
+                            if (messenger == null || !messenger.mounted) return;
+                            messenger.showSnackBar(
+                              SnackBar(
+                                  content: Text('Could not save mood: $error')),
+                            );
+                          });
+                          return;
+                        }
+
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final navigator = appNavigatorKey.currentState;
+                          if (navigator == null || !navigator.mounted) return;
+                          navigator.pop();
+                        });
+                      },
+                      icon: const Icon(
+                        Icons.check_rounded,
                       ),
-                      child: Text(
-                        'Save Mood',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                      label: const Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
+                        child: Text(
+                          'Save Mood',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    ).whenComplete(() {
+          );
+        },
+      );
+    } finally {
       noteCtrl.dispose();
-    });
+    }
   }
 }
 

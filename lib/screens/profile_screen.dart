@@ -37,326 +37,327 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-        // =========================================================
-        // PROFILE HERO
-        // =========================================================
+                // =========================================================
+                // PROFILE HERO
+                // =========================================================
 
-        _ProfileHero(
-          name: app.userName,
-          age: app.age,
-          streak: app.streak,
-          onEdit: () => _editName(context, app),
-        ),
-
-        const SizedBox(height: 18),
-
-        // =========================================================
-        // OVERVIEW
-        // =========================================================
-
-        const _SectionHeading(
-          icon: Icons.insights_rounded,
-          title: 'Your Overview',
-          subtitle: 'A snapshot of your progress',
-        ),
-
-        const SizedBox(height: 12),
-
-        // Responsive stats grid.
-        //
-        // Using a fixed mainAxisExtent instead of childAspectRatio
-        // prevents tiny bottom-overflow errors on different screens.
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-
-            final columns = width >= 700 ? 3 : 2;
-
-            final cardWidth = (width - ((columns - 1) * 10)) / columns;
-
-            final cardHeight = cardWidth < 170 ? 112.0 : 105.0;
-
-            return GridView.count(
-              crossAxisCount: columns,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              mainAxisExtent: cardHeight,
-              children: [
-                StatTile(
-                  label: 'Transactions',
-                  value: '${app.transactions.length}',
-                  icon: Icons.receipt_long_rounded,
-                  color: Colors.indigo,
-                  subtitle: 'Money records',
+                _ProfileHero(
+                  name: app.userName,
+                  age: app.age,
+                  streak: app.streak,
+                  onEdit: () => _editName(context, app),
                 ),
-                StatTile(
-                  label: 'Tasks',
-                  value: '${app.tasks.length}',
-                  icon: Icons.check_circle_outline_rounded,
-                  color: Colors.blue,
-                  subtitle: 'Things to do',
+
+                const SizedBox(height: 18),
+
+                // =========================================================
+                // OVERVIEW
+                // =========================================================
+
+                const _SectionHeading(
+                  icon: Icons.insights_rounded,
+                  title: 'Your Overview',
+                  subtitle: 'A snapshot of your progress',
                 ),
-                StatTile(
-                  label: 'Notes',
-                  value: '${app.notes.length}',
-                  icon: Icons.note_alt_outlined,
-                  color: Colors.orange,
-                  subtitle: 'Saved thoughts',
+
+                const SizedBox(height: 12),
+
+                // Responsive stats grid.
+                //
+                // Using a fixed mainAxisExtent instead of childAspectRatio
+                // prevents tiny bottom-overflow errors on different screens.
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final width = constraints.maxWidth;
+
+                    final columns = width >= 700 ? 3 : 2;
+
+                    final cardWidth = (width - ((columns - 1) * 10)) / columns;
+
+                    final cardHeight = cardWidth < 170 ? 112.0 : 105.0;
+
+                    return GridView.count(
+                      crossAxisCount: columns,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      mainAxisExtent: cardHeight,
+                      children: [
+                        StatTile(
+                          label: 'Transactions',
+                          value: '${app.transactions.length}',
+                          icon: Icons.receipt_long_rounded,
+                          color: Colors.indigo,
+                          subtitle: 'Money records',
+                        ),
+                        StatTile(
+                          label: 'Tasks',
+                          value: '${app.tasks.length}',
+                          icon: Icons.check_circle_outline_rounded,
+                          color: Colors.blue,
+                          subtitle: 'Things to do',
+                        ),
+                        StatTile(
+                          label: 'Notes',
+                          value: '${app.notes.length}',
+                          icon: Icons.note_alt_outlined,
+                          color: Colors.orange,
+                          subtitle: 'Saved thoughts',
+                        ),
+                        StatTile(
+                          label: 'Goals',
+                          value: '${app.goals.length}',
+                          icon: Icons.flag_outlined,
+                          color: Colors.purple,
+                          subtitle: 'Life targets',
+                        ),
+                        StatTile(
+                          label: 'Mood Logs',
+                          value: '${app.moods.length}',
+                          icon: Icons.mood_rounded,
+                          color: Colors.pink,
+                          subtitle: 'Mood entries',
+                        ),
+                        StatTile(
+                          label: 'Completed',
+                          value: '$completedGoals',
+                          icon: Icons.emoji_events_outlined,
+                          color: Colors.green,
+                          subtitle: 'Goals achieved',
+                        ),
+                      ],
+                    );
+                  },
                 ),
-                StatTile(
-                  label: 'Goals',
-                  value: '${app.goals.length}',
-                  icon: Icons.flag_outlined,
-                  color: Colors.purple,
-                  subtitle: 'Life targets',
+
+                const SizedBox(height: 18),
+
+                // =========================================================
+                // STREAK
+                // =========================================================
+
+                _StreakCard(
+                  streak: app.streak,
                 ),
-                StatTile(
-                  label: 'Mood Logs',
-                  value: '${app.moods.length}',
-                  icon: Icons.mood_rounded,
-                  color: Colors.pink,
-                  subtitle: 'Mood entries',
-                ),
-                StatTile(
-                  label: 'Completed',
-                  value: '$completedGoals',
-                  icon: Icons.emoji_events_outlined,
-                  color: Colors.green,
-                  subtitle: 'Goals achieved',
-                ),
-              ],
-            );
-          },
-        ),
 
-        const SizedBox(height: 18),
+                const SizedBox(height: 16),
 
-        // =========================================================
-        // STREAK
-        // =========================================================
+                // =========================================================
+                // BIRTHDAY
+                // =========================================================
 
-        _StreakCard(
-          streak: app.streak,
-        ),
-
-        const SizedBox(height: 16),
-
-        // =========================================================
-        // BIRTHDAY
-        // =========================================================
-
-        SectionCard(
-          title: 'Birthday',
-          titleIcon: Icons.cake_outlined,
-          accentColor: Colors.pink,
-          trailing: _EditButton(
-            onPressed: () => _editBirthday(context, app),
-          ),
-          child: app.birthday == null
-              ? _EmptyInfo(
-                  icon: Icons.cake_outlined,
-                  text: 'Your birthday is not set yet.',
-                  action: 'Add birthday',
-                  onTap: () => _editBirthday(context, app),
-                )
-              : Row(
-                  children: [
-                    Container(
-                      width: 46,
-                      height: 46,
-                      decoration: BoxDecoration(
-                        color: Colors.pink.withValues(alpha: 0.10),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(
-                        Icons.cake_rounded,
-                        color: Colors.pink,
-                        size: 23,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            formatDate(app.birthday!),
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: colors.onSurface,
-                            ),
-                          ),
-                          if (app.age != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              'Age ${app.age}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: colors.onSurface.withValues(alpha: 0.5),
+                SectionCard(
+                  title: 'Birthday',
+                  titleIcon: Icons.cake_outlined,
+                  accentColor: Colors.pink,
+                  trailing: _EditButton(
+                    onPressed: () => _editBirthday(context, app),
+                  ),
+                  child: app.birthday == null
+                      ? _EmptyInfo(
+                          icon: Icons.cake_outlined,
+                          text: 'Your birthday is not set yet.',
+                          action: 'Add birthday',
+                          onTap: () => _editBirthday(context, app),
+                        )
+                      : Row(
+                          children: [
+                            Container(
+                              width: 46,
+                              height: 46,
+                              decoration: BoxDecoration(
+                                color: Colors.pink.withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.cake_rounded,
+                                color: Colors.pink,
+                                size: 23,
                               ),
                             ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    formatDate(app.birthday!),
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w800,
+                                      color: colors.onSurface,
+                                    ),
+                                  ),
+                                  if (app.age != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Age ${app.age}',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: colors.onSurface
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            if (app.age != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 7,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.primary.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '${app.age} yrs',
+                                  style: TextStyle(
+                                    color: colors.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
                           ],
-                        ],
+                        ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // =========================================================
+                // SAVINGS GOAL
+                // =========================================================
+
+                SectionCard(
+                  title: 'Monthly Savings Goal',
+                  titleIcon: Icons.savings_outlined,
+                  accentColor: Colors.green,
+                  trailing: _EditButton(
+                    onPressed: () => _editSavings(context, app),
+                  ),
+                  child: app.savingsGoal <= 0
+                      ? _EmptyInfo(
+                          icon: Icons.savings_outlined,
+                          text: 'Set a monthly savings target.',
+                          action: 'Set goal',
+                          onTap: () => _editSavings(context, app),
+                        )
+                      : _SavingsContent(
+                          app: app,
+                          percentage: savedPct,
+                        ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // =========================================================
+                // FINANCIAL SNAPSHOT
+                // =========================================================
+
+                SectionCard(
+                  title: 'Financial Snapshot',
+                  titleIcon: Icons.account_balance_wallet_outlined,
+                  accentColor: Colors.teal,
+                  child: Column(
+                    children: [
+                      _InfoRow(
+                        icon: Icons.account_balance_rounded,
+                        label: 'Current balance',
+                        value: formatMoney(
+                          app.totalBalance,
+                          app.currency,
+                        ),
+                        color: Colors.teal,
                       ),
-                    ),
-                    if (app.age != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 7,
+                      const SizedBox(height: 12),
+                      _InfoRow(
+                        icon: Icons.savings_rounded,
+                        label: 'Savings target',
+                        value: app.savingsGoal > 0
+                            ? formatMoney(
+                                app.savingsGoal,
+                                app.currency,
+                              )
+                            : 'Not set',
+                        color: Colors.green,
+                      ),
+                      const SizedBox(height: 12),
+                      _InfoRow(
+                        icon: Icons.speed_rounded,
+                        label: 'Goal progress',
+                        value: app.savingsGoal > 0
+                            ? '${(savedPct * 100).toStringAsFixed(0)}%'
+                            : 'Not set',
+                        color: colors.primary,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // =========================================================
+                // SETTINGS
+                // =========================================================
+
+                SectionCard(
+                  title: 'Preferences',
+                  titleIcon: Icons.tune_rounded,
+                  accentColor: Colors.blueGrey,
+                  child: _SettingsTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SettingsScreen(),
                         ),
-                        decoration: BoxDecoration(
-                          color: colors.primary.withValues(alpha: 0.10),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '${app.age} yrs',
-                          style: TextStyle(
-                            color: colors.primary,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                          ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // =========================================================
+                // FOOTER
+                // =========================================================
+
+                Center(
+                  child: Column(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 18,
+                        color: colors.primary.withValues(alpha: 0.45),
+                      ),
+                      const SizedBox(height: 7),
+                      Text(
+                        'KEEP BUILDING YOUR BEST LIFE',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.8,
+                          color: colors.onSurface.withValues(alpha: 0.28),
                         ),
                       ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        'Small progress every day adds up.',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: colors.onSurface.withValues(alpha: 0.35),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-        ),
 
-        const SizedBox(height: 16),
-
-        // =========================================================
-        // SAVINGS GOAL
-        // =========================================================
-
-        SectionCard(
-          title: 'Monthly Savings Goal',
-          titleIcon: Icons.savings_outlined,
-          accentColor: Colors.green,
-          trailing: _EditButton(
-            onPressed: () => _editSavings(context, app),
-          ),
-          child: app.savingsGoal <= 0
-              ? _EmptyInfo(
-                  icon: Icons.savings_outlined,
-                  text: 'Set a monthly savings target.',
-                  action: 'Set goal',
-                  onTap: () => _editSavings(context, app),
-                )
-              : _SavingsContent(
-                  app: app,
-                  percentage: savedPct,
-                ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // =========================================================
-        // FINANCIAL SNAPSHOT
-        // =========================================================
-
-        SectionCard(
-          title: 'Financial Snapshot',
-          titleIcon: Icons.account_balance_wallet_outlined,
-          accentColor: Colors.teal,
-          child: Column(
-            children: [
-              _InfoRow(
-                icon: Icons.account_balance_rounded,
-                label: 'Current balance',
-                value: formatMoney(
-                  app.totalBalance,
-                  app.currency,
-                ),
-                color: Colors.teal,
-              ),
-              const SizedBox(height: 12),
-              _InfoRow(
-                icon: Icons.savings_rounded,
-                label: 'Savings target',
-                value: app.savingsGoal > 0
-                    ? formatMoney(
-                        app.savingsGoal,
-                        app.currency,
-                      )
-                    : 'Not set',
-                color: Colors.green,
-              ),
-              const SizedBox(height: 12),
-              _InfoRow(
-                icon: Icons.speed_rounded,
-                label: 'Goal progress',
-                value: app.savingsGoal > 0
-                    ? '${(savedPct * 100).toStringAsFixed(0)}%'
-                    : 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â',
-                color: colors.primary,
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // =========================================================
-        // SETTINGS
-        // =========================================================
-
-        SectionCard(
-          title: 'Preferences',
-          titleIcon: Icons.tune_rounded,
-          accentColor: Colors.blueGrey,
-          child: _SettingsTile(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const SettingsScreen(),
-                ),
-              );
-            },
-          ),
-        ),
-
-        const SizedBox(height: 24),
-
-        // =========================================================
-        // FOOTER
-        // =========================================================
-
-        Center(
-          child: Column(
-            children: [
-              Icon(
-                Icons.auto_awesome_rounded,
-                size: 18,
-                color: colors.primary.withValues(alpha: 0.45),
-              ),
-              const SizedBox(height: 7),
-              Text(
-                'KEEP BUILDING YOUR BEST LIFE',
-                style: TextStyle(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.8,
-                  color: colors.onSurface.withValues(alpha: 0.28),
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Small progress every day adds up.',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: colors.onSurface.withValues(alpha: 0.35),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // Extra breathing room at the absolute bottom.
-        const SizedBox(height: 12),
+                // Extra breathing room at the absolute bottom.
+                const SizedBox(height: 12),
               ],
             ),
           ),
@@ -881,7 +882,7 @@ class _StreakCard extends StatelessWidget {
               children: [
                 Text(
                   streak > 0
-                      ? '$streak day streak ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒâ€šÃ‚Â¥'
+                      ? '$streak day streak \u{1F525}'
                       : 'Start your streak',
                   style: TextStyle(
                     fontSize: 15,
@@ -1060,7 +1061,7 @@ class _GoalProjection extends StatelessWidget {
           ),
           SizedBox(width: 8),
           Text(
-            'Goal reached! ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°',
+            'Goal reached! \u{1F389}',
             style: TextStyle(
               fontSize: 12,
               color: Colors.green,

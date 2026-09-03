@@ -127,7 +127,7 @@ class RemindersScreen extends StatelessWidget {
         final period = h >= 12 ? 'PM' : 'AM';
         final displayHour = h % 12 == 0 ? 12 : h % 12;
 
-        return '$dateStr ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $displayHour:${m.toString().padLeft(2, '0')} $period';
+        return '$dateStr - $displayHour:${m.toString().padLeft(2, '0')} $period';
       }
 
       return dateStr;
@@ -333,17 +333,15 @@ class RemindersScreen extends StatelessWidget {
                   final age = contact.ageOn(next);
 
                   final label = days == 0
-                      ? 'Today ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ turns $age'
+                      ? 'Today - turns $age'
                       : days == 1
-                          ? 'Tomorrow ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ turns $age'
-                          : '$days days ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ turns $age';
+                          ? 'Tomorrow - turns $age'
+                          : '$days days - turns $age';
 
                   return _ReminderTile(
                     icon: Icons.cake_rounded,
-                    title:
-                        '${contact.name} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${contact.relation}',
-                    subtitle:
-                        '${formatDateShort(contact.date)} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $label',
+                    title: '${contact.name} - ${contact.relation}',
+                    subtitle: '${formatDateShort(contact.date)} - $label',
                     color: Colors.pink,
                     badge: days == 0 ? 'TODAY' : '$days DAYS',
                   );
@@ -401,9 +399,9 @@ class RemindersScreen extends StatelessWidget {
                   return _ReminderTile(
                     icon: Icons.autorenew_rounded,
                     title:
-                        '${transaction.category} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${transaction.repeat.name}',
+                        '${transaction.category} - ${transaction.repeat.name}',
                     subtitle:
-                        'Last on ${formatDate(transaction.date)} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${app.currency}${transaction.amount}',
+                        'Last on ${formatDate(transaction.date)} - ${app.currency}${transaction.amount}',
                     color: Colors.indigo,
                     badge: 'REPEAT',
                   );
@@ -534,7 +532,7 @@ class _ReminderSummary extends StatelessWidget {
                     Text(
                       hasReminders
                           ? '$totalReminders things to watch'
-                          : 'YouÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢re all caught up',
+                          : "You're all caught up",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -545,7 +543,7 @@ class _ReminderSummary extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       hasReminders
-                          ? 'HereÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s what deserves your attention'
+                          ? "Here's what deserves your attention"
                           : 'Nothing urgent right now',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.72),

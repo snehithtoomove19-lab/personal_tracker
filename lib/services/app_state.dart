@@ -41,7 +41,7 @@ const List<String> kMotivationalQuotes = [
   "Your future self will thank you for today's discipline.",
   "Consistency beats intensity.",
   "Every entry you log is a step toward clarity.",
-  "Mood, money, and tasks ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â small logs, big awareness.",
+  "Mood, money, and tasks - small logs, big awareness.",
 ];
 
 class AppState extends ChangeNotifier {

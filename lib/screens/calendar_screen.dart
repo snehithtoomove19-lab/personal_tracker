@@ -22,9 +22,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selected = DateTime.now();
 
   bool _sameDay(DateTime a, DateTime b) {
-    return a.year == b.year &&
-        a.month == b.month &&
-        a.day == b.day;
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   bool _isToday(DateTime date) {
@@ -123,11 +121,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
         )
         .toList();
 
-    final bottomInset =
-        MediaQuery.of(context).padding.bottom;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
 
-    final totalItems =
-        dayTx.length +
+    final totalItems = dayTx.length +
         dayTasks.length +
         dayGoals.length +
         dayNotes.length +
@@ -135,7 +131,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Scaffold(
       backgroundColor: colors.surface,
-
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -173,8 +168,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 color: colors.surface,
                 borderRadius: BorderRadius.circular(26),
                 border: Border.all(
-                  color: colors.outlineVariant
-                      .withValues(alpha: 0.45),
+                  color: colors.outlineVariant.withValues(alpha: 0.45),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -189,13 +183,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Column(
                 children: [
                   _buildMonthNavigation(context),
-
                   const SizedBox(height: 14),
-
                   _buildWeekdayHeader(context),
-
                   const SizedBox(height: 7),
-
                   _buildCalendarGrid(
                     context,
                     app,
@@ -336,18 +326,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             size: 27,
           ),
         ),
-
         const SizedBox(width: 13),
-
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Calendar',
-                style:
-                    theme.textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.8,
                 ),
@@ -355,8 +341,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               const SizedBox(height: 3),
               Text(
                 'Your life, organized by day',
-                style:
-                    theme.textTheme.bodySmall?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: colors.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
@@ -364,7 +349,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ],
           ),
         ),
-
         if (totalItems > 0)
           Container(
             padding: const EdgeInsets.symmetric(
@@ -388,8 +372,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 const SizedBox(width: 5),
                 Text(
                   '$totalItems',
-                  style: theme.textTheme.labelMedium
-                      ?.copyWith(
+                  style: theme.textTheme.labelMedium?.copyWith(
                     color: colors.primary,
                     fontWeight: FontWeight.w900,
                   ),
@@ -418,15 +401,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
           icon: Icons.chevron_left_rounded,
           onTap: _previousMonth,
         ),
-
         Expanded(
           child: Column(
             children: [
               Text(
                 formatMonthYear(_month),
                 textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.2,
                 ),
@@ -434,15 +415,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
               const SizedBox(height: 3),
               Text(
                 'Monthly overview',
-                style: theme.textTheme.labelSmall
-                    ?.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
-
         _monthButton(
           context,
           icon: Icons.chevron_right_rounded,
@@ -457,8 +436,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     required IconData icon,
     required VoidCallback onTap,
   }) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Material(
       color: colors.primary.withValues(
@@ -507,8 +485,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: Center(
               child: Text(
                 days[i],
-                style: theme.textTheme.labelSmall
-                    ?.copyWith(
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: i == 0 || i == 6
                       ? colors.primary
                       : colors.onSurfaceVariant,
@@ -553,8 +530,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       mainAxisSpacing: 3,
       childAspectRatio: 0.92,
       shrinkWrap: true,
-      physics:
-          const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       children: children,
     );
   }
@@ -577,8 +553,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       day,
     );
 
-    final isSelected =
-        _sameDay(date, _selected);
+    final isSelected = _sameDay(date, _selected);
 
     final isToday = _isToday(date);
 
@@ -587,15 +562,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
 
     final hasTask = app.tasks.any(
-      (t) =>
-          t.dueDate != null &&
-          _sameDay(t.dueDate!, date),
+      (t) => t.dueDate != null && _sameDay(t.dueDate!, date),
     );
 
     final hasGoal = app.goals.any(
-      (g) =>
-          g.targetDate != null &&
-          _sameDay(g.targetDate!, date),
+      (g) => g.targetDate != null && _sameDay(g.targetDate!, date),
     );
 
     final hasNote = app.notes.any(
@@ -611,8 +582,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         });
       },
       child: AnimatedContainer(
-        duration:
-            const Duration(milliseconds: 180),
+        duration: const Duration(milliseconds: 180),
         margin: const EdgeInsets.all(1),
         decoration: BoxDecoration(
           color: isSelected
@@ -622,20 +592,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       alpha: 0.07,
                     )
                   : Colors.transparent,
-          borderRadius:
-              BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14),
           border: isToday && !isSelected
               ? Border.all(
-                  color: colors.primary
-                      .withValues(alpha: 0.35),
+                  color: colors.primary.withValues(alpha: 0.35),
                   width: 1,
                 )
               : null,
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: colors.primary
-                        .withValues(alpha: 0.22),
+                    color: colors.primary.withValues(alpha: 0.22),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -643,32 +610,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
               : null,
         ),
         child: Column(
-          mainAxisAlignment:
-              MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               '$day',
-              style:
-                  theme.textTheme.bodySmall?.copyWith(
-                color: isSelected
-                    ? colors.onPrimary
-                    : colors.onSurface,
-                fontWeight: isToday || isSelected
-                    ? FontWeight.w900
-                    : FontWeight.w600,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isSelected ? colors.onPrimary : colors.onSurface,
+                fontWeight:
+                    isToday || isSelected ? FontWeight.w900 : FontWeight.w600,
               ),
             ),
-
             const SizedBox(height: 4),
-
             if (mood != null)
               Icon(
                 moodOptionFor(mood.mood).icon,
                 size: 13,
                 color: isSelected
                     ? colors.onPrimary
-                    : moodOptionFor(mood.mood)
-                        .color,
+                    : moodOptionFor(mood.mood).color,
               )
             else
               _buildEventDots(
@@ -693,40 +652,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
     required bool hasNote,
     required bool selected,
   }) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     final dotColors = <Color>[];
 
     if (hasTx) {
       dotColors.add(
-        selected
-            ? colors.onPrimary
-            : const Color(0xFFE2574C),
+        selected ? colors.onPrimary : const Color(0xFFE2574C),
       );
     }
 
     if (hasTask) {
       dotColors.add(
-        selected
-            ? colors.onPrimary
-            : const Color(0xFF4D8FE7),
+        selected ? colors.onPrimary : const Color(0xFF4D8FE7),
       );
     }
 
     if (hasGoal) {
       dotColors.add(
-        selected
-            ? colors.onPrimary
-            : const Color(0xFFE0A52B),
+        selected ? colors.onPrimary : const Color(0xFFE0A52B),
       );
     }
 
     if (hasNote) {
       dotColors.add(
-        selected
-            ? colors.onPrimary
-            : const Color(0xFF9A6BDB),
+        selected ? colors.onPrimary : const Color(0xFF9A6BDB),
       );
     }
 
@@ -739,15 +689,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return SizedBox(
       height: 6,
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           for (final color in dotColors.take(4))
             Container(
               width: 4,
               height: 4,
-              margin:
-                  const EdgeInsets.symmetric(
+              margin: const EdgeInsets.symmetric(
                 horizontal: 1,
               ),
               decoration: BoxDecoration(
@@ -777,36 +725,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
       children: [
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                today
-                    ? 'Today'
-                    : formatDate(_selected),
-                style:
-                    theme.textTheme.titleLarge?.copyWith(
+                today ? 'Today' : formatDate(_selected),
+                style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.4,
                 ),
               ),
               if (today)
                 Padding(
-                  padding:
-                      const EdgeInsets.only(top: 3),
+                  padding: const EdgeInsets.only(top: 3),
                   child: Text(
                     formatDate(_selected),
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(
-                      color:
-                          colors.onSurfaceVariant,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colors.onSurfaceVariant,
                     ),
                   ),
                 ),
             ],
           ),
         ),
-
         if (!today)
           OutlinedButton.icon(
             onPressed: _goToToday,
@@ -816,39 +756,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
             label: const Text('Today'),
             style: OutlinedButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 11,
                 vertical: 8,
               ),
-              visualDensity:
-                  VisualDensity.compact,
-              shape:
-                  RoundedRectangleBorder(
-                borderRadius:
-                    BorderRadius.circular(12),
+              visualDensity: VisualDensity.compact,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
-
         if (totalItems > 0) ...[
           const SizedBox(width: 8),
           Container(
-            padding:
-                const EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: 10,
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: colors.primary
-                  .withValues(alpha: 0.09),
-              borderRadius:
-                  BorderRadius.circular(11),
+              color: colors.primary.withValues(alpha: 0.09),
+              borderRadius: BorderRadius.circular(11),
             ),
             child: Text(
               '$totalItems ${totalItems == 1 ? 'item' : 'items'}',
-              style: theme.textTheme.labelSmall
-                  ?.copyWith(
+              style: theme.textTheme.labelSmall?.copyWith(
                 color: colors.primary,
                 fontWeight: FontWeight.w800,
               ),
@@ -867,11 +798,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     BuildContext context,
     MoodEntry mood,
   ) {
-    final option =
-        moodOptionFor(mood.mood);
+    final option = moodOptionFor(mood.mood);
 
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(13),
@@ -879,8 +808,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         color: option.color.withValues(
           alpha: 0.08,
         ),
-        borderRadius:
-            BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
@@ -899,19 +827,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
               size: 23,
             ),
           ),
-
           const SizedBox(width: 12),
-
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   option.label,
                   style: const TextStyle(
-                    fontWeight:
-                        FontWeight.w900,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
                 if (mood.note.isNotEmpty) ...[
@@ -919,11 +843,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   Text(
                     mood.note,
                     maxLines: 2,
-                    overflow:
-                        TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color:
-                          colors.onSurfaceVariant,
+                      color: colors.onSurfaceVariant,
                       height: 1.3,
                     ),
                   ),
@@ -945,8 +867,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     dynamic app,
     List<dynamic> transactions,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     if (transactions.isEmpty) {
       return _emptyMessage(
@@ -959,23 +880,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Column(
       children: transactions.map<Widget>((t) {
-        final isIncome =
-            t.type == TxType.income;
+        final isIncome = t.type == TxType.income;
 
-        final accent = isIncome
-            ? const Color(0xFF2FB380)
-            : const Color(0xFFE2574C);
+        final accent =
+            isIncome ? const Color(0xFF2FB380) : const Color(0xFFE2574C);
 
         return Container(
-          margin:
-              const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(11),
           decoration: BoxDecoration(
             color: accent.withValues(
               alpha: 0.055,
             ),
-            borderRadius:
-                BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
             children: [
@@ -996,22 +913,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   size: 18,
                 ),
               ),
-
               const SizedBox(width: 10),
-
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       t.category,
                       maxLines: 1,
-                      overflow:
-                          TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     if (t.note.isNotEmpty) ...[
@@ -1019,11 +931,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       Text(
                         t.note,
                         maxLines: 1,
-                        overflow:
-                            TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: colors
-                              .onSurfaceVariant,
+                          color: colors.onSurfaceVariant,
                           fontSize: 12,
                         ),
                       ),
@@ -1031,20 +941,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Flexible(
                 child: Text(
                   '${isIncome ? '+' : '-'}${formatMoney(t.amount, app.currency)}',
                   maxLines: 1,
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     color: accent,
-                    fontWeight:
-                        FontWeight.w900,
+                    fontWeight: FontWeight.w900,
                     fontSize: 13,
                   ),
                 ),
@@ -1064,8 +970,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     BuildContext context,
     List<dynamic> tasks,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     if (tasks.isEmpty) {
       return _emptyMessage(
@@ -1081,28 +986,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
         final completed = t.completed;
 
         return ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(
+          contentPadding: const EdgeInsets.symmetric(
             horizontal: 4,
           ),
           leading: Icon(
             completed
                 ? Icons.check_circle_rounded
                 : Icons.radio_button_unchecked_rounded,
-            color: completed
-                ? const Color(0xFF2FB380)
-                : colors.onSurfaceVariant,
+            color:
+                completed ? const Color(0xFF2FB380) : colors.onSurfaceVariant,
           ),
           title: Text(
             t.title,
             maxLines: 2,
-            overflow:
-                TextOverflow.ellipsis,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              decoration: completed
-                  ? TextDecoration.lineThrough
-                  : null,
+              decoration: completed ? TextDecoration.lineThrough : null,
             ),
           ),
         );
@@ -1118,8 +1018,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     BuildContext context,
     List<dynamic> goals,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     if (goals.isEmpty) {
       return _emptyMessage(
@@ -1133,14 +1032,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Column(
       children: goals.map<Widget>((g) {
         return Container(
-          margin:
-              const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colors.primary
-                .withValues(alpha: 0.055),
-            borderRadius:
-                BorderRadius.circular(15),
+            color: colors.primary.withValues(alpha: 0.055),
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
             children: [
@@ -1148,8 +1044,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: colors.primary
-                      .withValues(alpha: 0.10),
+                  color: colors.primary.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -1158,42 +1053,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   size: 19,
                 ),
               ),
-
               const SizedBox(width: 10),
-
               Expanded(
                 child: Text(
                   g.title,
                   maxLines: 2,
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-
               const SizedBox(width: 8),
-
               Container(
-                padding:
-                    const EdgeInsets.symmetric(
+                padding: const EdgeInsets.symmetric(
                   horizontal: 9,
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.primary
-                      .withValues(alpha: 0.10),
-                  borderRadius:
-                      BorderRadius.circular(9),
+                  color: colors.primary.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(9),
                 ),
                 child: Text(
                   '${g.progress}%',
                   style: TextStyle(
                     color: colors.primary,
-                    fontWeight:
-                        FontWeight.w900,
+                    fontWeight: FontWeight.w900,
                     fontSize: 12,
                   ),
                 ),
@@ -1213,8 +1098,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     BuildContext context,
     List<dynamic> notes,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     if (notes.isEmpty) {
       return _emptyMessage(
@@ -1228,14 +1112,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return Column(
       children: notes.map<Widget>((n) {
         return Container(
-          margin:
-              const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colors.secondary
-                .withValues(alpha: 0.055),
-            borderRadius:
-                BorderRadius.circular(15),
+            color: colors.secondary.withValues(alpha: 0.055),
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Row(
             children: [
@@ -1243,8 +1124,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 width: 38,
                 height: 38,
                 decoration: BoxDecoration(
-                  color: colors.secondary
-                      .withValues(alpha: 0.10),
+                  color: colors.secondary.withValues(alpha: 0.10),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -1253,18 +1133,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   size: 19,
                 ),
               ),
-
               const SizedBox(width: 10),
-
               Expanded(
                 child: Text(
                   n.title,
                   maxLines: 2,
-                  overflow:
-                      TextOverflow.ellipsis,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
@@ -1295,10 +1171,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         vertical: 17,
       ),
       decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest
-            .withValues(alpha: 0.28),
-        borderRadius:
-            BorderRadius.circular(16),
+        color: colors.surfaceContainerHighest.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
@@ -1310,29 +1184,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
           const SizedBox(width: 11),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: theme
-                      .textTheme.bodyMedium
-                      ?.copyWith(
-                    fontWeight:
-                        FontWeight.w800,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
                   maxLines: 2,
-                  overflow:
-                      TextOverflow.ellipsis,
-                  style: theme
-                      .textTheme.bodySmall
-                      ?.copyWith(
-                    color:
-                        colors.onSurfaceVariant,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
                     height: 1.3,
                   ),
                 ),

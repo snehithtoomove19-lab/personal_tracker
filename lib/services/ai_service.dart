@@ -66,7 +66,7 @@ class AiService {
           .timeout(const Duration(seconds: 30));
     } catch (_) {
       throw AiChatException(
-          'Could not reach the AI service ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â check your internet connection and try again.');
+          'Could not reach the AI service - check your internet connection and try again.');
     }
 
     if (response.statusCode == 401) {
@@ -75,7 +75,7 @@ class AiService {
     }
     if (response.statusCode == 429) {
       throw AiChatException(
-          'Rate limit reached on your API key ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â wait a moment and try again.');
+          'Rate limit reached on your API key - wait a moment and try again.');
     }
     if (response.statusCode != 200) {
       String detail = 'Request failed (HTTP ${response.statusCode}).';
@@ -98,8 +98,7 @@ class AiService {
       final decoded = jsonDecode(response.body) as Map<String, dynamic>;
       final choices = decoded['choices'] as List?;
       if (choices == null || choices.isEmpty) {
-        throw AiChatException(
-            'The AI returned an empty response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
+        throw AiChatException('The AI returned an empty response - try again.');
       }
       final firstChoice = choices[0];
       String? content;
@@ -111,14 +110,12 @@ class AiService {
         }
       }
       if (content == null || content.trim().isEmpty) {
-        throw AiChatException(
-            'The AI returned an empty response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
+        throw AiChatException('The AI returned an empty response - try again.');
       }
       return content.trim();
     } catch (e) {
       if (e is AiChatException) rethrow;
-      throw AiChatException(
-          'Could not read the AI\'s response ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â try again.');
+      throw AiChatException('Could not read the AI\'s response - try again.');
     }
   }
 }

@@ -191,8 +191,8 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
             const SizedBox(height: 10),
             Text(
               completed
-                  ? 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° Great job! You have completed this goal.'
-                  : 'Keep going ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â every small step counts.',
+                  ? '\u{1F389} Great job! You have completed this goal.'
+                  : 'Keep going - every small step counts.',
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
@@ -267,7 +267,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                 Text(
                   completed
                       ? 'You made it. Well done!'
-                      : '$progress% complete ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Keep pushing forward',
+                      : '$progress% complete - Keep pushing forward',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
                     height: 1.35,
@@ -464,9 +464,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      completed
-                          ? 'Completed ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°'
-                          : '$progress% Complete',
+                      completed ? 'Completed \u{1F389}' : '$progress% Complete',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
                           ),

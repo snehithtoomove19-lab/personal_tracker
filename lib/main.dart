@@ -12,6 +12,7 @@ import 'screens/profile_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/reminders_screen.dart';
 import 'widgets/app_drawer.dart';
+import 'utils/app_navigation.dart';
 
 void main() {
   // Makes any widget-build error show its actual message on-screen instead
@@ -94,24 +95,50 @@ class _AppRootState extends State<AppRoot> {
   Widget build(BuildContext context) {
     return AppScope(
       appState: appState,
-      child: AnimatedBuilder(
-        animation: appState,
-        builder: (context, _) {
-          return MaterialApp(
-            title: 'Personal Tracker',
-            debugShowCheckedModeBanner: false,
-            theme: buildLightTheme(),
-            darkTheme: buildDarkTheme(),
-            themeMode: appState.darkMode ? ThemeMode.dark : ThemeMode.light,
-            home: !appState.loaded
-                ? const Scaffold(
-                    body: Center(child: CircularProgressIndicator()))
-                : (appState.pinEnabled
-                    ? LockScreen(child: RootShell(startupError: _startupError))
-                    : RootShell(startupError: _startupError)),
-          );
-        },
+      child: MaterialApp(
+        title: 'Personal Tracker',
+        debugShowCheckedModeBanner: false,
+        navigatorKey: appNavigatorKey,
+        scaffoldMessengerKey: appMessengerKey,
+        theme: buildLightTheme(),
+        home: _AppHome(
+          appState: appState,
+          startupError: _startupError,
+        ),
       ),
+    );
+  }
+}
+
+class _AppHome extends StatelessWidget {
+  final AppState appState;
+  final String? startupError;
+
+  const _AppHome({
+    required this.appState,
+    required this.startupError,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: appState,
+      builder: (context, _) {
+        if (!appState.loaded) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final content = appState.pinEnabled
+            ? LockScreen(child: RootShell(startupError: startupError))
+            : RootShell(startupError: startupError);
+
+        return Theme(
+          data: appState.darkMode ? buildDarkTheme() : buildLightTheme(),
+          child: content,
+        );
+      },
     );
   }
 }
@@ -180,8 +207,7 @@ class _RootShellState extends State<RootShell> {
       builder: (ctx) {
         final children = <Widget>[];
         if (app.isMyBirthdayToday) {
-          children.add(const Text(
-              'Happy birthday! ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°',
+          children.add(const Text('Happy birthday! \u{1F389}',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 10));
           children.add(Text('Today is your special day, ${app.userName}.',
@@ -198,7 +224,7 @@ class _RootShellState extends State<RootShell> {
               style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)));
           children.add(const SizedBox(height: 8));
           children.addAll(todaysContacts.map((c) => Text(
-              'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ ${c.name} (${c.relation})',
+              '\u2022 ${c.name} (${c.relation})',
               style: const TextStyle(fontSize: 14))));
         }
 

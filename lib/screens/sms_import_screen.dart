@@ -845,7 +845,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
               ),
               const SizedBox(height: 3),
               Text(
-                '$pendingCount pending Ã¢â‚¬Â¢ $importedCount added',
+                '$pendingCount pending - $importedCount added',
                 style: TextStyle(
                   fontSize: 10.5,
                   color: colors.onSurfaceVariant,
