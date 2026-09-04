@@ -198,9 +198,15 @@ class AppState extends ChangeNotifier {
 
     await safely('birthday contacts', () async {
       final contactsJson = await s.readList(StoreKeys.birthdayContacts);
+      final loaded = <BirthdayContact>[];
+      for (final contactJson in contactsJson) {
+        try {
+          loaded.add(BirthdayContact.fromJson(contactJson));
+        } catch (_) {}
+      }
       birthdayContacts
         ..clear()
-        ..addAll(contactsJson.map((e) => BirthdayContact.fromJson(e)));
+        ..addAll(loaded);
     });
 
     await safely('AI settings', () async {
@@ -555,6 +561,8 @@ class AppState extends ChangeNotifier {
     if (date != null) {
       await StorageService.instance
           .writeString(StoreKeys.birthday, date.toIso8601String());
+    } else {
+      await StorageService.instance.remove(StoreKeys.birthday);
     }
     notifyListeners();
   }

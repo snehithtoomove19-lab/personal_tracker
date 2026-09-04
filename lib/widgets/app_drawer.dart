@@ -12,6 +12,7 @@ import '../screens/settings_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/sms_import_screen.dart';
 import '../screens/ai_chat_screen.dart';
+import '../utils/app_navigation.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -62,14 +63,7 @@ class AppDrawer extends StatelessWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(16),
             onTap: () {
-              Navigator.pop(context);
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => screen,
-                ),
-              );
+              dismissAndPush(screen);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(

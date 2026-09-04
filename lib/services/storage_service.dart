@@ -48,6 +48,11 @@ class StorageService {
     await p.setBool(key, value);
   }
 
+  Future<void> remove(String key) async {
+    final p = await _p;
+    await p.remove(key);
+  }
+
   Future<void> clearAll() async {
     final p = await _p;
     await p.clear();

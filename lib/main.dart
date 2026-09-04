@@ -81,39 +81,39 @@ class _AppRootState extends State<AppRoot> {
   Future<void> _bootstrap() async {
     try {
       await appState.load();
+      if (!mounted) return;
     } catch (e, st) {
       debugPrint('Failed to load app data: $e\n$st');
       // Even if loading saved data fails, mark the app as loaded (with
       // whatever defaults AppState already has) so the UI can still open
       // rather than being stuck on a spinner forever.
-      setState(() => _startupError = e.toString());
+      if (mounted) {
+        setState(() => _startupError = e.toString());
+      }
       appState.forceMarkLoaded();
     }
+  }
+
+  @override
+  void dispose() {
+    appState.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return AppScope(
       appState: appState,
-      child: AnimatedBuilder(
-        animation: appState,
-        builder: (context, _) {
-          return MaterialApp(
-            title: 'Personal Tracker',
-            debugShowCheckedModeBanner: false,
-            navigatorKey: appNavigatorKey,
-            scaffoldMessengerKey: appMessengerKey,
-            theme: buildLightTheme(),
-            darkTheme: buildDarkTheme(),
-            themeMode: appState.darkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            home: _AppHome(
-              appState: appState,
-              startupError: _startupError,
-            ),
-          );
-        },
+      child: MaterialApp(
+        title: 'Personal Tracker',
+        debugShowCheckedModeBanner: false,
+        navigatorKey: appNavigatorKey,
+        scaffoldMessengerKey: appMessengerKey,
+        theme: buildLightTheme(),
+        home: _AppHome(
+          appState: appState,
+          startupError: _startupError,
+        ),
       ),
     );
   }

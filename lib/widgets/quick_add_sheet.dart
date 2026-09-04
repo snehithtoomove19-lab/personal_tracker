@@ -10,6 +10,7 @@ import '../screens/birthday_contacts_screen.dart';
 import '../screens/settings_screen.dart';
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
+import '../utils/app_navigation.dart';
 
 // ============================================================================
 // QUICK ADD SHEET
@@ -186,15 +187,8 @@ void showQuickAddSheet(BuildContext context) {
                         subtitle: 'Add spending',
                         color: const Color(0xFFE2574C),
                         onTap: () {
-                          Navigator.pop(ctx);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddTransactionScreen(
-                                type: TxType.expense,
-                              ),
-                            ),
+                          dismissAndPush(
+                            const AddTransactionScreen(type: TxType.expense),
                           );
                         },
                       ),
@@ -208,15 +202,8 @@ void showQuickAddSheet(BuildContext context) {
                         subtitle: 'Add earnings',
                         color: const Color(0xFF2FB380),
                         onTap: () {
-                          Navigator.pop(ctx);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddTransactionScreen(
-                                type: TxType.income,
-                              ),
-                            ),
+                          dismissAndPush(
+                            const AddTransactionScreen(type: TxType.income),
                           );
                         },
                       ),
@@ -249,13 +236,8 @@ void showQuickAddSheet(BuildContext context) {
                         subtitle: 'Stay organized',
                         color: const Color(0xFF4285F4),
                         onTap: () {
-                          Navigator.pop(ctx);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddTaskScreen(),
-                            ),
+                          dismissAndPush(
+                            const AddTaskScreen(),
                           );
                         },
                       ),
@@ -269,13 +251,8 @@ void showQuickAddSheet(BuildContext context) {
                         subtitle: 'Save an idea',
                         color: const Color(0xFFF59E0B),
                         onTap: () {
-                          Navigator.pop(ctx);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddNoteScreen(),
-                            ),
+                          dismissAndPush(
+                            const AddNoteScreen(),
                           );
                         },
                       ),
@@ -289,13 +266,8 @@ void showQuickAddSheet(BuildContext context) {
                         subtitle: 'Set a target',
                         color: const Color(0xFF8B5CF6),
                         onTap: () {
-                          Navigator.pop(ctx);
-
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const AddGoalScreen(),
-                            ),
+                          dismissAndPush(
+                            const AddGoalScreen(),
                           );
                         },
                       ),
@@ -367,12 +339,8 @@ void showQuickAddSheet(BuildContext context) {
                   subtitle: 'Remember important birthdays',
                   color: Colors.pink,
                   onTap: () {
-                    Navigator.pop(ctx);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const BirthdayContactsScreen(),
-                      ),
+                    dismissAndPush(
+                      const BirthdayContactsScreen(),
                     );
                   },
                 ),
@@ -413,13 +381,8 @@ void showQuickAddSheet(BuildContext context) {
                   subtitle: 'Manage your app',
                   color: colors.primary,
                   onTap: () {
-                    Navigator.pop(ctx);
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const SettingsScreen(),
-                      ),
+                    dismissAndPush(
+                      const SettingsScreen(),
                     );
                   },
                 ),
