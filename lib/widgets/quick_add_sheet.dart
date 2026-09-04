@@ -6,6 +6,7 @@ import '../screens/add_transaction_screen.dart';
 import '../screens/add_task_screen.dart';
 import '../screens/add_note_screen.dart';
 import '../screens/add_goal_screen.dart';
+import '../screens/birthday_contacts_screen.dart';
 import '../screens/settings_screen.dart';
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
@@ -354,6 +355,25 @@ void showQuickAddSheet(BuildContext context) {
                   onTap: () {
                     Navigator.pop(ctx);
                     _showCookDialog(context);
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                _largeLifestyleCard(
+                  context: ctx,
+                  icon: Icons.cake_rounded,
+                  title: 'Birthday',
+                  subtitle: 'Remember important birthdays',
+                  color: Colors.pink,
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const BirthdayContactsScreen(),
+                      ),
+                    );
                   },
                 ),
 

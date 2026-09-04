@@ -2053,9 +2053,9 @@ class _TipsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
+        padding: EdgeInsets.fromLTRB(
           20,
           8,
           20,
@@ -2066,33 +2066,33 @@ class _TipsSheet extends StatelessWidget {
           crossAxisAlignment:
               CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Birthday Tips ✨',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
               ),
             ),
-            const SizedBox(height: 16),
-            const _TipRow(
+            SizedBox(height: 16),
+            _TipRow(
               icon: Icons.message_rounded,
               title: 'Send a personal message',
               text:
                   'A thoughtful message can make their day.',
             ),
-            const _TipRow(
+            _TipRow(
               icon: Icons.card_giftcard_rounded,
               title: 'Choose a meaningful gift',
               text:
                   'Think about their hobbies and interests.',
             ),
-            const _TipRow(
+            _TipRow(
               icon: Icons.call_rounded,
               title: 'Give them a call',
               text:
                   'Sometimes a quick call means the most.',
             ),
-            const _TipRow(
+            _TipRow(
               icon: Icons.photo_camera_rounded,
               title: 'Share a memory',
               text:

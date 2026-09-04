@@ -95,16 +95,25 @@ class _AppRootState extends State<AppRoot> {
   Widget build(BuildContext context) {
     return AppScope(
       appState: appState,
-      child: MaterialApp(
-        title: 'Personal Tracker',
-        debugShowCheckedModeBanner: false,
-        navigatorKey: appNavigatorKey,
-        scaffoldMessengerKey: appMessengerKey,
-        theme: buildLightTheme(),
-        home: _AppHome(
-          appState: appState,
-          startupError: _startupError,
-        ),
+      child: AnimatedBuilder(
+        animation: appState,
+        builder: (context, _) {
+          return MaterialApp(
+            title: 'Personal Tracker',
+            debugShowCheckedModeBanner: false,
+            navigatorKey: appNavigatorKey,
+            scaffoldMessengerKey: appMessengerKey,
+            theme: buildLightTheme(),
+            darkTheme: buildDarkTheme(),
+            themeMode: appState.darkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: _AppHome(
+              appState: appState,
+              startupError: _startupError,
+            ),
+          );
+        },
       ),
     );
   }
