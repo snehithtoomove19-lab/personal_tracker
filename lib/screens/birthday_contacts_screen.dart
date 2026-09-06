@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/birthday_contact.dart';
 import '../services/app_scope.dart';
+import '../services/app_state.dart';
 
 const _uuid = Uuid();
 const _birthdayRelationOptions = [
@@ -32,6 +33,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
   String _searchQuery = '';
   String _selectedFilter = 'All';
+  String _sortMode = 'Soonest';
 
   final List<String> _filters = [
     'All',
@@ -52,6 +54,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     _animationController.forward();
 
     _searchController.addListener(() {
+      if (!mounted) return;
       setState(() {
         _searchQuery = _searchController.text.trim().toLowerCase();
       });
@@ -92,11 +95,15 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       }
     }).toList();
 
-    result.sort(
-      (a, b) => a.nextOccurrence(now).compareTo(
-            b.nextOccurrence(now),
-          ),
-    );
+    result.sort((a, b) {
+      if (_sortMode == 'Name') return a.name.compareTo(b.name);
+      if (_sortMode == 'Age') {
+        return b.ageOn(b.nextOccurrence(now)).compareTo(
+              a.ageOn(a.nextOccurrence(now)),
+            );
+      }
+      return a.nextOccurrence(now).compareTo(b.nextOccurrence(now));
+    });
 
     return result;
   }
@@ -390,6 +397,24 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
           const SizedBox(height: 22),
 
+          _AnimatedSection(
+            controller: _animationController,
+            delay: 325,
+            child: _ListToolbar(
+              sortMode: _sortMode,
+              onSortChanged: (value) {
+                setState(() {
+                  _sortMode = value;
+                });
+              },
+              onShare: filtered.isEmpty
+                  ? null
+                  : () => _shareBirthdayList(context, filtered),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           // =============================================================
           // QUICK IDEAS
           // =============================================================
@@ -477,7 +502,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
   void _editContact(
     BuildContext context,
-    dynamic app, {
+    AppState app, {
     BirthdayContact? contact,
   }) {
     final nameCtrl = TextEditingController(
@@ -487,11 +512,11 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     final relationCtrl = TextEditingController(
       text: contact?.relation ?? 'Friend',
     );
-    var selectedRelation = _birthdayRelationOptions.contains(
-      contact?.relation,
-    )
-        ? contact!.relation
-        : 'Other';
+    var selectedRelation = contact == null
+        ? 'Friend'
+        : _birthdayRelationOptions.contains(contact.relation)
+            ? contact.relation
+            : 'Other';
 
     DateTime selectedDate = contact?.date ?? DateTime.now();
 
@@ -732,7 +757,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                         width: double.infinity,
                         height: 54,
                         child: FilledButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             if (nameCtrl.text.trim().isEmpty) {
                               ScaffoldMessenger.of(
                                 context,
@@ -760,13 +785,9 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                             );
 
                             if (contact == null) {
-                              app.addBirthdayContact(
-                                edited,
-                              );
+                              await app.addBirthdayContact(edited);
                             } else {
-                              app.updateBirthdayContact(
-                                edited,
-                              );
+                              await app.updateBirthdayContact(edited);
                             }
 
                             Navigator.pop(
@@ -816,7 +837,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
   void _deleteContact(
     BuildContext context,
-    dynamic app,
+    AppState app,
     BirthdayContact contact,
   ) {
     showDialog(
@@ -887,6 +908,21 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
     await SharePlus.instance.share(
       ShareParams(text: message),
+    );
+  }
+
+  Future<void> _shareBirthdayList(
+    BuildContext context,
+    List<BirthdayContact> contacts,
+  ) async {
+    final lines = contacts.map((contact) {
+      final days = contact.daysUntil(DateTime.now());
+      final when = days == 0 ? 'today' : 'in $days days';
+      return '${contact.name} - ${DateFormat.MMMd().format(contact.date)} ($when)';
+    }).join('\n');
+
+    await SharePlus.instance.share(
+      ShareParams(text: 'My upcoming birthdays:\n$lines'),
     );
   }
 
@@ -1457,6 +1493,86 @@ class _SectionHeader extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ListToolbar extends StatelessWidget {
+  final String sortMode;
+  final ValueChanged<String> onSortChanged;
+  final VoidCallback? onShare;
+
+  const _ListToolbar({
+    required this.sortMode,
+    required this.onSortChanged,
+    required this.onShare,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Icon(
+          Icons.tune_rounded,
+          size: 18,
+          color: colors.onSurface.withValues(alpha: .55),
+        ),
+        const SizedBox(width: 7),
+        Text(
+          'Organize',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            color: colors.onSurface.withValues(alpha: .60),
+          ),
+        ),
+        const Spacer(),
+        Container(
+          height: 38,
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest.withValues(alpha: .55),
+            borderRadius: BorderRadius.circular(13),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: sortMode,
+              isDense: true,
+              borderRadius: BorderRadius.circular(14),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              icon: const Icon(Icons.expand_more_rounded, size: 17),
+              style: TextStyle(
+                color: colors.onSurface,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+              items: const [
+                DropdownMenuItem(value: 'Soonest', child: Text('Soonest')),
+                DropdownMenuItem(value: 'Name', child: Text('Name')),
+                DropdownMenuItem(value: 'Age', child: Text('Age')),
+              ],
+              onChanged: (value) {
+                if (value != null) onSortChanged(value);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 6),
+        IconButton(
+          tooltip: 'Share birthday list',
+          onPressed: onShare,
+          visualDensity: VisualDensity.compact,
+          icon: Icon(
+            Icons.ios_share_rounded,
+            size: 18,
+            color: onShare == null
+                ? colors.onSurface.withValues(alpha: .25)
+                : colors.primary,
           ),
         ),
       ],

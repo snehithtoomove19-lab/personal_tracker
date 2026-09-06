@@ -20,9 +20,9 @@ class BirthdayContact {
 
   DateTime nextOccurrence(DateTime now) {
     final today = DateTime(now.year, now.month, now.day);
-    final thisYear = DateTime(now.year, date.month, date.day);
+    final thisYear = _birthdayInYear(now.year);
     if (!thisYear.isBefore(today)) return thisYear;
-    return DateTime(now.year + 1, date.month, date.day);
+    return _birthdayInYear(now.year + 1);
   }
 
   int daysUntil(DateTime now) {
@@ -32,10 +32,19 @@ class BirthdayContact {
   }
 
   int ageOn(DateTime referenceDate) {
-    final birthdayThisYear = DateTime(referenceDate.year, date.month, date.day);
+    final birthdayThisYear = _birthdayInYear(referenceDate.year);
     var age = referenceDate.year - date.year;
     if (referenceDate.isBefore(birthdayThisYear)) age--;
     return age;
+  }
+
+  DateTime _birthdayInYear(int year) {
+    // Keep Feb 29 birthdays on Feb 28 in non-leap years.
+    if (date.month == DateTime.february && date.day == 29) {
+      final isLeapYear = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+      return DateTime(year, DateTime.february, isLeapYear ? 29 : 28);
+    }
+    return DateTime(year, date.month, date.day);
   }
 
   Map<String, dynamic> toJson() => {
