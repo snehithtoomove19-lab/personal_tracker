@@ -190,12 +190,12 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.pink.withValues(alpha: .10),
+                color: colors.primary.withValues(alpha: .12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.auto_awesome_rounded,
-                color: Colors.pink,
+                color: colors.primary,
                 size: 19,
               ),
             ),
