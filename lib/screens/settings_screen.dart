@@ -22,6 +22,7 @@ class SettingsScreen extends StatelessWidget {
           children: [
             SwitchListTile(
               title: const Text('Dark Mode'),
+              subtitle: const Text('Reduce glare with a darker app theme'),
               secondary: const Icon(Icons.dark_mode_outlined),
               value: app.darkMode,
               onChanged: (v) => app.setDarkMode(v),

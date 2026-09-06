@@ -143,9 +143,24 @@ class _AppHome extends StatelessWidget {
             ? LockScreen(child: RootShell(startupError: startupError))
             : RootShell(startupError: startupError);
 
-        return Theme(
-          data: appState.darkMode ? buildDarkTheme() : buildLightTheme(),
-          child: content,
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: appState.darkMode
+              ? const SystemUiOverlayStyle(
+                  systemNavigationBarColor: kDarkBackground,
+                  systemNavigationBarIconBrightness: Brightness.light,
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                )
+              : const SystemUiOverlayStyle(
+                  systemNavigationBarColor: kLightBackground,
+                  systemNavigationBarIconBrightness: Brightness.dark,
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.dark,
+                ),
+          child: Theme(
+            data: appState.darkMode ? buildDarkTheme() : buildLightTheme(),
+            child: content,
+          ),
         );
       },
     );
