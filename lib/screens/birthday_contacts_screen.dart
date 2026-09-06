@@ -790,6 +790,8 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                               await app.updateBirthdayContact(edited);
                             }
 
+                            if (!mounted || !sheetContext.mounted) return;
+
                             Navigator.pop(
                               sheetContext,
                             );
