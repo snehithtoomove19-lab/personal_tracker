@@ -130,6 +130,13 @@ class AppDrawer extends StatelessWidget {
 
     return Drawer(
       width: MediaQuery.of(context).size.width * 0.84,
+      backgroundColor: colorScheme.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(
+          right: Radius.circular(28),
+        ),
+      ),
       child: SafeArea(
         top: false,
         child: Column(

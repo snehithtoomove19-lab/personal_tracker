@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 // APP COLORS
 // ================================================================
 
-const Color kPrimaryColor = Color(0xFF5B67CA);
+const Color kPrimaryColor = Color(0xFF0F766E);
 const Color kIncomeColor = Color(0xFF2FB380);
 const Color kExpenseColor = Color(0xFFE2574C);
 
-const Color kLightBackground = Color(0xFFF6F7FB);
-const Color kDarkBackground = Color(0xFF111218);
+const Color kLightBackground = Color(0xFFF3F7F6);
+const Color kDarkBackground = Color(0xFF0E1515);
 
 const Color kLightSurface = Colors.white;
-const Color kDarkSurface = Color(0xFF1B1D24);
+const Color kDarkSurface = Color(0xFF182020);
 
 // ================================================================
 // LIGHT THEME
@@ -35,23 +35,23 @@ ThemeData buildLightTheme() {
     colorScheme: scheme.copyWith(
       primary: kPrimaryColor,
       onPrimary: Colors.white,
-      primaryContainer: const Color(0xFFE7E9FF),
-      onPrimaryContainer: const Color(0xFF1B205E),
-      secondary: const Color(0xFF737DE0),
+      primaryContainer: const Color(0xFFD8F1EC),
+      onPrimaryContainer: const Color(0xFF063D39),
+      secondary: const Color(0xFFE08A2E),
       onSecondary: Colors.white,
-      secondaryContainer: const Color(0xFFE8EAFF),
-      onSecondaryContainer: const Color(0xFF20255F),
-      tertiary: const Color(0xFF9A6BD6),
+      secondaryContainer: const Color(0xFFFFE8C7),
+      onSecondaryContainer: const Color(0xFF4C2A00),
+      tertiary: const Color(0xFFE85D75),
       onTertiary: Colors.white,
       surface: kLightSurface,
       onSurface: const Color(0xFF181A20),
       surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: const Color(0xFFFAFAFD),
-      surfaceContainer: const Color(0xFFF5F5F9),
-      surfaceContainerHigh: const Color(0xFFEFEFF4),
-      surfaceContainerHighest: const Color(0xFFE8E8EE),
-      outline: const Color(0xFFD4D5DE),
-      outlineVariant: const Color(0xFFE4E4EA),
+      surfaceContainerLow: const Color(0xFFF8FBFA),
+      surfaceContainer: const Color(0xFFF0F5F4),
+      surfaceContainerHigh: const Color(0xFFE7EFED),
+      surfaceContainerHighest: const Color(0xFFDDE9E6),
+      outline: const Color(0xFFC7D6D2),
+      outlineVariant: const Color(0xFFDCE7E4),
       error: kExpenseColor,
       onError: Colors.white,
     ),
@@ -92,7 +92,7 @@ ThemeData buildLightTheme() {
       margin: EdgeInsets.zero,
       shadowColor: Colors.black.withValues(alpha: 0.06),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
       ),
     ),
 
@@ -290,32 +290,32 @@ ThemeData buildLightTheme() {
         vertical: 14,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
           color: Color(0xFFE4E5EB),
           width: 1,
         ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
           color: kPrimaryColor,
           width: 1.4,
         ),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
           color: kExpenseColor,
           width: 1,
         ),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(
           color: kExpenseColor,
           width: 1.4,
@@ -340,7 +340,7 @@ ThemeData buildLightTheme() {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       height: 72,
-      indicatorColor: kPrimaryColor.withValues(alpha: 0.12),
+      indicatorColor: kPrimaryColor.withValues(alpha: 0.15),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) {

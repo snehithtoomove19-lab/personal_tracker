@@ -151,7 +151,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: colors.surfaceContainerLowest,
 
       // ===============================================================
       // APP BAR
@@ -160,24 +160,27 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: colors.surface,
-        titleSpacing: 20,
+        backgroundColor: Colors.transparent,
+        titleSpacing: 18,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              'PERSONAL TRACKER',
+              style: TextStyle(
+                fontSize: 9,
+                letterSpacing: 1.4,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFFE85D75),
+              ),
+            ),
+            const SizedBox(height: 2),
             const Text(
               'Birthdays',
               style: TextStyle(
-                fontSize: 21,
+                fontSize: 23,
+                height: 1,
                 fontWeight: FontWeight.w900,
-              ),
-            ),
-            Text(
-              'Never miss a special day',
-              style: TextStyle(
-                fontSize: 10,
-                color: colors.onSurface.withValues(alpha: .55),
-                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -187,15 +190,25 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
             tooltip: 'Birthday tips',
             onPressed: () => _showBirthdayTips(context),
             icon: Container(
-              width: 40,
-              height: 40,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: .12),
+                color: colors.surface,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: colors.outline.withValues(alpha: .12),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Icon(
-                Icons.auto_awesome_rounded,
-                color: colors.primary,
+                Icons.lightbulb_outline_rounded,
+                color: const Color(0xFFE85D75),
                 size: 19,
               ),
             ),
@@ -224,7 +237,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
         physics: const BouncingScrollPhysics(),
         padding: EdgeInsets.fromLTRB(
           16,
-          6,
+          2,
           16,
           bottomPadding,
         ),
@@ -1019,14 +1032,14 @@ class _HeroCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFFFF4F9A),
-            Color(0xFF7C4DFF),
+            Color(0xFFE85D75),
+            Color(0xFFF59E0B),
           ],
         ),
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: Colors.pink.withValues(alpha: .22),
+            color: const Color(0xFFE85D75).withValues(alpha: .22),
             blurRadius: 28,
             offset: const Offset(0, 12),
           ),
@@ -1352,6 +1365,7 @@ class _QuickActions extends StatelessWidget {
             icon: Icons.chat_bubble_outline_rounded,
             title: 'Birthday Message',
             subtitle: 'Share a wish',
+            accent: const Color(0xFFE85D75),
             onTap: onMessage,
           ),
         ),
@@ -1361,6 +1375,7 @@ class _QuickActions extends StatelessWidget {
             icon: Icons.card_giftcard_rounded,
             title: 'Gift Ideas',
             subtitle: 'Find inspiration',
+            accent: const Color(0xFFF59E0B),
             onTap: onTips,
           ),
         ),
@@ -1373,12 +1388,14 @@ class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final Color accent;
   final VoidCallback onTap;
 
   const _QuickActionCard({
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.accent,
     required this.onTap,
   });
 
@@ -1400,12 +1417,12 @@ class _QuickActionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: .09),
+                  color: accent.withValues(alpha: .12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: colors.primary,
+                  color: accent,
                   size: 19,
                 ),
               ),

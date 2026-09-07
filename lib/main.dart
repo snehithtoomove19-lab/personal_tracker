@@ -331,9 +331,36 @@ class _RootShellState extends State<RootShell> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
+      backgroundColor: colors.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text(_titles[_index]),
+        backgroundColor: colors.surfaceContainerLowest,
+        titleSpacing: 18,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'PERSONAL TRACKER',
+              style: TextStyle(
+                color: colors.primary,
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.2,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              _titles[_index],
+              style: const TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ],
+        ),
         actions: [
           Builder(builder: (context) {
             final app = AppScope.of(context);
@@ -375,7 +402,17 @@ class _RootShellState extends State<RootShell> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: SafeArea(child: _screens[_index]),
+      body: SafeArea(
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: KeyedSubtree(
+            key: ValueKey(_index),
+            child: _screens[_index],
+          ),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
