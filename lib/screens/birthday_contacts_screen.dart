@@ -162,7 +162,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
         scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
         titleSpacing: 18,
-        title: Column(
+        title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
@@ -174,8 +174,8 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                 color: Color(0xFFE85D75),
               ),
             ),
-            const SizedBox(height: 2),
-            const Text(
+            SizedBox(height: 2),
+            Text(
               'Birthdays',
               style: TextStyle(
                 fontSize: 23,
@@ -206,9 +206,9 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   ),
                 ],
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.lightbulb_outline_rounded,
-                color: const Color(0xFFE85D75),
+                color: Color(0xFFE85D75),
                 size: 19,
               ),
             ),
