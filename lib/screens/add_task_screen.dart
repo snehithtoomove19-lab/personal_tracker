@@ -16,7 +16,8 @@ class AddTaskScreen extends StatefulWidget {
   State<AddTaskScreen> createState() => _AddTaskScreenState();
 }
 
-class _AddTaskScreenState extends State<AddTaskScreen> {
+class _AddTaskScreenState extends State<AddTaskScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
 
   final _titleCtrl = TextEditingController();
@@ -34,11 +35,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   final List<SubTask> _subtasks = [];
 
+  late AnimationController _animationController;
+
   bool get _isEditing => widget.existing != null;
 
   @override
   void initState() {
     super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+
+    _animationController.forward();
 
     final existing = widget.existing;
 
@@ -82,6 +92,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
   @override
   void dispose() {
+    _animationController.dispose();
     _titleCtrl.dispose();
     _descCtrl.dispose();
     _subtaskCtrl.dispose();
@@ -120,6 +131,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       initialDate: _dueDate ?? now,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        final theme = Theme.of(context);
+
+        return Theme(
+          data: theme.copyWith(
+            datePickerTheme: DatePickerThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked == null) return;
@@ -137,6 +162,20 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _dueTime ?? TimeOfDay.now(),
+      builder: (context, child) {
+        final theme = Theme.of(context);
+
+        return Theme(
+          data: theme.copyWith(
+            timePickerTheme: TimePickerThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked == null) return;
@@ -170,10 +209,60 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
+        final colors = Theme.of(dialogContext).colorScheme;
+
         return AlertDialog(
-          title: const Text('Delete task?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          titlePadding: const EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            8,
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(
+            24,
+            8,
+            24,
+            8,
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            16,
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(11),
+                decoration: BoxDecoration(
+                  color: colors.error.withValues(alpha: .10),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  color: colors.error,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Delete task?',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
           content: Text(
-            'Are you sure you want to delete "${existing.title}"?',
+            'Are you sure you want to permanently delete "${existing.title}"?',
+            style: TextStyle(
+              color: colors.onSurfaceVariant,
+              height: 1.45,
+            ),
           ),
           actions: [
             TextButton(
@@ -182,8 +271,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: colors.error,
+                foregroundColor: colors.onError,
               ),
               onPressed: () {
                 app.deleteTask(existing.id);
@@ -191,7 +280,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 Navigator.pop(dialogContext);
                 Navigator.pop(context);
               },
-              child: const Text('Delete'),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
           ],
         );
@@ -208,8 +302,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
     final app = AppScope.of(context);
 
-    final minutes =
-        _dueTime == null ? null : (_dueTime!.hour * 60) + _dueTime!.minute;
+    final minutes = _dueTime == null
+        ? null
+        : (_dueTime!.hour * 60) + _dueTime!.minute;
 
     if (_isEditing) {
       final existing = widget.existing!;
@@ -257,33 +352,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: colors.surface,
-        titleSpacing: 20,
-        title: Text(
-          _isEditing ? 'Edit Task' : 'New Task',
-          style: const TextStyle(
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.3,
-          ),
-        ),
-        actions: [
-          if (_isEditing)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: IconButton(
-                tooltip: 'Delete task',
-                onPressed: _deleteExistingTask,
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  color: colors.error,
-                ),
-              ),
-            ),
-        ],
-      ),
+      appBar: _buildAppBar(context),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -293,37 +362,32 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               16,
               8,
               16,
-              110,
+              120,
             ),
             children: [
               _buildIntro(context),
               const SizedBox(height: 18),
+
               _buildMainDetailsCard(context),
               const SizedBox(height: 14),
+
               _buildChecklistCard(context),
               const SizedBox(height: 14),
+
               _buildScheduleCard(context),
               const SizedBox(height: 14),
+
               _buildOrganizationCard(context),
               const SizedBox(height: 14),
+
               _buildRepeatCard(context),
               const SizedBox(height: 22),
+
               _buildSaveButton(context),
+
               if (_isEditing) ...[
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: _deleteExistingTask,
-                  style: TextButton.styleFrom(
-                    foregroundColor: colors.error,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: const Text(
-                    'Delete this task',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 12),
+                _buildDeleteButton(context),
               ],
             ],
           ),
@@ -332,64 +396,128 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // ===============================================================
-  // INTRO
-  // ===============================================================
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return AppBar(
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
+      titleSpacing: 20,
+      leading: IconButton(
+        tooltip: 'Back',
+        onPressed: () => Navigator.pop(context),
+        icon: const Icon(
+          Icons.arrow_back_ios_new_rounded,
+          size: 20,
+        ),
+      ),
+      title: Text(
+        _isEditing ? 'Edit Task' : 'New Task',
+        style: const TextStyle(
+          fontWeight: FontWeight.w900,
+          letterSpacing: -.5,
+        ),
+      ),
+      actions: [
+        if (_isEditing)
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: IconButton(
+              tooltip: 'Delete task',
+              onPressed: _deleteExistingTask,
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: colors.error,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _buildIntro(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withValues(alpha: 0.12),
-            colors.secondary.withValues(alpha: 0.05),
+            colors.primary.withValues(alpha: .20),
+            colors.secondary.withValues(alpha: .10),
+            colors.tertiary.withValues(alpha: .06),
           ],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: colors.primary.withValues(alpha: 0.12),
+          color: colors.primary.withValues(alpha: .15),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: .06),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 58,
+            height: 58,
             decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  colors.primary,
+                  colors.secondary,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(19),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.primary.withValues(alpha: .25),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
             child: Icon(
-              _isEditing ? Icons.edit_note_rounded : Icons.add_task_rounded,
-              color: colors.primary,
-              size: 26,
+              _isEditing
+                  ? Icons.edit_note_rounded
+                  : Icons.add_task_rounded,
+              color: colors.onPrimary,
+              size: 29,
             ),
           ),
-          const SizedBox(width: 13),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isEditing ? 'Update your task' : 'Plan something great',
+                  _isEditing
+                      ? 'Update your task'
+                      : 'Plan something great',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -.2,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 5),
                 Text(
                   _isEditing
-                      ? 'Make changes and keep yourself organized.'
+                      ? 'Make changes and stay organized.'
                       : 'Add the details now so you can focus later.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colors.onSurfaceVariant,
-                    height: 1.35,
+                    height: 1.4,
                   ),
                 ),
               ],
@@ -399,10 +527,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       ),
     );
   }
-
-  // ===============================================================
-  // MAIN DETAILS
-  // ===============================================================
 
   Widget _buildMainDetailsCard(BuildContext context) {
     final theme = Theme.of(context);
@@ -416,25 +540,22 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             icon: Icons.edit_note_rounded,
             title: 'Task details',
             color: colors.primary,
+            subtitle: 'What needs to get done?',
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           TextFormField(
             controller: _titleCtrl,
             autofocus: !_isEditing,
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.next,
             maxLength: 100,
-            decoration: InputDecoration(
-              labelText: 'Task title',
-              hintText: 'What do you need to do?',
-              prefixIcon: const Icon(
-                Icons.check_circle_outline_rounded,
-              ),
+            decoration: _inputDecoration(
+              context,
+              label: 'Task title',
+              hint: 'e.g. Finish Flutter project',
+              icon: Icons.check_circle_outline_rounded,
+            ).copyWith(
               counterText: '',
-              filled: true,
-              fillColor: colors.surfaceContainerHighest.withValues(
-                alpha: 0.35,
-              ),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -444,24 +565,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               return null;
             },
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 13),
           TextFormField(
             controller: _descCtrl,
             textCapitalization: TextCapitalization.sentences,
             maxLines: 4,
             minLines: 3,
-            decoration: InputDecoration(
-              labelText: 'Description',
-              hintText: 'Add notes or extra details...',
+            decoration: _inputDecoration(
+              context,
+              label: 'Description',
+              hint: 'Add notes, links or extra details...',
+              icon: Icons.notes_rounded,
               alignLabelWithHint: true,
-              prefixIcon: const Padding(
-                padding: EdgeInsets.only(bottom: 54),
-                child: Icon(Icons.notes_rounded),
-              ),
-              filled: true,
-              fillColor: colors.surfaceContainerHighest.withValues(
-                alpha: 0.35,
-              ),
             ),
           ),
         ],
@@ -469,15 +584,72 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // ===============================================================
-  // CHECKLIST
-  // ===============================================================
+  InputDecoration _inputDecoration(
+    BuildContext context, {
+    required String label,
+    required String hint,
+    required IconData icon,
+    bool alignLabelWithHint = false,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+
+    return InputDecoration(
+      labelText: label,
+      hintText: hint,
+      alignLabelWithHint: alignLabelWithHint,
+      prefixIcon: Padding(
+        padding: alignLabelWithHint
+            ? const EdgeInsets.only(bottom: 50)
+            : EdgeInsets.zero,
+        child: Icon(icon),
+      ),
+      filled: true,
+      fillColor: colors.surfaceContainerHighest.withValues(
+        alpha: .35,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: colors.outlineVariant.withValues(alpha: .35),
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: colors.primary,
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: colors.error,
+        ),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: colors.error,
+          width: 1.5,
+        ),
+      ),
+    );
+  }
 
   Widget _buildChecklistCard(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
-    final completedCount = _subtasks.where((s) => s.completed).length;
+    final completedCount =
+        _subtasks.where((s) => s.completed).length;
+
+    final progress = _subtasks.isEmpty
+        ? 0.0
+        : completedCount / _subtasks.length;
 
     return _SectionContainer(
       child: Column(
@@ -490,37 +662,53 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   icon: Icons.checklist_rounded,
                   title: 'Checklist',
                   color: colors.primary,
+                  subtitle: _subtasks.isEmpty
+                      ? 'Break big tasks into steps'
+                      : '$completedCount of ${_subtasks.length} completed',
                 ),
               ),
               if (_subtasks.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 5,
+                    horizontal: 10,
+                    vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: colors.primary.withValues(alpha: 0.10),
+                    color: colors.primary.withValues(alpha: .10),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '$completedCount/${_subtasks.length}',
+                    '${(progress * 100).round()}%',
                     style: TextStyle(
                       color: colors.primary,
                       fontSize: 12,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 13),
+          const SizedBox(height: 14),
           if (_subtasks.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 7,
+                backgroundColor:
+                    colors.surfaceContainerHighest,
+              ),
+            ),
+            const SizedBox(height: 14),
             Container(
               decoration: BoxDecoration(
                 color: colors.surfaceContainerHighest.withValues(
-                  alpha: 0.32,
+                  alpha: .28,
                 ),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: colors.outlineVariant.withValues(alpha: .3),
+                ),
               ),
               child: Column(
                 children: [
@@ -533,7 +721,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
           ],
           Row(
             children: [
@@ -543,30 +731,38 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addSubtask(),
-                  decoration: InputDecoration(
-                    hintText: 'Add checklist item...',
-                    prefixIcon: const Icon(
-                      Icons.add_task_rounded,
-                    ),
-                    filled: true,
-                    fillColor: colors.surfaceContainerHighest.withValues(
-                      alpha: 0.35,
-                    ),
+                  decoration: _inputDecoration(
+                    context,
+                    label: '',
+                    hint: 'Add checklist item...',
+                    icon: Icons.add_task_rounded,
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                tooltip: 'Add checklist item',
-                onPressed: _addSubtask,
-                icon: const Icon(Icons.add_rounded),
+              const SizedBox(width: 9),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      colors.primary,
+                      colors.secondary,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(17),
+                ),
+                child: IconButton(
+                  tooltip: 'Add checklist item',
+                  onPressed: _addSubtask,
+                  color: colors.onPrimary,
+                  icon: const Icon(Icons.add_rounded),
+                ),
               ),
             ],
           ),
           if (_subtasks.isEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 9),
             Text(
-              'Break this task into smaller steps if needed.',
+              'Optional • Add smaller steps to make this task easier.',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -589,8 +785,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 3,
+            horizontal: 9,
+            vertical: 5,
           ),
           child: Row(
             children: [
@@ -601,18 +797,28 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     subtask.completed = value ?? false;
                   });
                 },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
                 visualDensity: VisualDensity.compact,
               ),
+              const SizedBox(width: 3),
               Expanded(
-                child: Text(
-                  subtask.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    decoration:
-                        subtask.completed ? TextDecoration.lineThrough : null,
-                    color: subtask.completed ? colors.onSurfaceVariant : null,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: theme.textTheme.bodyMedium!.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: subtask.completed
+                        ? colors.onSurfaceVariant
+                        : colors.onSurface,
+                    decoration: subtask.completed
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                  child: Text(
+                    subtask.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -631,21 +837,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         if (!isLast)
           Divider(
             height: 1,
-            indent: 48,
-            endIndent: 8,
-            color: colors.outlineVariant.withValues(alpha: 0.5),
+            indent: 52,
+            endIndent: 10,
+            color: colors.outlineVariant.withValues(alpha: .4),
           ),
       ],
     );
   }
 
-  // ===============================================================
-  // SCHEDULE
-  // ===============================================================
-
   Widget _buildScheduleCard(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return _SectionContainer(
       child: Column(
@@ -655,27 +856,27 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             icon: Icons.schedule_rounded,
             title: 'Schedule',
             color: colors.primary,
+            subtitle: 'When should this happen?',
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 15),
           _buildSettingTile(
             context,
             icon: Icons.calendar_today_rounded,
             title: 'Due date',
-            subtitle: _dueDate != null ? formatDate(_dueDate!) : 'No due date',
+            subtitle: _dueDate != null
+                ? formatDate(_dueDate!)
+                : 'No due date',
             trailing: _dueDate != null
                 ? IconButton(
                     tooltip: 'Clear date',
                     onPressed: _clearDueDate,
                     icon: const Icon(Icons.close_rounded),
                   )
-                : Icon(
-                    Icons.chevron_right_rounded,
-                    color: colors.onSurfaceVariant,
-                  ),
+                : const Icon(Icons.chevron_right_rounded),
             onTap: _pickDueDate,
             highlighted: _dueDate != null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 9),
           _buildSettingTile(
             context,
             icon: Icons.access_time_rounded,
@@ -689,31 +890,31 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     onPressed: _clearDueTime,
                     icon: const Icon(Icons.close_rounded),
                   )
-                : Icon(
-                    Icons.chevron_right_rounded,
-                    color: colors.onSurfaceVariant,
-                  ),
+                : const Icon(Icons.chevron_right_rounded),
             onTap: _pickDueTime,
             highlighted: _dueTime != null,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 9),
           Container(
             decoration: BoxDecoration(
               color: colors.surfaceContainerHighest.withValues(
-                alpha: 0.32,
+                alpha: .30,
               ),
-              borderRadius: BorderRadius.circular(17),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: colors.outlineVariant.withValues(alpha: .3),
+              ),
             ),
             child: SwitchListTile(
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 13,
-                vertical: 2,
+                vertical: 3,
               ),
               secondary: Container(
-                padding: const EdgeInsets.all(9),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
+                  color: colors.primary.withValues(alpha: .10),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
                   Icons.notifications_active_outlined,
@@ -724,13 +925,13 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               title: const Text(
                 'Remind me',
                 style: TextStyle(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               subtitle: Text(
                 _dueDate == null
                     ? 'Set a due date first'
-                    : 'Show this task in reminders as it approaches',
+                    : 'Get a reminder when this task approaches',
               ),
               value: _reminderEnabled,
               onChanged: _dueDate == null
@@ -760,45 +961,49 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
     return Material(
       color: highlighted
-          ? colors.primary.withValues(alpha: 0.055)
-          : colors.surfaceContainerHighest.withValues(alpha: 0.32),
-      borderRadius: BorderRadius.circular(17),
+          ? colors.primary.withValues(alpha: .07)
+          : colors.surfaceContainerHighest.withValues(alpha: .30),
+      borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(18),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 13,
-            vertical: 10,
+            vertical: 11,
           ),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(9),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: highlighted
-                      ? colors.primary.withValues(alpha: 0.11)
+                      ? colors.primary.withValues(alpha: .12)
                       : colors.surface,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(13),
                 ),
                 child: Icon(
                   icon,
                   size: 20,
-                  color: highlighted ? colors.primary : colors.onSurfaceVariant,
+                  color: highlighted
+                      ? colors.primary
+                      : colors.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
                       maxLines: 1,
@@ -819,10 +1024,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // ===============================================================
-  // ORGANIZATION
-  // ===============================================================
-
   Widget _buildOrganizationCard(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -835,30 +1036,35 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             icon: Icons.tune_rounded,
             title: 'Organization',
             color: colors.primary,
+            subtitle: 'Keep your tasks structured',
           ),
-          const SizedBox(height: 15),
+          const SizedBox(height: 17),
           Text(
             'Category',
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
             initialValue: _category,
             isExpanded: true,
-            decoration: InputDecoration(
-              prefixIcon: const Icon(
-                Icons.folder_open_rounded,
-              ),
-              filled: true,
-              fillColor: colors.surfaceContainerHighest.withValues(alpha: 0.35),
+            decoration: _inputDecoration(
+              context,
+              label: '',
+              hint: 'Select category',
+              icon: Icons.folder_open_rounded,
             ),
             items: kTaskCategories
                 .map(
                   (category) => DropdownMenuItem<String>(
                     value: category,
-                    child: Text(category),
+                    child: Text(
+                      category,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 )
                 .toList(),
@@ -870,14 +1076,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               });
             },
           ),
-          const SizedBox(height: 17),
+          const SizedBox(height: 18),
           Text(
             'Priority',
             style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
             ),
           ),
-          const SizedBox(height: 9),
+          const SizedBox(height: 10),
           _buildPrioritySelector(context),
         ],
       ),
@@ -932,10 +1138,6 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // ===============================================================
-  // REPEAT
-  // ===============================================================
-
   Widget _buildRepeatCard(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
@@ -948,11 +1150,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             icon: Icons.repeat_rounded,
             title: 'Repeat',
             color: colors.primary,
+            subtitle: 'Automate recurring tasks',
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 15),
           Wrap(
             spacing: 8,
-            runSpacing: 8,
+            runSpacing: 9,
             children: [
               _RepeatChip(
                 label: 'None',
@@ -997,29 +1200,48 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             ],
           ),
           if (_repeat != TaskRepeat.none) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(13),
               decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(14),
+                gradient: LinearGradient(
+                  colors: [
+                    colors.primary.withValues(alpha: .10),
+                    colors.secondary.withValues(alpha: .05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: .10),
+                ),
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    size: 18,
-                    color: colors.primary,
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(
+                        alpha: .10,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 16,
+                      color: colors.primary,
+                    ),
                   ),
-                  const SizedBox(width: 9),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'When you complete this task, the next occurrence will be created automatically.',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style:
+                          theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
-                        height: 1.35,
+                        height: 1.4,
                       ),
                     ),
                   ),
@@ -1032,43 +1254,88 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  // ===============================================================
-  // SAVE BUTTON
-  // ===============================================================
-
   Widget _buildSaveButton(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return SizedBox(
-      width: double.infinity,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            colors.primary,
+            colors.secondary,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(19),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: .25),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: FilledButton.icon(
         onPressed: _saveTask,
         icon: Icon(
-          _isEditing ? Icons.check_rounded : Icons.add_task_rounded,
+          _isEditing
+              ? Icons.check_rounded
+              : Icons.add_task_rounded,
         ),
         label: Text(
           _isEditing ? 'Save Changes' : 'Create Task',
           style: const TextStyle(
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w900,
             fontSize: 15,
           ),
         ),
         style: FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(56),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-          ),
-          backgroundColor: colors.primary,
+          minimumSize: const Size.fromHeight(58),
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
           foregroundColor: colors.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(19),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeleteButton(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
+    return OutlinedButton.icon(
+      onPressed: _deleteExistingTask,
+      icon: Icon(
+        Icons.delete_outline_rounded,
+        color: colors.error,
+      ),
+      label: Text(
+        'Delete this task',
+        style: TextStyle(
+          color: colors.error,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(52),
+        side: BorderSide(
+          color: colors.error.withValues(alpha: .30),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(17),
         ),
       ),
     );
   }
 }
 
-// =================================================================
+
+// ============================================================================
 // SECTION CONTAINER
-// =================================================================
+// ============================================================================
 
 class _SectionContainer extends StatelessWidget {
   final Widget child;
@@ -1082,18 +1349,23 @@ class _SectionContainer extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(17),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(23),
+        borderRadius: BorderRadius.circular(25),
         border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.65),
+          color: colors.outlineVariant.withValues(alpha: .55),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: Colors.black.withValues(
+              alpha: Theme.of(context).brightness ==
+                      Brightness.dark
+                  ? .16
+                  : .025,
+            ),
+            blurRadius: 22,
+            offset: const Offset(0, 9),
           ),
         ],
       ),
@@ -1102,53 +1374,82 @@ class _SectionContainer extends StatelessWidget {
   }
 }
 
-// =================================================================
+
+// ============================================================================
 // SECTION HEADING
-// =================================================================
+// ============================================================================
 
 class _SectionHeading extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final Color color;
 
   const _SectionHeading({
     required this.icon,
     required this.title,
     required this.color,
+    this.subtitle,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(9),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: [
+                color.withValues(alpha: .16),
+                color.withValues(alpha: .07),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(
             icon,
             color: color,
-            size: 20,
+            size: 21,
           ),
         ),
-        const SizedBox(width: 11),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.2,
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style:
+                    theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -.3,
+                ),
               ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 3),
+                Text(
+                  subtitle!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );
   }
 }
 
-// =================================================================
+
+// ============================================================================
 // PRIORITY BUTTON
-// =================================================================
+// ============================================================================
 
 class _PriorityButton extends StatelessWidget {
   final String label;
@@ -1169,45 +1470,74 @@ class _PriorityButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return Material(
-      color: selected
-          ? color.withValues(alpha: 0.12)
-          : colors.surfaceContainerHighest.withValues(alpha: 0.35),
-      borderRadius: BorderRadius.circular(15),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 7,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: selected
-                  ? color.withValues(alpha: 0.35)
-                  : colors.outlineVariant.withValues(alpha: 0.45),
-              width: selected ? 1.2 : 1,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        gradient: selected
+            ? LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withValues(alpha: .18),
+                  color.withValues(alpha: .07),
+                ],
+              )
+            : null,
+        color: selected
+            ? null
+            : colors.surfaceContainerHighest.withValues(
+                alpha: .30,
+              ),
+        borderRadius: BorderRadius.circular(17),
+        border: Border.all(
+          color: selected
+              ? color.withValues(alpha: .45)
+              : colors.outlineVariant.withValues(alpha: .4),
+          width: selected ? 1.4 : 1,
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(17),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 13,
+              horizontal: 7,
             ),
-          ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: selected ? color : colors.onSurfaceVariant,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? color : colors.onSurfaceVariant,
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? color.withValues(alpha: .12)
+                        : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 20,
+                    color: selected
+                        ? color
+                        : colors.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: selected
+                        ? color
+                        : colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1215,9 +1545,10 @@ class _PriorityButton extends StatelessWidget {
   }
 }
 
-// =================================================================
+
+// ============================================================================
 // REPEAT CHIP
-// =================================================================
+// ============================================================================
 
 class _RepeatChip extends StatelessWidget {
   final String label;
@@ -1236,37 +1567,62 @@ class _RepeatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
 
-    return Material(
-      color: selected
-          ? colors.primary.withValues(alpha: 0.11)
-          : colors.surfaceContainerHighest.withValues(alpha: 0.35),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 10,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 17,
-                color: selected ? colors.primary : colors.onSurfaceVariant,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      decoration: BoxDecoration(
+        gradient: selected
+            ? LinearGradient(
+                colors: [
+                  colors.primary.withValues(alpha: .16),
+                  colors.secondary.withValues(alpha: .08),
+                ],
+              )
+            : null,
+        color: selected
+            ? null
+            : colors.surfaceContainerHighest.withValues(
+                alpha: .32,
               ),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? colors.primary : colors.onSurfaceVariant,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: selected
+              ? colors.primary.withValues(alpha: .35)
+              : colors.outlineVariant.withValues(alpha: .4),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 13,
+              vertical: 11,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 17,
+                  color: selected
+                      ? colors.primary
+                      : colors.onSurfaceVariant,
                 ),
-              ),
-            ],
+                const SizedBox(width: 7),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: selected
+                        ? colors.primary
+                        : colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
