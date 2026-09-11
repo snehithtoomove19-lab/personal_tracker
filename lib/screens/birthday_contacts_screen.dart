@@ -1421,9 +1421,9 @@ class _TodayBirthdayCard extends StatelessWidget {
                   Container(
                     width: 37,
                     height: 37,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       gradient:
-                          const LinearGradient(
+                          LinearGradient(
                         colors: [
                           Color(0xFFE85D75),
                           Color(0xFF9B5DE5),
@@ -2516,9 +2516,9 @@ class _EmptyBirthdayState
           Container(
             width: 90,
             height: 90,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient:
-                  const LinearGradient(
+                  LinearGradient(
                 colors: [
                   Color(0xFFE85D75),
                   Color(0xFF9B5DE5),
@@ -2554,10 +2554,10 @@ class _EmptyBirthdayState
             ),
           ),
           const SizedBox(height: 22),
-          Row(
+          const Row(
             mainAxisAlignment:
                 MainAxisAlignment.center,
-            children: const [
+            children: [
               _MiniFeature(
                 icon: Icons
                     .notifications_active_outlined,
@@ -2788,10 +2788,10 @@ class _TipsSheet
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return const SafeArea(
       child: Padding(
         padding:
-            const EdgeInsets.fromLTRB(
+            EdgeInsets.fromLTRB(
           20,
           8,
           20,
@@ -2802,7 +2802,7 @@ class _TipsSheet
               MainAxisSize.min,
           crossAxisAlignment:
               CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
               'Birthday Tips ✨',
               style: TextStyle(
