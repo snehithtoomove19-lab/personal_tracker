@@ -239,6 +239,66 @@ ThemeData buildAppTheme({
 
   return base.copyWith(
     colorScheme: scheme,
+    primaryColor: scheme.primary,
+    splashColor: scheme.primary.withValues(alpha: 0.12),
+    focusColor: scheme.primary.withValues(alpha: 0.12),
+    hoverColor: scheme.primary.withValues(alpha: 0.08),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: base.elevatedButtonTheme.style?.copyWith(
+        backgroundColor: WidgetStatePropertyAll(scheme.primary),
+        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: base.filledButtonTheme.style?.copyWith(
+        backgroundColor: WidgetStatePropertyAll(scheme.primary),
+        foregroundColor: WidgetStatePropertyAll(scheme.onPrimary),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: base.outlinedButtonTheme.style?.copyWith(
+        foregroundColor: WidgetStatePropertyAll(scheme.primary),
+        side: WidgetStatePropertyAll(
+          BorderSide(color: scheme.primary.withValues(alpha: 0.28)),
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: base.textButtonTheme.style?.copyWith(
+        foregroundColor: WidgetStatePropertyAll(scheme.primary),
+      ),
+    ),
+    floatingActionButtonTheme: base.floatingActionButtonTheme.copyWith(
+      backgroundColor: scheme.primary,
+      foregroundColor: scheme.onPrimary,
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: base.navigationBarTheme.backgroundColor,
+      surfaceTintColor: base.navigationBarTheme.surfaceTintColor,
+      elevation: base.navigationBarTheme.elevation,
+      height: base.navigationBarTheme.height,
+      labelBehavior: base.navigationBarTheme.labelBehavior,
+      indicatorColor: scheme.primary.withValues(alpha: 0.15),
+      iconTheme: WidgetStateProperty.resolveWith(
+        (states) => IconThemeData(
+          color: states.contains(WidgetState.selected)
+              ? scheme.primary
+              : base.iconTheme.color,
+          size: states.contains(WidgetState.selected) ? 23 : 21,
+        ),
+      ),
+      labelTextStyle: WidgetStateProperty.resolveWith(
+        (states) => TextStyle(
+          fontSize: 11,
+          fontWeight: states.contains(WidgetState.selected)
+              ? FontWeight.w800
+              : FontWeight.w600,
+          color: states.contains(WidgetState.selected)
+              ? scheme.primary
+              : base.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    ),
     progressIndicatorTheme: base.progressIndicatorTheme.copyWith(
       color: scheme.primary,
     ),
