@@ -40,7 +40,7 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
   bool _isParsing = false;
 
   static final RegExp _amountPattern = RegExp(
-    r'(?:rs\.?|inr|Ã¢â€šÂ¹|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
+    r'(?:rs\.?|inr|\u20B9|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
     caseSensitive: false,
   );
 

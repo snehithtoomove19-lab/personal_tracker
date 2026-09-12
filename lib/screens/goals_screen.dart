@@ -10,13 +10,31 @@ class GoalsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final active = app.goals.where((g) => !g.completed).toList();
     final completed = app.goals.where((g) => g.completed).toList();
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Goals')),
+      appBar: AppBar(
+        title: const Text('Goals'),
+        actions: [
+          if (app.goals.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: Text(
+                  '${active.length} active',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
             context, MaterialPageRoute(builder: (_) => const AddGoalScreen())),
@@ -26,22 +44,64 @@ class GoalsScreen extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(16, 12, 16, 90 + bottomInset),
         children: [
           if (active.isEmpty && completed.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 60),
-              child: Center(
-                  child: Text(
-                      'No goals yet ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â tap + to add one',
-                      style: TextStyle(color: Colors.grey.shade600))),
-            ),
+            _EmptyGoalsState(colors: colors),
           ...active.map((g) => _GoalCard(goal: g)),
           if (completed.isNotEmpty) ...[
             const Padding(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Text('Completed',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              padding: EdgeInsets.only(top: 12, bottom: 12),
+              child: Text(
+                'Completed',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             ...completed.map((g) => _GoalCard(goal: g)),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptyGoalsState extends StatelessWidget {
+  final ColorScheme colors;
+
+  const _EmptyGoalsState({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 56, horizontal: 20),
+      child: Column(
+        children: [
+          Container(
+            width: 82,
+            height: 82,
+            decoration: BoxDecoration(
+              color: colors.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.flag_rounded,
+              size: 38,
+              color: colors.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Make room for what matters',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create a goal and turn a good intention into your next small win.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -55,16 +115,20 @@ class _GoalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Dismissible(
       key: ValueKey(goal.id),
       direction: DismissDirection.endToStart,
       background: Container(
         decoration: BoxDecoration(
-            color: Colors.red, borderRadius: BorderRadius.circular(16)),
+          color: colors.error,
+          borderRadius: BorderRadius.circular(16),
+        ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         margin: const EdgeInsets.only(bottom: 12),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete_outline_rounded, color: colors.onError),
       ),
       onDismissed: (_) {
         final removed = goal;
@@ -92,14 +156,15 @@ class _GoalCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(goal.title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              decoration: goal.completed
-                                  ? TextDecoration.lineThrough
-                                  : null)),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            decoration: goal.completed
+                                ? TextDecoration.lineThrough
+                                : null,
+                          )),
                     ),
                     if (goal.completed)
-                      const Icon(Icons.check_circle, color: Colors.green),
+                      Icon(Icons.check_circle_rounded, color: colors.primary),
                   ],
                 ),
                 if (goal.targetDate != null) ...[
@@ -112,16 +177,16 @@ class _GoalCard extends StatelessWidget {
                     final daysLabel = goal.completed
                         ? ''
                         : days < 0
-                            ? ' ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· ${-days} day${-days == 1 ? '' : 's'} overdue'
+                            ? ' · ${-days} day${-days == 1 ? '' : 's'} overdue'
                             : days == 0
-                                ? ' ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· due today'
-                                : ' ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â· $days day${days == 1 ? '' : 's'} left';
+                                ? ' · due today'
+                                : ' · $days day${days == 1 ? '' : 's'} left';
                     return Text(
                       'Target: ${formatDate(goal.targetDate!)}$daysLabel',
                       style: TextStyle(
                         color: (!goal.completed && days < 0)
-                            ? Colors.red
-                            : Colors.grey.shade600,
+                            ? colors.error
+                            : colors.onSurfaceVariant,
                         fontSize: 12,
                       ),
                     );
@@ -131,11 +196,27 @@ class _GoalCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: LinearProgressIndicator(
-                      value: goal.progress / 100, minHeight: 10),
+                    value: goal.progress / 100,
+                    minHeight: 8,
+                    backgroundColor: colors.surfaceContainerHighest,
+                  ),
                 ),
                 const SizedBox(height: 6),
-                Text('${goal.progress}%',
-                    style: const TextStyle(fontWeight: FontWeight.w600)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      goal.completed ? 'Complete' : 'Progress',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                    ),
+                    Text(
+                      '${goal.progress}%',
+                      style: theme.textTheme.labelLarge,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

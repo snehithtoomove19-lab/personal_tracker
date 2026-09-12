@@ -327,8 +327,8 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: Text(
                   app.isMyBirthdayToday
-                      ? 'Happy Birthday! ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°'
-                      : 'TodayÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢s Birthdays',
+                      ? 'Happy Birthday! \u{1F389}'
+                      : "Today's Birthdays",
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -339,7 +339,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 13),
           if (app.isMyBirthdayToday) ...[
             Text(
-              'Happy birthday, ${app.userName}! ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â°',
+              'Happy birthday, ${app.userName}! \u{1F389}',
               style: theme.textTheme.bodyLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),

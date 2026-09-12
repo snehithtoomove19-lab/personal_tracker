@@ -537,7 +537,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
           icon: Icons.percent_rounded,
           title: 'Balance',
           value: balancePercentage == null
-              ? 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â'
+              ? '-'
               : '${balancePercentage.clamp(-999.0, 999.0).toStringAsFixed(0)}%',
           description: 'Income retained',
           iconColor: Colors.deepPurple,
@@ -583,7 +583,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             title: 'Most productive day',
             value: productiveDay != null
                 ? productiveDay.toString()
-                : 'ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â',
+              : '-',
             subtitle: productiveDay != null
                 ? '${_monthName(_month)} productivity'
                 : 'No activity recorded',
@@ -719,7 +719,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ $percentage% of logged moods',
+                  '${topMood.value} ${topMood.value == 1 ? 'entry' : 'entries'} - $percentage% of logged moods',
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.bodySmall?.copyWith(
