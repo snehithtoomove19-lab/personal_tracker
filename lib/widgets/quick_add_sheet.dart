@@ -8,6 +8,7 @@ import '../screens/add_note_screen.dart';
 import '../screens/add_goal_screen.dart';
 import '../screens/birthday_contacts_screen.dart';
 import '../screens/settings_screen.dart';
+import '../screens/theme_picker_screen.dart';
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
 import '../utils/app_navigation.dart';
@@ -384,6 +385,19 @@ void showQuickAddSheet(BuildContext context) {
                     dismissAndPush(
                       const SettingsScreen(),
                     );
+                  },
+                ),
+
+                const SizedBox(height: 9),
+
+                _toolTile(
+                  context: ctx,
+                  icon: Icons.palette_outlined,
+                  title: 'Themes',
+                  subtitle: 'Choose from 24 color styles',
+                  color: Colors.deepPurple,
+                  onTap: () {
+                    dismissAndPush(const ThemePickerScreen());
                   },
                 ),
 

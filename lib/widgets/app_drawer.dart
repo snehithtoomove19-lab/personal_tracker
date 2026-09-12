@@ -12,6 +12,7 @@ import '../screens/settings_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/sms_import_screen.dart';
 import '../screens/ai_chat_screen.dart';
+import '../screens/theme_picker_screen.dart';
 import '../utils/app_navigation.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -412,6 +413,14 @@ class AppDrawer extends StatelessWidget {
                     Colors.grey.shade700,
                     const SettingsScreen(),
                     subtitle: 'Customize your experience',
+                  ),
+
+                  item(
+                    Icons.palette_outlined,
+                    'Themes',
+                    Colors.deepPurple,
+                    const ThemePickerScreen(),
+                    subtitle: 'Choose from 24 color styles',
                   ),
 
                   const SizedBox(height: 8),
