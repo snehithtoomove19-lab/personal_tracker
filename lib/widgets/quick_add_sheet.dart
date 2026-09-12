@@ -394,7 +394,7 @@ void showQuickAddSheet(BuildContext context) {
                   context: ctx,
                   icon: Icons.palette_outlined,
                   title: 'Themes',
-                  subtitle: 'Choose from 24 color styles',
+                  subtitle: 'Choose from 36 color styles',
                   color: Colors.deepPurple,
                   onTap: () {
                     dismissAndPush(const ThemePickerScreen());

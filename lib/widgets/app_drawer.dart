@@ -420,7 +420,7 @@ class AppDrawer extends StatelessWidget {
                     'Themes',
                     Colors.deepPurple,
                     const ThemePickerScreen(),
-                    subtitle: 'Choose from 24 color styles',
+                    subtitle: 'Choose from 36 color styles',
                   ),
 
                   const SizedBox(height: 8),
