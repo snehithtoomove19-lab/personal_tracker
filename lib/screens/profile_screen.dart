@@ -200,6 +200,19 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ],
+                                  if (app.daysUntilNextBirthday != null) ...[
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      app.daysUntilNextBirthday == 0
+                                          ? 'Your birthday is today!'
+                                          : '${app.daysUntilNextBirthday} days until your next birthday',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: colors.primary,
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),

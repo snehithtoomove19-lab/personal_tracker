@@ -609,6 +609,21 @@ class AppState extends ChangeNotifier {
     return years;
   }
 
+  /// Number of whole days until the next birthday. Null if unset.
+  int? get daysUntilNextBirthday {
+    if (birthday == null) return null;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    var next = DateTime(today.year, birthday!.month, birthday!.day);
+
+    if (next.isBefore(today)) {
+      next = DateTime(today.year + 1, birthday!.month, birthday!.day);
+    }
+
+    return next.difference(today).inDays;
+  }
+
   Future<void> setAiApiKey(String key) async {
     aiApiKey = key;
     await StorageService.instance.writeString(StoreKeys.aiApiKey, key);
