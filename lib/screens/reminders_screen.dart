@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/app_scope.dart';
 import '../utils/formatters.dart';
 
 class RemindersScreen extends StatelessWidget {
   const RemindersScreen({super.key});
+
+  Future<void> _openMessages(BuildContext context, String message) async {
+    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(message)}');
+    final opened = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!opened && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Messages app is not available on this device.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,6 +157,19 @@ class RemindersScreen extends StatelessWidget {
         upcomingGoals.length +
         upcomingBirthdayContacts.length;
 
+    final messageLines = <String>[
+      'Personal Tracker reminders',
+      '',
+      if (overdueTasks.isNotEmpty) 'Overdue tasks: ${overdueTasks.length}',
+      if (upcomingTasks.isNotEmpty) 'Upcoming tasks: ${upcomingTasks.length}',
+      if (upcomingGoals.isNotEmpty) 'Goals due soon: ${upcomingGoals.length}',
+      if (upcomingBirthdayContacts.isNotEmpty)
+        'Birthdays soon: ${upcomingBirthdayContacts.length}',
+      if (noDateTasks.isNotEmpty) 'Tasks without a date: ${noDateTasks.length}',
+      if (!hasReminders) 'Nothing urgent right now.',
+    ];
+    final message = messageLines.join('\n');
+
     return Scaffold(
       backgroundColor: colors.surface,
       appBar: AppBar(
@@ -169,6 +199,11 @@ class RemindersScreen extends StatelessWidget {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.sms_outlined),
+            tooltip: 'Send reminders to Messages',
+            onPressed: () => _openMessages(context, message),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Container(
