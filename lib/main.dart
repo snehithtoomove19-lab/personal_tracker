@@ -158,7 +158,10 @@ class _AppHome extends StatelessWidget {
                   statusBarIconBrightness: Brightness.dark,
                 ),
           child: Theme(
-            data: appState.darkMode ? buildDarkTheme() : buildLightTheme(),
+            data: buildAppTheme(
+              preset: appState.themePreset,
+              darkMode: appState.darkMode,
+            ),
             child: content,
           ),
         );

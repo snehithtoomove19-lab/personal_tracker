@@ -11,6 +11,7 @@ import '../models/note.dart';
 import '../models/goal.dart';
 import '../models/birthday_contact.dart';
 import '../models/chat_message.dart';
+import '../theme.dart';
 import 'storage_service.dart';
 
 const _uuid = Uuid();
@@ -58,6 +59,7 @@ class AppState extends ChangeNotifier {
   double savingsGoal = 0;
   String currency = '\u20b9';
   bool darkMode = false;
+  AppThemePreset themePreset = AppThemePreset.ocean;
   bool pinEnabled = false;
   String? pin;
   int streak = 0;
@@ -172,6 +174,9 @@ class AppState extends ChangeNotifier {
           ? '\u20b9'
           : storedCurrency;
       darkMode = await s.readBool(StoreKeys.darkMode) ?? false;
+      themePreset = AppThemePreset.fromId(
+        await s.readString(StoreKeys.themePreset),
+      );
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
       final savingsStr = await s.readString(StoreKeys.savingsGoal);
@@ -818,6 +823,15 @@ class AppState extends ChangeNotifier {
   Future<void> setDarkMode(bool v) async {
     darkMode = v;
     await StorageService.instance.writeBool(StoreKeys.darkMode, v);
+    notifyListeners();
+  }
+
+  Future<void> setThemePreset(AppThemePreset preset) async {
+    themePreset = preset;
+    await StorageService.instance.writeString(
+      StoreKeys.themePreset,
+      preset.id,
+    );
     notifyListeners();
   }
 

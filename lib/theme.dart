@@ -14,6 +14,104 @@ const Color kDarkBackground = Color(0xFF0E1515);
 const Color kLightSurface = Colors.white;
 const Color kDarkSurface = Color(0xFF182020);
 
+enum AppThemePreset {
+  ocean(
+    id: 'ocean',
+    label: 'Ocean',
+    description: 'Calm and focused',
+    seed: Color(0xFF0F766E),
+    icon: Icons.water_drop_rounded,
+  ),
+  sunset(
+    id: 'sunset',
+    label: 'Sunset',
+    description: 'Warm and energetic',
+    seed: Color(0xFFE4572E),
+    icon: Icons.wb_twilight_rounded,
+  ),
+  forest(
+    id: 'forest',
+    label: 'Forest',
+    description: 'Grounded and fresh',
+    seed: Color(0xFF3F7D58),
+    icon: Icons.forest_rounded,
+  ),
+  lavender(
+    id: 'lavender',
+    label: 'Lavender',
+    description: 'Soft and reflective',
+    seed: Color(0xFF7567B1),
+    icon: Icons.auto_awesome_rounded,
+  ),
+  rose(
+    id: 'rose',
+    label: 'Rose',
+    description: 'Bright and expressive',
+    seed: Color(0xFFC44569),
+    icon: Icons.local_florist_rounded,
+  ),
+  citrus(
+    id: 'citrus',
+    label: 'Citrus',
+    description: 'Optimistic and bold',
+    seed: Color(0xFFB7791F),
+    icon: Icons.wb_sunny_rounded,
+  );
+
+  const AppThemePreset({
+    required this.id,
+    required this.label,
+    required this.description,
+    required this.seed,
+    required this.icon,
+  });
+
+  final String id;
+  final String label;
+  final String description;
+  final Color seed;
+  final IconData icon;
+
+  static AppThemePreset fromId(String? id) {
+    return AppThemePreset.values.firstWhere(
+      (preset) => preset.id == id,
+      orElse: () => AppThemePreset.ocean,
+    );
+  }
+}
+
+ThemeData buildAppTheme({
+  required AppThemePreset preset,
+  required bool darkMode,
+}) {
+  final base = darkMode ? buildDarkTheme() : buildLightTheme();
+  if (preset == AppThemePreset.ocean) return base;
+
+  final generated = ColorScheme.fromSeed(
+    seedColor: preset.seed,
+    brightness: base.brightness,
+  );
+  final scheme = base.colorScheme.copyWith(
+    primary: generated.primary,
+    onPrimary: generated.onPrimary,
+    primaryContainer: generated.primaryContainer,
+    onPrimaryContainer: generated.onPrimaryContainer,
+    secondary: generated.secondary,
+    onSecondary: generated.onSecondary,
+    secondaryContainer: generated.secondaryContainer,
+    onSecondaryContainer: generated.onSecondaryContainer,
+    tertiary: generated.tertiary,
+    onTertiary: generated.onTertiary,
+  );
+
+  return base.copyWith(
+    colorScheme: scheme,
+    progressIndicatorTheme: base.progressIndicatorTheme.copyWith(
+      color: scheme.primary,
+    ),
+  );
+}
+
 // ================================================================
 // LIGHT THEME
 // ================================================================

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
+import '../theme.dart';
 import 'birthday_contacts_screen.dart';
 
 const List<String> kCurrencies = ['\u20b9', '\$', '\u20ac', '\u00a3', '\u00a5'];
@@ -26,6 +27,18 @@ class SettingsScreen extends StatelessWidget {
               secondary: const Icon(Icons.dark_mode_outlined),
               value: app.darkMode,
               onChanged: (v) => app.setDarkMode(v),
+            ),
+            ListTile(
+              leading: Icon(
+                app.themePreset.icon,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              title: const Text('Color Theme'),
+              subtitle: Text(
+                '${app.themePreset.label} - ${app.themePreset.description}',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => _showThemePicker(context, app),
             ),
             ListTile(
               leading: const Icon(Icons.currency_exchange),
@@ -181,6 +194,46 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showThemePicker(BuildContext context, app) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        final colors = Theme.of(sheetContext).colorScheme;
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            children: [
+              Text(
+                'Choose your color theme',
+                style: Theme.of(sheetContext).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Personalize the mood of your tracker.',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                      color: colors.onSurfaceVariant,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              ...AppThemePreset.values.map(
+                (preset) => _ThemeOption(
+                  preset: preset,
+                  selected: app.themePreset == preset,
+                  onTap: () {
+                    app.setThemePreset(preset);
+                    Navigator.pop(sheetContext);
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -413,6 +466,53 @@ class SettingsScreen extends StatelessWidget {
             child: const Text('Erase', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThemeOption extends StatelessWidget {
+  final AppThemePreset preset;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _ThemeOption({
+    required this.preset,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+            color: selected ? colors.primary : colors.outlineVariant,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        leading: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: preset.seed,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(preset.icon, color: Colors.white, size: 21),
+        ),
+        title: Text(
+          preset.label,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
+        subtitle: Text(preset.description),
+        trailing: selected
+            ? Icon(Icons.check_circle_rounded, color: colors.primary)
+            : const Icon(Icons.circle_outlined),
+        onTap: onTap,
       ),
     );
   }
