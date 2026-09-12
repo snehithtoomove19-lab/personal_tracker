@@ -11,6 +11,7 @@ import 'screens/tasks_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/reminders_screen.dart';
+import 'screens/search_screen.dart';
 import 'widgets/app_drawer.dart';
 import 'utils/app_navigation.dart';
 
@@ -365,6 +366,14 @@ class _RootShellState extends State<RootShell> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search_rounded),
+            tooltip: 'Search everything',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SearchScreen()),
+            ),
+          ),
           Builder(builder: (context) {
             final app = AppScope.of(context);
             final count = app.overdueTasks.length + app.todayTasks.length;
