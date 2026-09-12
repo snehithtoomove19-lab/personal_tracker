@@ -403,14 +403,9 @@ class _RootShellState extends State<RootShell> {
       ),
       drawer: const AppDrawer(),
       body: SafeArea(
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 220),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          child: KeyedSubtree(
-            key: ValueKey(_index),
-            child: _screens[_index],
-          ),
+        child: IndexedStack(
+          index: _index,
+          children: _screens,
         ),
       ),
       bottomNavigationBar: NavigationBar(
