@@ -13,6 +13,8 @@ import '../models/birthday_contact.dart';
 import '../models/chat_message.dart';
 import '../theme.dart';
 import 'storage_service.dart';
+import 'sms_transaction_parser.dart';
+import 'sms_inbox_service.dart';
 
 const _uuid = Uuid();
 
@@ -60,6 +62,7 @@ class AppState extends ChangeNotifier {
   String currency = '\u20b9';
   bool darkMode = false;
   AppThemePreset themePreset = AppThemePreset.ocean;
+  bool smsDetectionEnabled = false;
   bool pinEnabled = false;
   String? pin;
   int streak = 0;
@@ -177,6 +180,8 @@ class AppState extends ChangeNotifier {
       themePreset = AppThemePreset.fromId(
         await s.readString(StoreKeys.themePreset),
       );
+      smsDetectionEnabled =
+          await s.readBool(StoreKeys.smsDetectionEnabled) ?? false;
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
       final savingsStr = await s.readString(StoreKeys.savingsGoal);
@@ -292,6 +297,70 @@ class AppState extends ChangeNotifier {
     await _saveTransactions();
     await _updateStreak();
     notifyListeners();
+  }
+
+  Future<void> setSmsDetectionEnabled(bool enabled) async {
+    smsDetectionEnabled = enabled;
+    await StorageService.instance.writeBool(
+      StoreKeys.smsDetectionEnabled,
+      enabled,
+    );
+    notifyListeners();
+  }
+
+  Future<int> scanSmsInbox() async {
+    final messages = await SmsInboxService().readMessages();
+    final candidates = messages
+        .map(
+          (message) => SmsTransactionParser.parse(
+            sourceId: message.id,
+            address: message.address,
+            body: message.body,
+            date: message.date,
+          ),
+        )
+        .whereType<SmsTransactionCandidate>();
+    return importSmsCandidates(candidates);
+  }
+
+  List<AppTransaction> get smsDetectedTransactions => transactions
+      .where((transaction) => transaction.sourceSmsHash != null)
+      .toList();
+
+  Future<int> importSmsCandidates(
+    Iterable<SmsTransactionCandidate> candidates,
+  ) async {
+    final knownHashes = transactions
+        .map((transaction) => transaction.sourceSmsHash)
+        .whereType<String>()
+        .toSet();
+    final added = <AppTransaction>[];
+
+    for (final candidate in candidates) {
+      if (!knownHashes.add(candidate.sourceHash)) continue;
+      added.add(
+        AppTransaction(
+          id: newId(),
+          type: candidate.type,
+          amount: candidate.amount,
+          category: candidate.category,
+          note:
+              'Detected from SMS${candidate.merchant == null ? '' : ' - ${candidate.merchant}'}',
+          date: candidate.date,
+          paymentMethod: candidate.paymentMethod,
+          sourceSmsHash: candidate.sourceHash,
+          merchant: candidate.merchant,
+          detectedLabel: candidate.detectedLabel,
+        ),
+      );
+    }
+
+    if (added.isEmpty) return 0;
+    transactions.insertAll(0, added.reversed);
+    await _saveTransactions();
+    await _updateStreak();
+    notifyListeners();
+    return added.length;
   }
 
   Future<void> updateTransaction(AppTransaction t) async {

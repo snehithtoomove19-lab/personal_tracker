@@ -71,6 +71,7 @@ class StoreKeys {
   static const currency = 'currency';
   static const darkMode = 'darkMode';
   static const themePreset = 'themePreset';
+  static const smsDetectionEnabled = 'smsDetectionEnabled';
   static const pin = 'appPin';
   static const pinEnabled = 'pinEnabled';
   static const lastOpenDate = 'lastOpenDate';

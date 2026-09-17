@@ -117,6 +117,11 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
 
+          if (app.smsDetectedTransactions.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildSmsDetectedCard(context, app),
+          ],
+
           // MONTH OVER MONTH
           if (app.monthOverMonthChangePercent != null) ...[
             const SizedBox(height: 12),
@@ -275,6 +280,72 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+
+  Widget _buildSmsDetectedCard(BuildContext context, AppState app) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final recent = app.smsDetectedTransactions.take(3).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.sms_rounded, color: colors.primary, size: 19),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Detected from SMS',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Text(
+                '${app.smsDetectedTransactions.length}',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colors.primary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ...recent.map(
+            (transaction) => Padding(
+              padding: const EdgeInsets.only(top: 7),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      transaction.merchant ??
+                          transaction.detectedLabel ??
+                          transaction.category,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    formatMoney(transaction.amount, app.currency),
+                    style: theme.textTheme.labelLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

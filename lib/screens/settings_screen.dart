@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import '../theme.dart';
+import '../services/sms_inbox_service.dart';
 import 'birthday_contacts_screen.dart';
 
 const List<String> kCurrencies = ['\u20b9', '\$', '\u20ac', '\u00a3', '\u00a5'];
@@ -39,6 +40,27 @@ class SettingsScreen extends StatelessWidget {
               ),
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showThemePicker(context, app),
+            ),
+            SwitchListTile(
+              title: const Text('SMS Expense Detection'),
+              subtitle: const Text(
+                'Scan bank and payment alerts locally on this device. SMS text is never uploaded.',
+              ),
+              secondary: const Icon(Icons.sms_outlined),
+              value: app.smsDetectionEnabled,
+              onChanged: (enabled) => _toggleSmsDetection(
+                context,
+                app,
+                enabled,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.manage_search_rounded),
+              title: const Text('Scan SMS / Import Transactions'),
+              subtitle: const Text(
+                'Read existing messages and add new transactions safely',
+              ),
+              onTap: () => _scanSms(context, app),
             ),
             ListTile(
               leading: const Icon(Icons.currency_exchange),
@@ -194,6 +216,56 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _toggleSmsDetection(
+    BuildContext context,
+    dynamic app,
+    bool enabled,
+  ) async {
+    if (!enabled) {
+      await app.setSmsDetectionEnabled(false);
+      return;
+    }
+
+    final granted = await SmsInboxService().requestPermission();
+    if (!context.mounted) return;
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('SMS permission is needed to detect bank alerts.'),
+        ),
+      );
+      return;
+    }
+    await app.setSmsDetectionEnabled(true);
+    final added = await app.scanSmsInbox();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content:
+              Text('$added new transaction${added == 1 ? '' : 's'} detected.')),
+    );
+  }
+
+  Future<void> _scanSms(BuildContext context, dynamic app) async {
+    final granted = await SmsInboxService().requestPermission();
+    if (!context.mounted) return;
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Allow SMS access to scan transaction messages.'),
+        ),
+      );
+      return;
+    }
+    final added = await app.scanSmsInbox();
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content:
+              Text('$added new transaction${added == 1 ? '' : 's'} imported.')),
     );
   }
 

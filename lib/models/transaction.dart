@@ -19,6 +19,9 @@ class AppTransaction {
   DateTime date;
   String paymentMethod;
   TxRepeat repeat;
+  String? sourceSmsHash;
+  String? merchant;
+  String? detectedLabel;
 
   AppTransaction({
     required this.id,
@@ -29,6 +32,9 @@ class AppTransaction {
     required this.date,
     this.paymentMethod = 'Cash',
     this.repeat = TxRepeat.none,
+    this.sourceSmsHash,
+    this.merchant,
+    this.detectedLabel,
   });
 
   Map<String, dynamic> toJson() => {
@@ -40,6 +46,9 @@ class AppTransaction {
         'date': date.toIso8601String(),
         'paymentMethod': paymentMethod,
         'repeat': repeat.name,
+        if (sourceSmsHash != null) 'sourceSmsHash': sourceSmsHash,
+        if (merchant != null) 'merchant': merchant,
+        if (detectedLabel != null) 'detectedLabel': detectedLabel,
       };
 
   factory AppTransaction.fromJson(Map<String, dynamic> json) => AppTransaction(
@@ -54,5 +63,8 @@ class AppTransaction {
           (e) => e.name == (json['repeat'] ?? 'none'),
           orElse: () => TxRepeat.none,
         ),
+        sourceSmsHash: json['sourceSmsHash'] as String?,
+        merchant: json['merchant'] as String?,
+        detectedLabel: json['detectedLabel'] as String?,
       );
 }

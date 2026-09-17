@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/transaction.dart';
 import '../services/app_scope.dart';
+import '../services/sms_inbox_service.dart';
 import '../utils/formatters.dart';
 
 /// A best-effort transaction candidate extracted from pasted SMS text.
@@ -38,6 +39,34 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
   List<_SmsCandidate> _candidates = [];
 
   bool _isParsing = false;
+
+  Future<void> _scanDeviceInbox() async {
+    final granted = await SmsInboxService().requestPermission();
+    if (!mounted) return;
+    if (!granted) {
+      _showMessage(
+        'SMS permission is needed to scan bank and payment alerts.',
+        isError: true,
+      );
+      return;
+    }
+
+    try {
+      final app = AppScope.of(context);
+      final added = await app.scanSmsInbox();
+      if (!mounted) return;
+      _showMessage(
+        '$added new transaction${added == 1 ? '' : 's'} imported from SMS.',
+      );
+    } catch (_) {
+      if (mounted) {
+        _showMessage(
+          'Could not read SMS messages on this device.',
+          isError: true,
+        );
+      }
+    }
+  }
 
   static final RegExp _amountPattern = RegExp(
     r'(?:rs\.?|inr|\u20B9|\$|usd)\s*([\d,]+(?:\.\d{1,2})?)',
@@ -386,6 +415,8 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           children: [
             _buildHeroCard(context),
             const SizedBox(height: 18),
+            _buildDeviceScanButton(context),
+            const SizedBox(height: 18),
             _buildHowItWorks(context),
             const SizedBox(height: 18),
             _buildPasteSection(context),
@@ -513,6 +544,14 @@ class _SmsImportScreenState extends State<SmsImportScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDeviceScanButton(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: _scanDeviceInbox,
+      icon: const Icon(Icons.manage_search_rounded),
+      label: const Text('Scan SMS / Import Transactions'),
     );
   }
 

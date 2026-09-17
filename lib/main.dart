@@ -83,6 +83,13 @@ class _AppRootState extends State<AppRoot> {
     try {
       await appState.load();
       if (!mounted) return;
+      if (appState.smsDetectionEnabled) {
+        try {
+          await appState.scanSmsInbox();
+        } catch (e) {
+          debugPrint('SMS auto-scan skipped: $e');
+        }
+      }
     } catch (e, st) {
       debugPrint('Failed to load app data: $e\n$st');
       // Even if loading saved data fails, mark the app as loaded (with
