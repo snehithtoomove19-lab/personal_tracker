@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../screens/ai_chat_screen.dart';
 import '../screens/budgets_screen.dart';
@@ -131,9 +130,7 @@ class AppDrawer extends StatelessWidget {
                       size: 21,
                     ),
                   ),
-
                   const SizedBox(width: 13),
-
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,9 +160,7 @@ class AppDrawer extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(width: 6),
-
                   Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 13,
@@ -291,8 +286,7 @@ class AppDrawer extends StatelessWidget {
                                 Text(
                                   'WELCOME BACK',
                                   style: TextStyle(
-                                    color:
-                                        Colors.white.withValues(alpha: 0.70),
+                                    color: Colors.white.withValues(alpha: 0.70),
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.55,
@@ -365,9 +359,7 @@ class AppDrawer extends StatelessWidget {
                                 size: 21,
                               ),
                             ),
-
                             const SizedBox(width: 11),
-
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +387,6 @@ class AppDrawer extends StatelessWidget {
                                 ],
                               ),
                             ),
-
                             const Icon(
                               Icons.trending_up_rounded,
                               color: Colors.white70,
@@ -620,4 +611,3 @@ class AppDrawer extends StatelessWidget {
     );
   }
 }
-

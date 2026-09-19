@@ -5,15 +5,15 @@ final GlobalKey<ScaffoldMessengerState> appMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
 void dismissAndPush(Widget screen) {
-    final navigator = appNavigatorKey.currentState;
-    if (navigator == null) return;
+  final navigator = appNavigatorKey.currentState;
+  if (navigator == null) return;
 
-    navigator.pop();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (navigator.mounted) {
-            navigator.push(
-                MaterialPageRoute(builder: (_) => screen),
-            );
-        }
-    });
+  navigator.pop();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (navigator.mounted) {
+      navigator.push(
+        MaterialPageRoute(builder: (_) => screen),
+      );
+    }
+  });
 }

@@ -581,9 +581,7 @@ class _MonthlyReviewScreenState extends State<MonthlyReviewScreen> {
             icon: Icons.bolt_rounded,
             color: Colors.orange,
             title: 'Most productive day',
-            value: productiveDay != null
-                ? productiveDay.toString()
-              : '-',
+            value: productiveDay != null ? productiveDay.toString() : '-',
             subtitle: productiveDay != null
                 ? '${_monthName(_month)} productivity'
                 : 'No activity recorded',

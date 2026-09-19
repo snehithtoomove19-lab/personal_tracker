@@ -23,8 +23,7 @@ class BirthdayContactsScreen extends StatefulWidget {
   const BirthdayContactsScreen({super.key});
 
   @override
-  State<BirthdayContactsScreen> createState() =>
-      _BirthdayContactsScreenState();
+  State<BirthdayContactsScreen> createState() => _BirthdayContactsScreenState();
 }
 
 class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
@@ -78,8 +77,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     DateTime now,
   ) {
     final result = contacts.where((contact) {
-      final matchesSearch =
-          contact.name.toLowerCase().contains(_searchQuery) ||
+      final matchesSearch = contact.name.toLowerCase().contains(_searchQuery) ||
           contact.relation.toLowerCase().contains(_searchQuery);
 
       if (!matchesSearch) return false;
@@ -148,9 +146,11 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       now,
     );
 
-    final todayContacts = contacts.where(
-      (contact) => contact.daysUntil(now) == 0,
-    ).toList();
+    final todayContacts = contacts
+        .where(
+          (contact) => contact.daysUntil(now) == 0,
+        )
+        .toList();
 
     final weekCount = contacts.where((contact) {
       final days = contact.daysUntil(now);
@@ -175,8 +175,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       nextBirthday = sorted.first;
     }
 
-    final bottomPadding =
-        MediaQuery.of(context).padding.bottom + 115;
+    final bottomPadding = MediaQuery.of(context).padding.bottom + 115;
 
     return Theme(
       data: theme,
@@ -215,9 +214,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   now: now,
                 ),
               ),
-
               const SizedBox(height: 16),
-
               if (todayContacts.isNotEmpty)
                 _AnimatedSection(
                   controller: _animationController,
@@ -232,10 +229,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                     },
                   ),
                 ),
-
-              if (todayContacts.isNotEmpty)
-                const SizedBox(height: 16),
-
+              if (todayContacts.isNotEmpty) const SizedBox(height: 16),
               _AnimatedSection(
                 controller: _animationController,
                 delay: 150,
@@ -246,9 +240,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   total: contacts.length,
                 ),
               ),
-
               const SizedBox(height: 20),
-
               _AnimatedSection(
                 controller: _animationController,
                 delay: 210,
@@ -257,9 +249,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   query: _searchQuery,
                 ),
               ),
-
               const SizedBox(height: 12),
-
               _AnimatedSection(
                 controller: _animationController,
                 delay: 270,
@@ -273,9 +263,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   },
                 ),
               ),
-
               const SizedBox(height: 18),
-
               _AnimatedSection(
                 controller: _animationController,
                 delay: 330,
@@ -295,9 +283,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   },
                 ),
               ),
-
               const SizedBox(height: 20),
-
               _AnimatedSection(
                 controller: _animationController,
                 delay: 390,
@@ -317,9 +303,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                           ),
                 ),
               ),
-
               const SizedBox(height: 12),
-
               if (filtered.isEmpty)
                 const _EmptyBirthdayState()
               else
@@ -348,8 +332,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                             app,
                             contact,
                           ),
-                          onMessage: () =>
-                              _shareBirthdayMessage(
+                          onMessage: () => _shareBirthdayMessage(
                             context,
                             contact,
                           ),
@@ -400,12 +383,8 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       ),
       actions: [
         _AppBarButton(
-          icon: _darkMode
-              ? Icons.light_mode_rounded
-              : Icons.dark_mode_rounded,
-          tooltip: _darkMode
-              ? 'Switch to light mode'
-              : 'Switch to dark mode',
+          icon: _darkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          tooltip: _darkMode ? 'Switch to light mode' : 'Switch to dark mode',
           onPressed: () {
             setState(() {
               _darkMode = !_darkMode;
@@ -472,8 +451,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
             ? contact.relation
             : 'Other';
 
-    DateTime selectedDate =
-        contact?.date ?? DateTime.now();
+    DateTime selectedDate = contact?.date ?? DateTime.now();
 
     showModalBottomSheet(
       context: context,
@@ -482,8 +460,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final colors =
-                Theme.of(context).colorScheme;
+            final colors = Theme.of(context).colorScheme;
 
             return Padding(
               padding: EdgeInsets.only(
@@ -494,8 +471,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
               child: Container(
                 decoration: BoxDecoration(
                   color: colors.surface,
-                  borderRadius:
-                      const BorderRadius.vertical(
+                  borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(34),
                   ),
                   boxShadow: [
@@ -516,45 +492,36 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                     30,
                   ),
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
                         child: Container(
                           width: 45,
                           height: 5,
                           decoration: BoxDecoration(
-                            color: colors.onSurface
-                                .withValues(alpha: .15),
-                            borderRadius:
-                                BorderRadius.circular(
+                            color: colors.onSurface.withValues(alpha: .15),
+                            borderRadius: BorderRadius.circular(
                               20,
                             ),
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 24),
-
                       Row(
                         children: [
                           Container(
                             width: 58,
                             height: 58,
                             decoration: BoxDecoration(
-                              gradient:
-                                  const LinearGradient(
-                                begin:
-                                    Alignment.topLeft,
-                                end:
-                                    Alignment.bottomRight,
+                              gradient: const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                                 colors: [
                                   Color(0xFFE85D75),
                                   Color(0xFF8B5CF6),
                                 ],
                               ),
-                              borderRadius:
-                                  BorderRadius.circular(
+                              borderRadius: BorderRadius.circular(
                                 18,
                               ),
                               boxShadow: [
@@ -565,8 +532,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                                     alpha: .25,
                                   ),
                                   blurRadius: 18,
-                                  offset:
-                                      const Offset(0, 8),
+                                  offset: const Offset(0, 8),
                                 ),
                               ],
                             ),
@@ -579,18 +545,15 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   contact == null
                                       ? 'Add Birthday'
                                       : 'Edit Birthday',
-                                  style:
-                                      const TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 22,
-                                    fontWeight:
-                                        FontWeight.w900,
+                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -598,9 +561,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                                   'Never forget someone special.',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: colors
-                                        .onSurface
-                                        .withValues(
+                                    color: colors.onSurface.withValues(
                                       alpha: .52,
                                     ),
                                   ),
@@ -610,79 +571,60 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 26),
-
                       _BirthdayInput(
                         controller: nameCtrl,
                         label: 'Name',
                         hint: 'e.g. Snehith',
-                        icon:
-                            Icons.person_outline_rounded,
+                        icon: Icons.person_outline_rounded,
                       ),
-
                       const SizedBox(height: 12),
-
                       DropdownButtonFormField<String>(
-                        initialValue:
-                            selectedRelation,
-                        decoration:
-                            _inputDecoration(
+                        initialValue: selectedRelation,
+                        decoration: _inputDecoration(
                           context,
                           'Relation',
-                          Icons
-                              .people_outline_rounded,
+                          Icons.people_outline_rounded,
                         ),
-                        items:
-                            _birthdayRelationOptions
-                                .map(
-                                  (relation) =>
-                                      DropdownMenuItem(
-                                    value: relation,
-                                    child: Text(
-                                      relation,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                        items: _birthdayRelationOptions
+                            .map(
+                              (relation) => DropdownMenuItem(
+                                value: relation,
+                                child: Text(
+                                  relation,
+                                ),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (value) {
                           if (value == null) return;
 
                           setSheetState(() {
-                            selectedRelation =
-                                value;
+                            selectedRelation = value;
 
                             if (value != 'Other') {
-                              relationCtrl.text =
-                                  value;
+                              relationCtrl.text = value;
                             }
                           });
                         },
                       ),
-
                       if (selectedRelation == 'Other') ...[
                         const SizedBox(height: 10),
                         _BirthdayInput(
                           controller: relationCtrl,
                           label: 'Custom relation',
-                          hint:
-                              'e.g. Mentor, Cousin',
-                          icon:
-                              Icons.edit_note_rounded,
+                          hint: 'e.g. Mentor, Cousin',
+                          icon: Icons.edit_note_rounded,
                         ),
                       ],
-
                       const SizedBox(height: 12),
-
                       _DatePickerCard(
                         selectedDate: selectedDate,
                         onTap: () async {
-                          final picked =
-                              await showDatePicker(
+                          final picked = await showDatePicker(
                             context: context,
                             initialDate: selectedDate,
-                            firstDate:
-                                DateTime(1900),
+                            firstDate: DateTime(1900),
                             lastDate: DateTime(
                               DateTime.now().year + 5,
                             ),
@@ -695,24 +637,18 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                           }
                         },
                       ),
-
                       const SizedBox(height: 24),
-
                       SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: FilledButton.icon(
                           onPressed: () async {
-                            if (nameCtrl.text
-                                .trim()
-                                .isEmpty) {
+                            if (nameCtrl.text.trim().isEmpty) {
                               ScaffoldMessenger.of(
                                 context,
                               ).showSnackBar(
                                 const SnackBar(
-                                  behavior:
-                                      SnackBarBehavior
-                                          .floating,
+                                  behavior: SnackBarBehavior.floating,
                                   content: Text(
                                     'Please enter a name',
                                   ),
@@ -721,19 +657,12 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                               return;
                             }
 
-                            final edited =
-                                BirthdayContact(
-                              id: contact?.id ??
-                                  _uuid.v4(),
-                              name: nameCtrl.text
-                                  .trim(),
-                              relation: relationCtrl
-                                      .text
-                                      .trim()
-                                      .isEmpty
+                            final edited = BirthdayContact(
+                              id: contact?.id ?? _uuid.v4(),
+                              name: nameCtrl.text.trim(),
+                              relation: relationCtrl.text.trim().isEmpty
                                   ? 'Friend'
-                                  : relationCtrl.text
-                                      .trim(),
+                                  : relationCtrl.text.trim(),
                               date: DateTime(
                                 selectedDate.year,
                                 selectedDate.month,
@@ -742,19 +671,16 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                             );
 
                             if (contact == null) {
-                              await app
-                                  .addBirthdayContact(
+                              await app.addBirthdayContact(
                                 edited,
                               );
                             } else {
-                              await app
-                                  .updateBirthdayContact(
+                              await app.updateBirthdayContact(
                                 edited,
                               );
                             }
 
-                            if (!mounted ||
-                                !sheetContext.mounted) {
+                            if (!mounted || !sheetContext.mounted) {
                               return;
                             }
 
@@ -766,9 +692,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                               context,
                             ).showSnackBar(
                               SnackBar(
-                                behavior:
-                                    SnackBarBehavior
-                                        .floating,
+                                behavior: SnackBarBehavior.floating,
                                 content: Text(
                                   contact == null
                                       ? '🎂 Birthday added'
@@ -783,12 +707,9 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                                 : Icons.check_rounded,
                           ),
                           label: Text(
-                            contact == null
-                                ? 'Add Birthday'
-                                : 'Save Changes',
+                            contact == null ? 'Add Birthday' : 'Save Changes',
                             style: const TextStyle(
-                              fontWeight:
-                                  FontWeight.w900,
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                         ),
@@ -816,8 +737,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     showDialog(
       context: context,
       builder: (ctx) {
-        final colors =
-            Theme.of(ctx).colorScheme;
+        final colors = Theme.of(ctx).colorScheme;
 
         return AlertDialog(
           backgroundColor: colors.surface,
@@ -844,14 +764,12 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
           ),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.pop(ctx),
+              onPressed: () => Navigator.pop(ctx),
               child: const Text('Cancel'),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor:
-                    Colors.redAccent,
+                backgroundColor: Colors.redAccent,
                 foregroundColor: Colors.white,
               ),
               onPressed: () {
@@ -865,8 +783,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                   context,
                 ).showSnackBar(
                   SnackBar(
-                    behavior:
-                        SnackBarBehavior.floating,
+                    behavior: SnackBarBehavior.floating,
                     content: Text(
                       '${contact.name} removed',
                     ),
@@ -896,18 +813,12 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   ) async {
     final messages = [
       'Happy Birthday, ${contact.name}! 🎂🎉 Wishing you an amazing day filled with happiness, laughter and beautiful memories! ❤️',
-
       'Happy Birthday ${contact.name}! 🥳🎂 Hope your special day is absolutely wonderful and the year ahead brings you lots of happiness! ✨',
-
       'Wishing you the happiest birthday, ${contact.name}! 🎉 May your day be full of love, smiles and everything that makes you happy! 💖',
-
       'Here’s to another amazing year, ${contact.name}! 🎂✨ Happy Birthday! May this year bring you new adventures and unforgettable memories! 🥳',
     ];
 
-    final message =
-        messages[
-            DateTime.now().millisecond %
-                messages.length];
+    final message = messages[DateTime.now().millisecond % messages.length];
 
     await SharePlus.instance.share(
       ShareParams(
@@ -922,12 +833,9 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   ) async {
     final lines = contacts.map(
       (contact) {
-        final days =
-            contact.daysUntil(DateTime.now());
+        final days = contact.daysUntil(DateTime.now());
 
-        final when = days == 0
-            ? 'today 🎉'
-            : 'in $days days';
+        final when = days == 0 ? 'today 🎉' : 'in $days days';
 
         return '🎂 ${contact.name} • '
             '${DateFormat.MMMd().format(contact.date)} '
@@ -937,8 +845,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
     await SharePlus.instance.share(
       ShareParams(
-        text:
-            '🎂 My upcoming birthdays\n\n$lines',
+        text: '🎂 My upcoming birthdays\n\n$lines',
       ),
     );
   }
@@ -949,8 +856,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor:
-          Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (_) => const _TipsSheet(),
     );
   }
@@ -961,8 +867,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      backgroundColor:
-          Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (_) => const _GiftIdeasSheet(),
     );
   }
@@ -972,37 +877,27 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     String label,
     IconData icon,
   ) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return InputDecoration(
       labelText: label,
       prefixIcon: Icon(icon),
       filled: true,
-      fillColor:
-          colors.surfaceContainerHighest
-              .withValues(alpha: .45),
+      fillColor: colors.surfaceContainerHighest.withValues(alpha: .45),
       border: OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
-          color: colors.outline
-              .withValues(alpha: .08),
+          color: colors.outline.withValues(alpha: .08),
         ),
       ),
-      enabledBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(18),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
-          color: colors.outline
-              .withValues(alpha: .08),
+          color: colors.outline.withValues(alpha: .08),
         ),
       ),
-      focusedBorder:
-          OutlineInputBorder(
-        borderRadius:
-            BorderRadius.circular(18),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(18),
         borderSide: BorderSide(
           color: colors.primary,
           width: 1.5,
@@ -1029,14 +924,12 @@ class _AppBarButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: colors.surfaceContainerHighest
-            .withValues(alpha: .65),
+        color: colors.surfaceContainerHighest.withValues(alpha: .65),
         shape: const CircleBorder(),
         child: InkWell(
           customBorder: const CircleBorder(),
@@ -1077,11 +970,8 @@ class _AnimatedSection extends StatelessWidget {
       animation: controller,
       child: child,
       builder: (context, child) {
-        final progress =
-            Curves.easeOutCubic.transform(
-          ((controller.value * 1000 - delay) /
-                  650)
-              .clamp(0.0, 1.0),
+        final progress = Curves.easeOutCubic.transform(
+          ((controller.value * 1000 - delay) / 650).clamp(0.0, 1.0),
         );
 
         return Opacity(
@@ -1131,12 +1021,10 @@ class _HeroCard extends StatelessWidget {
             Color(0xFFF59E0B),
           ],
         ),
-        borderRadius:
-            BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE85D75)
-                .withValues(alpha: .30),
+            color: const Color(0xFFE85D75).withValues(alpha: .30),
             blurRadius: 30,
             offset: const Offset(0, 14),
           ),
@@ -1150,8 +1038,7 @@ class _HeroCard extends StatelessWidget {
             child: Icon(
               Icons.cake_rounded,
               size: 155,
-              color: Colors.white
-                  .withValues(alpha: .08),
+              color: Colors.white.withValues(alpha: .08),
             ),
           ),
           Positioned(
@@ -1160,8 +1047,7 @@ class _HeroCard extends StatelessWidget {
             child: Icon(
               Icons.auto_awesome_rounded,
               size: 75,
-              color: Colors.white
-                  .withValues(alpha: .08),
+              color: Colors.white.withValues(alpha: .08),
             ),
           ),
           Positioned(
@@ -1170,13 +1056,11 @@ class _HeroCard extends StatelessWidget {
             child: Icon(
               Icons.favorite_rounded,
               size: 105,
-              color: Colors.white
-                  .withValues(alpha: .05),
+              color: Colors.white.withValues(alpha: .05),
             ),
           ),
           Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -1184,13 +1068,10 @@ class _HeroCard extends StatelessWidget {
                     width: 50,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white
-                          .withValues(alpha: .16),
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      color: Colors.white.withValues(alpha: .16),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white
-                            .withValues(alpha: .15),
+                        color: Colors.white.withValues(alpha: .15),
                       ),
                     ),
                     child: const Icon(
@@ -1202,14 +1083,11 @@ class _HeroCard extends StatelessWidget {
                   const Spacer(),
                   if (todayCount > 0)
                     _GlassPill(
-                      text:
-                          '$todayCount today 🎉',
+                      text: '$todayCount today 🎉',
                     ),
                 ],
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 'Celebrate the people\nwho matter most 🎂',
                 style: TextStyle(
@@ -1219,35 +1097,27 @@ class _HeroCard extends StatelessWidget {
                   fontWeight: FontWeight.w900,
                 ),
               ),
-
               const SizedBox(height: 9),
-
               Text(
                 contactCount == 0
                     ? 'Build your personal birthday list.'
                     : '$contactCount special '
                         '${contactCount == 1 ? 'person' : 'people'} saved.',
                 style: TextStyle(
-                  color: Colors.white
-                      .withValues(alpha: .82),
+                  color: Colors.white.withValues(alpha: .82),
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-
               if (nextBirthday != null) ...[
                 const SizedBox(height: 18),
                 Container(
-                  padding:
-                      const EdgeInsets.all(13),
+                  padding: const EdgeInsets.all(13),
                   decoration: BoxDecoration(
-                    color: Colors.white
-                        .withValues(alpha: .13),
-                    borderRadius:
-                        BorderRadius.circular(17),
+                    color: Colors.white.withValues(alpha: .13),
+                    borderRadius: BorderRadius.circular(17),
                     border: Border.all(
-                      color: Colors.white
-                          .withValues(alpha: .10),
+                      color: Colors.white.withValues(alpha: .10),
                     ),
                   ),
                   child: Row(
@@ -1262,12 +1132,10 @@ class _HeroCard extends StatelessWidget {
                         child: Text(
                           'Next: ${nextBirthday!.name} • '
                           '${nextBirthday!.daysUntil(now) == 0 ? 'Today 🎉' : '${nextBirthday!.daysUntil(now)} days'}',
-                          style:
-                              const TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
-                            fontWeight:
-                                FontWeight.w800,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),
@@ -1293,19 +1161,15 @@ class _GlassPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 11,
         vertical: 7,
       ),
       decoration: BoxDecoration(
-        color: Colors.white
-            .withValues(alpha: .15),
-        borderRadius:
-            BorderRadius.circular(30),
+        color: Colors.white.withValues(alpha: .15),
+        borderRadius: BorderRadius.circular(30),
         border: Border.all(
-          color: Colors.white
-              .withValues(alpha: .12),
+          color: Colors.white.withValues(alpha: .12),
         ),
       ),
       child: Text(
@@ -1335,24 +1199,19 @@ class _TodayBirthdayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
-        color: Colors.redAccent
-            .withValues(alpha: .055),
-        borderRadius:
-            BorderRadius.circular(23),
+        color: Colors.redAccent.withValues(alpha: .055),
+        borderRadius: BorderRadius.circular(23),
         border: Border.all(
-          color: Colors.redAccent
-              .withValues(alpha: .14),
+          color: Colors.redAccent.withValues(alpha: .14),
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -1360,15 +1219,13 @@ class _TodayBirthdayCard extends StatelessWidget {
                 width: 43,
                 height: 43,
                 decoration: BoxDecoration(
-                  gradient:
-                      const LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [
                       Colors.redAccent,
                       Colors.pink,
                     ],
                   ),
-                  borderRadius:
-                      BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
                   Icons.celebration_rounded,
@@ -1379,15 +1236,13 @@ class _TodayBirthdayCard extends StatelessWidget {
               const SizedBox(width: 11),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Birthday Today! 🎉',
                       style: TextStyle(
                         fontSize: 15,
-                        fontWeight:
-                            FontWeight.w900,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -1395,9 +1250,7 @@ class _TodayBirthdayCard extends StatelessWidget {
                       'Make their day special ❤️',
                       style: TextStyle(
                         fontSize: 10,
-                        color: colors
-                            .onSurface
-                            .withValues(
+                        color: colors.onSurface.withValues(
                           alpha: .52,
                         ),
                       ),
@@ -1410,8 +1263,7 @@ class _TodayBirthdayCard extends StatelessWidget {
           const SizedBox(height: 13),
           ...contacts.map(
             (contact) => Padding(
-              padding:
-                  const EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 top: 7,
               ),
               child: Row(
@@ -1420,8 +1272,7 @@ class _TodayBirthdayCard extends StatelessWidget {
                     width: 37,
                     height: 37,
                     decoration: const BoxDecoration(
-                      gradient:
-                          LinearGradient(
+                      gradient: LinearGradient(
                         colors: [
                           Color(0xFFE85D75),
                           Color(0xFF9B5DE5),
@@ -1432,12 +1283,10 @@ class _TodayBirthdayCard extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       contact.initials,
-                      style:
-                          const TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
-                        fontWeight:
-                            FontWeight.w900,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ),
@@ -1445,18 +1294,14 @@ class _TodayBirthdayCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       contact.name,
-                      style:
-                          const TextStyle(
-                        fontWeight:
-                            FontWeight.w800,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                   IconButton(
-                    tooltip:
-                        'Send birthday message',
-                    onPressed: () =>
-                        onMessage(contact),
+                    tooltip: 'Send birthday message',
+                    onPressed: () => onMessage(contact),
                     icon: Icon(
                       Icons.send_rounded,
                       size: 18,
@@ -1549,24 +1394,18 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: 13,
         horizontal: 4,
       ),
       decoration: BoxDecoration(
-        color: colors
-            .surfaceContainerHighest
-            .withValues(alpha: .42),
-        borderRadius:
-            BorderRadius.circular(19),
+        color: colors.surfaceContainerHighest.withValues(alpha: .42),
+        borderRadius: BorderRadius.circular(19),
         border: Border.all(
-          color: colors.outline
-              .withValues(alpha: .07),
+          color: colors.outline.withValues(alpha: .07),
         ),
       ),
       child: Column(
@@ -1575,10 +1414,8 @@ class _StatCard extends StatelessWidget {
             width: 35,
             height: 35,
             decoration: BoxDecoration(
-              color:
-                  color.withValues(alpha: .11),
-              borderRadius:
-                  BorderRadius.circular(11),
+              color: color.withValues(alpha: .11),
+              borderRadius: BorderRadius.circular(11),
             ),
             child: Icon(
               icon,
@@ -1600,8 +1437,7 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 8,
               fontWeight: FontWeight.w700,
-              color: colors.onSurface
-                  .withValues(alpha: .50),
+              color: colors.onSurface.withValues(alpha: .50),
             ),
           ),
         ],
@@ -1625,20 +1461,16 @@ class _SearchBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return TextField(
       controller: controller,
-      textCapitalization:
-          TextCapitalization.words,
+      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
-        hintText:
-            'Search people or relationships...',
+        hintText: 'Search people or relationships...',
         hintStyle: TextStyle(
           fontSize: 12,
-          color: colors.onSurface
-              .withValues(alpha: .42),
+          color: colors.onSurface.withValues(alpha: .42),
         ),
         prefixIcon: const Icon(
           Icons.search_rounded,
@@ -1653,18 +1485,13 @@ class _SearchBox extends StatelessWidget {
               )
             : null,
         filled: true,
-        fillColor: colors
-            .surfaceContainerHighest
-            .withValues(alpha: .55),
+        fillColor: colors.surfaceContainerHighest.withValues(alpha: .55),
         border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(19),
+          borderRadius: BorderRadius.circular(19),
           borderSide: BorderSide.none,
         ),
-        focusedBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(19),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(19),
           borderSide: BorderSide(
             color: colors.primary,
             width: 1.4,
@@ -1695,15 +1522,11 @@ class _FilterBar extends StatelessWidget {
     return SizedBox(
       height: 39,
       child: ListView.separated(
-        scrollDirection:
-            Axis.horizontal,
+        scrollDirection: Axis.horizontal,
         itemCount: filters.length,
-        separatorBuilder:
-            (_, __) =>
-                const SizedBox(width: 8),
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (_, index) {
-          final filter =
-              filters[index];
+          final filter = filters[index];
 
           return ChoiceChip(
             selected: selected == filter,
@@ -1721,12 +1544,10 @@ class _FilterBar extends StatelessWidget {
                       ? Icons.today_rounded
                       : filter == 'This Week'
                           ? Icons.date_range_rounded
-                          : Icons
-                              .calendar_month_rounded,
+                          : Icons.calendar_month_rounded,
               size: 15,
             ),
-            onSelected: (_) =>
-                onChanged(filter),
+            onSelected: (_) => onChanged(filter),
           );
         },
       ),
@@ -1753,24 +1574,20 @@ class _QuickActions extends StatelessWidget {
       children: [
         Expanded(
           child: _QuickActionCard(
-            icon:
-                Icons.chat_bubble_outline_rounded,
+            icon: Icons.chat_bubble_outline_rounded,
             title: 'Birthday Message',
             subtitle: 'Share a wish',
-            accent:
-                const Color(0xFFE85D75),
+            accent: const Color(0xFFE85D75),
             onTap: onMessage,
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _QuickActionCard(
-            icon:
-                Icons.card_giftcard_rounded,
+            icon: Icons.card_giftcard_rounded,
             title: 'Gift Ideas',
             subtitle: 'Find inspiration',
-            accent:
-                const Color(0xFFF59E0B),
+            accent: const Color(0xFFF59E0B),
             onTap: onGift,
           ),
         ),
@@ -1779,8 +1596,7 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
-class _QuickActionCard
-    extends StatelessWidget {
+class _QuickActionCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
@@ -1797,32 +1613,24 @@ class _QuickActionCard
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Material(
-      color: colors
-          .surfaceContainerHighest
-          .withValues(alpha: .40),
-      borderRadius:
-          BorderRadius.circular(19),
+      color: colors.surfaceContainerHighest.withValues(alpha: .40),
+      borderRadius: BorderRadius.circular(19),
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(19),
+        borderRadius: BorderRadius.circular(19),
         onTap: onTap,
         child: Padding(
-          padding:
-              const EdgeInsets.all(13),
+          padding: const EdgeInsets.all(13),
           child: Row(
             children: [
               Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: accent
-                      .withValues(alpha: .12),
-                  borderRadius:
-                      BorderRadius.circular(12),
+                  color: accent.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
@@ -1833,19 +1641,15 @@ class _QuickActionCard
               const SizedBox(width: 9),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
                       maxLines: 1,
-                      overflow:
-                          TextOverflow.ellipsis,
-                      style:
-                          const TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
                         fontSize: 11,
-                        fontWeight:
-                            FontWeight.w800,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -1853,9 +1657,7 @@ class _QuickActionCard
                       subtitle,
                       style: TextStyle(
                         fontSize: 9,
-                        color: colors
-                            .onSurface
-                            .withValues(
+                        color: colors.onSurface.withValues(
                           alpha: .50,
                         ),
                       ),
@@ -1875,12 +1677,10 @@ class _QuickActionCard
 // TOOLBAR
 // ============================================================================
 
-class _ListToolbar
-    extends StatelessWidget {
+class _ListToolbar extends StatelessWidget {
   final String sortMode;
   final int resultCount;
-  final ValueChanged<String>
-      onSortChanged;
+  final ValueChanged<String> onSortChanged;
   final VoidCallback? onShare;
 
   const _ListToolbar({
@@ -1892,8 +1692,7 @@ class _ListToolbar
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -1901,10 +1700,8 @@ class _ListToolbar
           width: 38,
           height: 38,
           decoration: BoxDecoration(
-            color: colors.primary
-                .withValues(alpha: .09),
-            borderRadius:
-                BorderRadius.circular(12),
+            color: colors.primary.withValues(alpha: .09),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             Icons.people_alt_outlined,
@@ -1915,23 +1712,20 @@ class _ListToolbar
         const SizedBox(width: 10),
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 'Your People',
                 style: TextStyle(
                   fontSize: 14,
-                  fontWeight:
-                      FontWeight.w900,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
               Text(
                 '$resultCount birthdays',
                 style: TextStyle(
                   fontSize: 9,
-                  color: colors.onSurface
-                      .withValues(
+                  color: colors.onSurface.withValues(
                     alpha: .48,
                   ),
                 ),
@@ -1941,27 +1735,19 @@ class _ListToolbar
         ),
         Container(
           height: 38,
-          padding:
-              const EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: 4,
           ),
           decoration: BoxDecoration(
-            color: colors
-                .surfaceContainerHighest
-                .withValues(alpha: .55),
-            borderRadius:
-                BorderRadius.circular(13),
+            color: colors.surfaceContainerHighest.withValues(alpha: .55),
+            borderRadius: BorderRadius.circular(13),
           ),
-          child:
-              DropdownButtonHideUnderline(
-            child:
-                DropdownButton<String>(
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
               value: sortMode,
               isDense: true,
-              borderRadius:
-                  BorderRadius.circular(14),
-              padding:
-                  const EdgeInsets.symmetric(
+              borderRadius: BorderRadius.circular(14),
+              padding: const EdgeInsets.symmetric(
                 horizontal: 7,
               ),
               icon: const Icon(
@@ -1971,8 +1757,7 @@ class _ListToolbar
               style: TextStyle(
                 color: colors.onSurface,
                 fontSize: 10,
-                fontWeight:
-                    FontWeight.w800,
+                fontWeight: FontWeight.w800,
               ),
               items: const [
                 DropdownMenuItem(
@@ -1998,15 +1783,13 @@ class _ListToolbar
         ),
         const SizedBox(width: 4),
         IconButton(
-          tooltip:
-              'Share birthday list',
+          tooltip: 'Share birthday list',
           onPressed: onShare,
           icon: Icon(
             Icons.ios_share_rounded,
             size: 18,
             color: onShare == null
-                ? colors.onSurface
-                    .withValues(
+                ? colors.onSurface.withValues(
                     alpha: .25,
                   )
                 : colors.primary,
@@ -2021,8 +1804,7 @@ class _ListToolbar
 // BIRTHDAY CARD
 // ============================================================================
 
-class _BirthdayCard
-    extends StatelessWidget {
+class _BirthdayCard extends StatelessWidget {
   final BirthdayContact contact;
   final DateTime now;
   final VoidCallback onEdit;
@@ -2039,17 +1821,13 @@ class _BirthdayCard
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
-    final days =
-        contact.daysUntil(now);
+    final days = contact.daysUntil(now);
 
-    final next =
-        contact.nextOccurrence(now);
+    final next = contact.nextOccurrence(now);
 
-    final age =
-        contact.ageOn(next);
+    final age = contact.ageOn(next);
 
     final isToday = days == 0;
     final isTomorrow = days == 1;
@@ -2067,54 +1845,42 @@ class _BirthdayCard
             ? 'TOMORROW'
             : days <= 30
                 ? '$days DAYS'
-                : DateFormat.MMMd()
-                    .format(next);
+                : DateFormat.MMMd().format(next);
 
     return Material(
       color: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
           color: colors.surfaceContainerLowest,
-          borderRadius:
-              BorderRadius.circular(23),
+          borderRadius: BorderRadius.circular(23),
           border: Border.all(
-            color: accent
-                .withValues(alpha: .12),
+            color: accent.withValues(alpha: .12),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black
-                  .withValues(alpha: .035),
+              color: Colors.black.withValues(alpha: .035),
               blurRadius: 18,
-              offset:
-                  const Offset(0, 7),
+              offset: const Offset(0, 7),
             ),
           ],
         ),
         child: InkWell(
-          borderRadius:
-              BorderRadius.circular(23),
+          borderRadius: BorderRadius.circular(23),
           onTap: onEdit,
           child: Padding(
-            padding:
-                const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(14),
             child: Row(
               children: [
                 Stack(
-                  clipBehavior:
-                      Clip.none,
+                  clipBehavior: Clip.none,
                   children: [
                     Container(
                       width: 61,
                       height: 61,
-                      decoration:
-                          BoxDecoration(
-                        gradient:
-                            LinearGradient(
-                          begin:
-                              Alignment.topLeft,
-                          end: Alignment
-                              .bottomRight,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                           colors: [
                             accent.withValues(
                               alpha: .22,
@@ -2124,21 +1890,17 @@ class _BirthdayCard
                             ),
                           ],
                         ),
-                        borderRadius:
-                            BorderRadius
-                                .circular(
+                        borderRadius: BorderRadius.circular(
                           19,
                         ),
                       ),
-                      alignment:
-                          Alignment.center,
+                      alignment: Alignment.center,
                       child: Text(
                         contact.initials,
                         style: TextStyle(
                           color: accent,
                           fontSize: 17,
-                          fontWeight:
-                              FontWeight.w900,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -2146,67 +1908,44 @@ class _BirthdayCard
                       Positioned(
                         right: -5,
                         top: -7,
-                        child:
-                            Container(
+                        child: Container(
                           width: 25,
                           height: 25,
-                          decoration:
-                              BoxDecoration(
-                            color:
-                                colors
-                                    .surface,
-                            shape:
-                                BoxShape
-                                    .circle,
+                          decoration: BoxDecoration(
+                            color: colors.surface,
+                            shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors
-                                    .black
-                                    .withValues(
+                                color: Colors.black.withValues(
                                   alpha: .10,
                                 ),
-                                blurRadius:
-                                    8,
+                                blurRadius: 8,
                               ),
                             ],
                           ),
-                          alignment:
-                              Alignment
-                                  .center,
-                          child:
-                              const Text(
+                          alignment: Alignment.center,
+                          child: const Text(
                             '🎂',
-                            style:
-                                TextStyle(
-                              fontSize:
-                                  13,
+                            style: TextStyle(
+                              fontSize: 13,
                             ),
                           ),
                         ),
                       ),
                   ],
                 ),
-
                 const SizedBox(width: 13),
-
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment
-                            .start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         contact.name,
                         maxLines: 1,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style:
-                            const TextStyle(
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
                           fontSize: 14,
-                          fontWeight:
-                              FontWeight
-                                  .w900,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                       const SizedBox(
@@ -2214,12 +1953,9 @@ class _BirthdayCard
                       ),
                       Text(
                         contact.relation,
-                        style:
-                            TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
-                          fontWeight:
-                              FontWeight
-                                  .w800,
+                          fontWeight: FontWeight.w800,
                           color: accent,
                         ),
                       ),
@@ -2229,70 +1965,44 @@ class _BirthdayCard
                       Row(
                         children: [
                           Icon(
-                            Icons
-                                .cake_outlined,
+                            Icons.cake_outlined,
                             size: 13,
-                            color: colors
-                                .onSurface
-                                .withValues(
+                            color: colors.onSurface.withValues(
                               alpha: .40,
                             ),
                           ),
-                          const SizedBox(
-                              width: 5),
+                          const SizedBox(width: 5),
                           Flexible(
                             child: Text(
-                              DateFormat
-                                  .yMMMd()
-                                  .format(
+                              DateFormat.yMMMd().format(
                                 contact.date,
                               ),
-                              overflow:
-                                  TextOverflow
-                                      .ellipsis,
-                              style:
-                                  TextStyle(
-                                fontSize:
-                                    10,
-                                color: colors
-                                    .onSurface
-                                    .withValues(
-                                  alpha:
-                                      .48,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: colors.onSurface.withValues(
+                                  alpha: .48,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(
-                              width: 6),
+                          const SizedBox(width: 6),
                           Text(
                             '•',
-                            style:
-                                TextStyle(
-                              color: colors
-                                  .onSurface
-                                  .withValues(
-                                alpha:
-                                    .25,
+                            style: TextStyle(
+                              color: colors.onSurface.withValues(
+                                alpha: .25,
                               ),
                             ),
                           ),
-                          const SizedBox(
-                              width: 6),
+                          const SizedBox(width: 6),
                           Text(
                             'Turns $age',
-                            style:
-                                TextStyle(
-                              fontSize:
-                                  10,
-                              fontWeight:
-                                  FontWeight
-                                      .w700,
-                              color: colors
-                                  .onSurface
-                                  .withValues(
-                                alpha:
-                                    .55,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: colors.onSurface.withValues(
+                                alpha: .55,
                               ),
                             ),
                           ),
@@ -2301,96 +2011,63 @@ class _BirthdayCard
                     ],
                   ),
                 ),
-
                 const SizedBox(width: 5),
-
                 Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      constraints:
-                          const BoxConstraints(
+                      constraints: const BoxConstraints(
                         maxWidth: 74,
                       ),
-                      padding:
-                          const EdgeInsets
-                              .symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 7,
                         vertical: 5,
                       ),
-                      decoration:
-                          BoxDecoration(
-                        color: accent
-                            .withValues(
+                      decoration: BoxDecoration(
+                        color: accent.withValues(
                           alpha: .09,
                         ),
-                        borderRadius:
-                            BorderRadius
-                                .circular(
+                        borderRadius: BorderRadius.circular(
                           8,
                         ),
                       ),
                       child: Text(
                         label,
                         maxLines: 1,
-                        overflow:
-                            TextOverflow
-                                .ellipsis,
-                        style:
-                            TextStyle(
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: accent,
                           fontSize: 7,
-                          fontWeight:
-                              FontWeight
-                                  .w900,
-                          letterSpacing:
-                              .35,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: .35,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                        height: 2),
+                    const SizedBox(height: 2),
                     Row(
-                      mainAxisSize:
-                          MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          tooltip:
-                              'Birthday message',
-                          visualDensity:
-                              VisualDensity
-                                  .compact,
-                          onPressed:
-                              onMessage,
+                          tooltip: 'Birthday message',
+                          visualDensity: VisualDensity.compact,
+                          onPressed: onMessage,
                           icon: Icon(
-                            Icons
-                                .send_rounded,
+                            Icons.send_rounded,
                             size: 17,
-                            color: colors
-                                .primary,
+                            color: colors.primary,
                           ),
                         ),
-                        PopupMenuButton<
-                            String>(
-                          padding:
-                              EdgeInsets
-                                  .zero,
+                        PopupMenuButton<String>(
+                          padding: EdgeInsets.zero,
                           icon: Icon(
-                            Icons
-                                .more_horiz_rounded,
+                            Icons.more_horiz_rounded,
                             size: 20,
-                            color: colors
-                                .onSurface
-                                .withValues(
-                              alpha:
-                                  .45,
+                            color: colors.onSurface.withValues(
+                              alpha: .45,
                             ),
                           ),
-                          onSelected:
-                              (value) {
-                            switch (
-                                value) {
+                          onSelected: (value) {
+                            switch (value) {
                               case 'edit':
                                 onEdit();
                                 break;
@@ -2402,42 +2079,29 @@ class _BirthdayCard
                                 break;
                             }
                           },
-                          itemBuilder:
-                              (_) =>
-                                  const [
+                          itemBuilder: (_) => const [
                             PopupMenuItem(
-                              value:
-                                  'edit',
+                              value: 'edit',
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons
-                                        .edit_outlined,
-                                    size:
-                                        18,
+                                    Icons.edit_outlined,
+                                    size: 18,
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10),
-                                  Text(
-                                      'Edit'),
+                                  SizedBox(width: 10),
+                                  Text('Edit'),
                                 ],
                               ),
                             ),
                             PopupMenuItem(
-                              value:
-                                  'message',
+                              value: 'message',
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons
-                                        .message_outlined,
-                                    size:
-                                        18,
+                                    Icons.message_outlined,
+                                    size: 18,
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10),
+                                  SizedBox(width: 10),
                                   Text(
                                     'Birthday Message',
                                   ),
@@ -2445,23 +2109,16 @@ class _BirthdayCard
                               ),
                             ),
                             PopupMenuItem(
-                              value:
-                                  'delete',
+                              value: 'delete',
                               child: Row(
                                 children: [
                                   Icon(
-                                    Icons
-                                        .delete_outline,
-                                    size:
-                                        18,
-                                    color: Colors
-                                        .redAccent,
+                                    Icons.delete_outline,
+                                    size: 18,
+                                    color: Colors.redAccent,
                                   ),
-                                  SizedBox(
-                                      width:
-                                          10),
-                                  Text(
-                                      'Delete'),
+                                  SizedBox(width: 10),
+                                  Text('Delete'),
                                 ],
                               ),
                             ),
@@ -2484,29 +2141,23 @@ class _BirthdayCard
 // EMPTY
 // ============================================================================
 
-class _EmptyBirthdayState
-    extends StatelessWidget {
+class _EmptyBirthdayState extends StatelessWidget {
   const _EmptyBirthdayState();
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Container(
-      padding:
-          const EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: 24,
         vertical: 42,
       ),
       decoration: BoxDecoration(
-        color: colors.primary
-            .withValues(alpha: .035),
-        borderRadius:
-            BorderRadius.circular(27),
+        color: colors.primary.withValues(alpha: .035),
+        borderRadius: BorderRadius.circular(27),
         border: Border.all(
-          color: colors.primary
-              .withValues(alpha: .08),
+          color: colors.primary.withValues(alpha: .08),
         ),
       ),
       child: Column(
@@ -2515,8 +2166,7 @@ class _EmptyBirthdayState
             width: 90,
             height: 90,
             decoration: const BoxDecoration(
-              gradient:
-                  LinearGradient(
+              gradient: LinearGradient(
                 colors: [
                   Color(0xFFE85D75),
                   Color(0xFF9B5DE5),
@@ -2536,8 +2186,7 @@ class _EmptyBirthdayState
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 19,
-              fontWeight:
-                  FontWeight.w900,
+              fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 7),
@@ -2547,18 +2196,15 @@ class _EmptyBirthdayState
             style: TextStyle(
               fontSize: 11,
               height: 1.5,
-              color: colors.onSurface
-                  .withValues(alpha: .52),
+              color: colors.onSurface.withValues(alpha: .52),
             ),
           ),
           const SizedBox(height: 22),
           const Row(
-            mainAxisAlignment:
-                MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _MiniFeature(
-                icon: Icons
-                    .notifications_active_outlined,
+                icon: Icons.notifications_active_outlined,
                 text: 'Reminders',
               ),
               SizedBox(width: 16),
@@ -2568,8 +2214,7 @@ class _EmptyBirthdayState
               ),
               SizedBox(width: 16),
               _MiniFeature(
-                icon: Icons
-                    .favorite_border_rounded,
+                icon: Icons.favorite_border_rounded,
                 text: 'People',
               ),
             ],
@@ -2580,8 +2225,7 @@ class _EmptyBirthdayState
   }
 }
 
-class _MiniFeature
-    extends StatelessWidget {
+class _MiniFeature extends StatelessWidget {
   final IconData icon;
   final String text;
 
@@ -2592,8 +2236,7 @@ class _MiniFeature
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Row(
       children: [
@@ -2607,10 +2250,8 @@ class _MiniFeature
           text,
           style: TextStyle(
             fontSize: 9,
-            fontWeight:
-                FontWeight.w700,
-            color: colors.onSurface
-                .withValues(alpha: .65),
+            fontWeight: FontWeight.w700,
+            color: colors.onSurface.withValues(alpha: .65),
           ),
         ),
       ],
@@ -2622,8 +2263,7 @@ class _MiniFeature
 // INPUT
 // ============================================================================
 
-class _BirthdayInput
-    extends StatelessWidget {
+class _BirthdayInput extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
@@ -2638,36 +2278,27 @@ class _BirthdayInput
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return TextField(
       controller: controller,
-      textCapitalization:
-          TextCapitalization.words,
+      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon),
         filled: true,
-        fillColor: colors
-            .surfaceContainerHighest
-            .withValues(alpha: .45),
+        fillColor: colors.surfaceContainerHighest.withValues(alpha: .45),
         border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
-        enabledBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide.none,
         ),
-        focusedBorder:
-            OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(18),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(
             color: colors.primary,
             width: 1.4,
@@ -2682,8 +2313,7 @@ class _BirthdayInput
 // DATE PICKER
 // ============================================================================
 
-class _DatePickerCard
-    extends StatelessWidget {
+class _DatePickerCard extends StatelessWidget {
   final DateTime selectedDate;
   final VoidCallback onTap;
 
@@ -2694,27 +2324,20 @@ class _DatePickerCard
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius:
-            BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(18),
         onTap: onTap,
         child: Container(
-          padding:
-              const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: colors
-                .surfaceContainerHighest
-                .withValues(alpha: .45),
-            borderRadius:
-                BorderRadius.circular(18),
+            color: colors.surfaceContainerHighest.withValues(alpha: .45),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: colors.outline
-                  .withValues(alpha: .08),
+              color: colors.outline.withValues(alpha: .08),
             ),
           ),
           child: Row(
@@ -2723,50 +2346,41 @@ class _DatePickerCard
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: Colors.pink
-                      .withValues(alpha: .10),
-                  borderRadius:
-                      BorderRadius.circular(14),
+                  color: Colors.pink.withValues(alpha: .10),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
-                  Icons
-                      .calendar_month_rounded,
+                  Icons.calendar_month_rounded,
                   color: Colors.pink,
                 ),
               ),
               const SizedBox(width: 13),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Birthday',
                       style: TextStyle(
                         fontSize: 11,
-                        fontWeight:
-                            FontWeight.w600,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      DateFormat.yMMMMd()
-                          .format(
+                      DateFormat.yMMMMd().format(
                         selectedDate,
                       ),
-                      style:
-                          const TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
-                        fontWeight:
-                            FontWeight.w900,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ],
                 ),
               ),
               const Icon(
-                Icons
-                    .chevron_right_rounded,
+                Icons.chevron_right_rounded,
               ),
             ],
           ),
@@ -2780,65 +2394,50 @@ class _DatePickerCard
 // TIPS
 // ============================================================================
 
-class _TipsSheet
-    extends StatelessWidget {
+class _TipsSheet extends StatelessWidget {
   const _TipsSheet();
 
   @override
   Widget build(BuildContext context) {
     return const SafeArea(
       child: Padding(
-        padding:
-            EdgeInsets.fromLTRB(
+        padding: EdgeInsets.fromLTRB(
           20,
           8,
           20,
           30,
         ),
         child: Column(
-          mainAxisSize:
-              MainAxisSize.min,
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Birthday Tips ✨',
               style: TextStyle(
                 fontSize: 23,
-                fontWeight:
-                    FontWeight.w900,
+                fontWeight: FontWeight.w900,
               ),
             ),
             SizedBox(height: 18),
             _TipRow(
-              icon:
-                  Icons.message_rounded,
-              title:
-                  'Send a personal message',
-              text:
-                  'A thoughtful message can make their day.',
+              icon: Icons.message_rounded,
+              title: 'Send a personal message',
+              text: 'A thoughtful message can make their day.',
             ),
             _TipRow(
-              icon:
-                  Icons.card_giftcard_rounded,
-              title:
-                  'Choose a meaningful gift',
-              text:
-                  'Think about their hobbies and interests.',
+              icon: Icons.card_giftcard_rounded,
+              title: 'Choose a meaningful gift',
+              text: 'Think about their hobbies and interests.',
             ),
             _TipRow(
               icon: Icons.call_rounded,
               title: 'Give them a call',
-              text:
-                  'Sometimes a quick call means the most.',
+              text: 'Sometimes a quick call means the most.',
             ),
             _TipRow(
-              icon:
-                  Icons.photo_camera_rounded,
-              title:
-                  'Share a memory',
-              text:
-                  'Send an old photo or special memory.',
+              icon: Icons.photo_camera_rounded,
+              title: 'Share a memory',
+              text: 'Send an old photo or special memory.',
             ),
           ],
         ),
@@ -2847,8 +2446,7 @@ class _TipsSheet
   }
 }
 
-class _TipRow
-    extends StatelessWidget {
+class _TipRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String text;
@@ -2861,12 +2459,10 @@ class _TipRow
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     return Padding(
-      padding:
-          const EdgeInsets.only(
+      padding: const EdgeInsets.only(
         bottom: 16,
       ),
       child: Row(
@@ -2875,10 +2471,8 @@ class _TipRow
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: colors.primary
-                  .withValues(alpha: .09),
-              borderRadius:
-                  BorderRadius.circular(13),
+              color: colors.primary.withValues(alpha: .09),
+              borderRadius: BorderRadius.circular(13),
             ),
             child: Icon(
               icon,
@@ -2889,16 +2483,13 @@ class _TipRow
           const SizedBox(width: 12),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style:
-                      const TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    fontWeight:
-                        FontWeight.w800,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -2906,9 +2497,7 @@ class _TipRow
                   text,
                   style: TextStyle(
                     fontSize: 10,
-                    color: colors
-                        .onSurface
-                        .withValues(
+                    color: colors.onSurface.withValues(
                       alpha: .52,
                     ),
                   ),
@@ -2926,14 +2515,12 @@ class _TipRow
 // GIFT IDEAS
 // ============================================================================
 
-class _GiftIdeasSheet
-    extends StatelessWidget {
+class _GiftIdeasSheet extends StatelessWidget {
   const _GiftIdeasSheet();
 
   @override
   Widget build(BuildContext context) {
-    final colors =
-        Theme.of(context).colorScheme;
+    final colors = Theme.of(context).colorScheme;
 
     final ideas = [
       ('🎧', 'Tech & Gadgets'),
@@ -2948,25 +2535,21 @@ class _GiftIdeasSheet
 
     return SafeArea(
       child: Padding(
-        padding:
-            const EdgeInsets.fromLTRB(
+        padding: const EdgeInsets.fromLTRB(
           20,
           8,
           20,
           30,
         ),
         child: Column(
-          mainAxisSize:
-              MainAxisSize.min,
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Gift Ideas 🎁',
               style: TextStyle(
                 fontSize: 23,
-                fontWeight:
-                    FontWeight.w900,
+                fontWeight: FontWeight.w900,
               ),
             ),
             const SizedBox(height: 6),
@@ -2974,41 +2557,32 @@ class _GiftIdeasSheet
               'Quick inspiration for their special day.',
               style: TextStyle(
                 fontSize: 11,
-                color: colors.onSurface
-                    .withValues(alpha: .55),
+                color: colors.onSurface.withValues(alpha: .55),
               ),
             ),
             const SizedBox(height: 18),
             GridView.builder(
               shrinkWrap: true,
-              physics:
-                  const NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: ideas.length,
-              gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 2.5,
               ),
               itemBuilder: (_, index) {
-                final item =
-                    ideas[index];
+                final item = ideas[index];
 
                 return Container(
-                  padding:
-                      const EdgeInsets.all(
+                  padding: const EdgeInsets.all(
                     11,
                   ),
-                  decoration:
-                      BoxDecoration(
-                    color: colors
-                        .surfaceContainerHighest
-                        .withValues(
+                  decoration: BoxDecoration(
+                    color: colors.surfaceContainerHighest.withValues(
                       alpha: .45,
                     ),
-                    borderRadius:
-                        BorderRadius.circular(
+                    borderRadius: BorderRadius.circular(
                       15,
                     ),
                   ),
@@ -3016,22 +2590,17 @@ class _GiftIdeasSheet
                     children: [
                       Text(
                         item.$1,
-                        style:
-                            const TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                         ),
                       ),
-                      const SizedBox(
-                          width: 9),
+                      const SizedBox(width: 9),
                       Expanded(
                         child: Text(
                           item.$2,
-                          style:
-                              const TextStyle(
+                          style: const TextStyle(
                             fontSize: 11,
-                            fontWeight:
-                                FontWeight
-                                    .w700,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
