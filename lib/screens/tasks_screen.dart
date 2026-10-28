@@ -1124,8 +1124,8 @@ class _TaskTile extends StatelessWidget {
                 ),
 
                 if (!completed &&
-                    task.dueDate != null &&
-                    task.dueDate!.isBefore(DateTime.now()))
+                    app.overdueTasks
+                        .any((overdueTask) => overdueTask.id == task.id))
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(

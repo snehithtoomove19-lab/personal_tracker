@@ -12,6 +12,7 @@ import '../screens/theme_picker_screen.dart';
 import '../models/transaction.dart';
 import '../models/mood_entry.dart';
 import '../models/voice_log_entry.dart';
+import '../models/day_signals.dart';
 import '../services/app_scope.dart';
 import '../utils/app_navigation.dart';
 import 'voice_log_button.dart';
@@ -185,13 +186,27 @@ void showQuickAddSheet(BuildContext context) {
                     );
 
                     final signals = app.todaySignals;
-                    if (signals != null &&
-                        (parsed.waterMl > 0 || parsed.workoutMinutes > 0)) {
-                      await app.saveDaySignals(signals.copyWith(
-                        waterMl: signals.waterMl + parsed.waterMl,
-                        workoutMinutes:
-                            signals.workoutMinutes + parsed.workoutMinutes,
-                      ));
+                    if (parsed.waterMl > 0 || parsed.workoutMinutes > 0) {
+                      await app.saveDaySignals(
+                        signals == null
+                            ? DaySignals(
+                                dateKey: daySignalsKey(now),
+                                waterMl:
+                                    parsed.waterMl > 0 ? parsed.waterMl : null,
+                                workoutMinutes: parsed.workoutMinutes > 0
+                                    ? parsed.workoutMinutes
+                                    : null,
+                              )
+                            : signals.copyWith(
+                                waterMl: parsed.waterMl > 0
+                                    ? (signals.waterMl ?? 0) + parsed.waterMl
+                                    : null,
+                                workoutMinutes: parsed.workoutMinutes > 0
+                                    ? (signals.workoutMinutes ?? 0) +
+                                        parsed.workoutMinutes
+                                    : null,
+                              ),
+                      );
                     }
 
                     if (parsed.expenseAmount != null) {

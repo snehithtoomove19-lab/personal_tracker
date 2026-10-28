@@ -30,6 +30,12 @@ void main() {
     expect(parsed.expenseCategory, 'Transport');
   });
 
+  test('parses thousands separators without truncating the amount', () {
+    final parsed = ParsedVoiceLog.parse('Spent \$1,250.50 on shopping.');
+    expect(parsed.expenseAmount, 1250.50);
+    expect(parsed.expenseCategory, 'Shopping');
+  });
+
   test('does not invent entries without a supported signal', () {
     expect(ParsedVoiceLog.parse('Had a nice day.').hasEntries, isFalse);
   });

@@ -1083,10 +1083,12 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildInsightsCard(BuildContext context, AppState app) {
     final today = app.todaySignals;
+    final highPriorityTasks =
+        app.todayTasks.where((task) => task.priority.name == 'high').length;
+    final hasCapacityInputs = today != null || highPriorityTasks > 0;
     final capacity = FocusInsightsService.energyCapacity(
       today: today,
-      highPriorityTasksToday:
-          app.todayTasks.where((task) => task.priority.name == 'high').length,
+      highPriorityTasksToday: highPriorityTasks,
     );
     final colors = Theme.of(context).colorScheme;
     return Card(
@@ -1107,12 +1109,12 @@ class HomeScreen extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     CircularProgressIndicator(
-                      value: today == null ? 0 : capacity / 100,
+                      value: hasCapacityInputs ? capacity / 100 : 0,
                       strokeWidth: 5,
                       color: capacity <= 15 ? colors.error : colors.primary,
                       backgroundColor: colors.surfaceContainerHighest,
                     ),
-                    Text(today == null ? '—' : '$capacity%',
+                    Text(hasCapacityInputs ? '$capacity%' : '—',
                         style: const TextStyle(
                             fontSize: 11, fontWeight: FontWeight.w800)),
                   ],
@@ -1126,7 +1128,7 @@ class HomeScreen extends StatelessWidget {
                     const Text('Focus & Energy Insights',
                         style: TextStyle(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 3),
-                    Text(today == null
+                    Text(!hasCapacityInputs
                         ? 'Log today’s signals to estimate capacity'
                         : capacity <= 15
                             ? 'Your estimated capacity is running low'

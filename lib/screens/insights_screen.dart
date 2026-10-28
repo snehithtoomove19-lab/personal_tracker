@@ -51,9 +51,13 @@ class InsightsScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
                   Text(
-                    today == null
+                    today == null && highPriorityTasks == 0
                         ? 'Log sleep and today’s load for a personalized estimate.'
-                        : 'A planning estimate, not a medical measurement.',
+                        : today?.sleepQuality == null &&
+                                today?.meetingHours == null &&
+                                today?.highIntensityWorkout == null
+                            ? 'Partial estimate from available inputs; record sleep and the day’s planned load for more context.'
+                            : 'A planning estimate, not a medical measurement.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 20),
@@ -66,14 +70,19 @@ class InsightsScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             CircularProgressIndicator(
-                              value: today == null ? 0 : capacity / 100,
+                              value: today == null && highPriorityTasks == 0
+                                  ? 0
+                                  : capacity / 100,
                               strokeWidth: 10,
                               backgroundColor: colors.surfaceContainerHighest,
                               color: capacity <= 15
                                   ? colors.error
                                   : colors.primary,
                             ),
-                            Text(today == null ? '—' : '$capacity%',
+                            Text(
+                                today == null && highPriorityTasks == 0
+                                    ? '—'
+                                    : '$capacity%',
                                 style:
                                     Theme.of(context).textTheme.headlineSmall),
                           ],
@@ -82,7 +91,7 @@ class InsightsScreen extends StatelessWidget {
                       const SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          today == null
+                          today == null && highPriorityTasks == 0
                               ? 'Based on your inputs, meetings, priorities, and workout load.'
                               : capacity <= 15
                                   ? 'Your estimated capacity is low. Consider a lighter plan or a break.'
@@ -95,7 +104,7 @@ class InsightsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Model: starts at 100; subtracts for sleep quality, meeting hours, high-priority tasks, and intense workouts. It does not read calendars or predict health.',
+                    'Model: starts at 100; subtracts for recorded sleep quality, meeting hours, high-priority tasks, and intense workouts. Any time-to-threshold is a rough extrapolation, not a calendar forecast or health prediction.',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
@@ -205,7 +214,7 @@ class InsightsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 3),
                               Text(
-                                'Deep work completed: ${item.highSignalDeepWorkPercent}% vs ${item.lowSignalDeepWorkPercent}%.',
+                                'Deep work completed: ${item.highSignalDeepWorkPercent == null ? 'not enough data' : '${item.highSignalDeepWorkPercent}%'} vs ${item.lowSignalDeepWorkPercent == null ? 'not enough data' : '${item.lowSignalDeepWorkPercent}%'}.',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               const Divider(height: 16),
@@ -234,9 +243,11 @@ class InsightsScreen extends StatelessWidget {
                           contentPadding: EdgeInsets.zero,
                           title: Text(day.dateKey),
                           subtitle: Text(
-                            'Focus ${day.focusScore}/10 · sleep ${day.sleepQuality}/5 · '
-                            '${day.meetingHours.toStringAsFixed(1)} meeting hours · '
-                            '${day.socialMinutesBefore10} social minutes before 10',
+                            'Focus ${day.focusScore?.toString() ?? '—'}/10 · '
+                            'sleep ${day.sleepQuality?.toString() ?? '—'}/5 · '
+                            '${day.meetingHours?.toStringAsFixed(1) ?? '—'} meeting hours · '
+                            '${day.socialMinutesBefore10?.toString() ?? '—'} social minutes before 10 · '
+                            '${day.waterMl?.toString() ?? '—'} ml water',
                           ),
                         )),
                 ],

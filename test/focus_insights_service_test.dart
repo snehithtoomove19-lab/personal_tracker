@@ -27,11 +27,10 @@ DaySignals _signals({
 
 void main() {
   test('daily signals serialize and read older entries without water data', () {
-    final oldEntry = _signals(date: '2026-01-01', focus: 6).toJson()
-      ..remove('waterMl');
+    final oldEntry = <String, dynamic>{'dateKey': '2026-01-01'};
     final restored = DaySignals.fromJson(oldEntry);
-    expect(restored.waterMl, 0);
-    expect(restored.toJson()['focusScore'], 6);
+    expect(restored.waterMl, isNull);
+    expect(restored.focusScore, isNull);
   });
 
   test('correlations need two observations in both groups', () {
@@ -73,5 +72,67 @@ void main() {
       ),
       0,
     );
+  });
+
+  test('unknown signals are excluded from comparisons and estimates', () {
+    final days = [
+      _signals(date: '2026-01-01', focus: 3, social: 60),
+      _signals(date: '2026-01-02', focus: 4, social: 70),
+      _signals(date: '2026-01-03', focus: 8),
+      _signals(date: '2026-01-04', focus: 9),
+      const DaySignals(dateKey: '2026-01-05', workoutMinutes: 20),
+    ];
+    final social = FocusInsightsService.correlations(days)
+        .firstWhere((item) => item.signal.startsWith('Social media'));
+    expect(social.highSignalDays, 2);
+    expect(social.lowSignalDays, 2);
+
+    expect(
+      FocusInsightsService.energyCapacity(
+        today: const DaySignals(dateKey: '2026-01-05', workoutMinutes: 20),
+        highPriorityTasksToday: 2,
+      ),
+      90,
+    );
+    expect(
+      FocusInsightsService.estimatedTimeToCritical(
+        capacity: 90,
+        today: const DaySignals(dateKey: '2026-01-05', workoutMinutes: 20),
+        highPriorityTasksToday: 0,
+      ),
+      isNull,
+    );
+  });
+
+  test('focus comparisons work when deep-work completion is unknown', () {
+    final result = FocusInsightsService.correlations(const [
+      DaySignals(
+        dateKey: '2026-02-01',
+        focusScore: 2,
+        socialMinutesBefore10: 60,
+      ),
+      DaySignals(
+        dateKey: '2026-02-02',
+        focusScore: 4,
+        socialMinutesBefore10: 70,
+      ),
+      DaySignals(
+        dateKey: '2026-02-03',
+        focusScore: 8,
+        socialMinutesBefore10: 0,
+      ),
+      DaySignals(
+        dateKey: '2026-02-04',
+        focusScore: 10,
+        socialMinutesBefore10: 10,
+      ),
+    ]);
+
+    final social = result.firstWhere(
+      (item) => item.signal.startsWith('Social media'),
+    );
+    expect(social.highSignalDays, 2);
+    expect(social.lowSignalDays, 2);
+    expect(social.highSignalDeepWorkPercent, isNull);
   });
 }

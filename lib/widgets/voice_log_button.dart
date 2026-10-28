@@ -59,14 +59,14 @@ class ParsedVoiceLog {
             .toLowerCase();
 
     final expenseMatch = RegExp(
-      r'(?:[$€£₹]\s*(\d+(?:[,.]\d{1,2})?)|'
-      r'\b(\d+(?:[,.]\d{1,2})?)\s*(?:dollars?|bucks|rupees?|euros?|pounds?)\b)',
+      r'(?:[$€£₹]\s*((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)|'
+      r'\b((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)\s*(?:dollars?|bucks|rupees?|euros?|pounds?)\b)',
       caseSensitive: false,
     ).firstMatch(normalized);
     final rawAmount = expenseMatch?.group(1) ?? expenseMatch?.group(2);
     final expenseAmount = rawAmount == null
         ? null
-        : double.tryParse(rawAmount.replaceAll(',', '.'));
+        : double.tryParse(rawAmount.replaceAll(',', ''));
     String? expenseCategory;
     if (expenseAmount != null) {
       if (RegExp(r'\b(lunch|breakfast|dinner|food|meal|coffee)\b')
