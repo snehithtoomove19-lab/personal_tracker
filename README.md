@@ -67,7 +67,7 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 - A built-in chat assistant (bring your own OpenAI API key) for quick questions, right inside the app
 
 ### Focus & Energy
-- Log sleep quality, screen/social time, meal timing, meetings, workout load, and focus to compare patterns across days
+- Optionally log any known daily signal; unreported values remain unknown and are excluded from comparisons rather than treated as zero/default
 - Show signal associations only when each comparison has enough observations; these are personal correlations, not causal or medical conclusions
 - Estimate a 0–100 daily capacity from the logged sleep, meeting, high-priority task, and workout load, with the calculation shown in the app
 - Use the microphone to dictate a natural-language entry and review the extracted water, exercise, expense, and mood items before saving; the lightweight parser does not save the transcript, and assumes 250 ml per glass/cup

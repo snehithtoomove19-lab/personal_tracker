@@ -11,9 +11,14 @@ class InsightsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
+    final now = DateTime.now();
     final today = app.todaySignals;
     final highPriorityTasks =
         app.todayTasks.where((task) => task.priority.name == 'high').length;
+    final hasCapacityInputs = highPriorityTasks > 0 ||
+        today?.sleepQuality != null ||
+        today?.meetingHours != null ||
+        today?.highIntensityWorkout != null;
     final capacity = FocusInsightsService.energyCapacity(
       today: today,
       highPriorityTasksToday: highPriorityTasks,
@@ -51,7 +56,7 @@ class InsightsScreen extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 4),
                   Text(
-                    today == null && highPriorityTasks == 0
+                    !hasCapacityInputs
                         ? 'Log sleep and today’s load for a personalized estimate.'
                         : today?.sleepQuality == null &&
                                 today?.meetingHours == null &&
@@ -70,19 +75,14 @@ class InsightsScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             CircularProgressIndicator(
-                              value: today == null && highPriorityTasks == 0
-                                  ? 0
-                                  : capacity / 100,
+                              value: !hasCapacityInputs ? 0 : capacity / 100,
                               strokeWidth: 10,
                               backgroundColor: colors.surfaceContainerHighest,
                               color: capacity <= 15
                                   ? colors.error
                                   : colors.primary,
                             ),
-                            Text(
-                                today == null && highPriorityTasks == 0
-                                    ? '—'
-                                    : '$capacity%',
+                            Text(!hasCapacityInputs ? '—' : '$capacity%',
                                 style:
                                     Theme.of(context).textTheme.headlineSmall),
                           ],
@@ -91,7 +91,7 @@ class InsightsScreen extends StatelessWidget {
                       const SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          today == null && highPriorityTasks == 0
+                          !hasCapacityInputs
                               ? 'Based on your inputs, meetings, priorities, and workout load.'
                               : capacity <= 15
                                   ? 'Your estimated capacity is low. Consider a lighter plan or a break.'
@@ -112,11 +112,7 @@ class InsightsScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          if (app.recoveryReviews.any((review) =>
-              review['type'] == 'active_plan' &&
-              DateTime.tryParse(review['expiresAt'] as String? ?? '')
-                      ?.isAfter(DateTime.now()) ==
-                  true))
+          if (app.recoveryReviews.any((review) => _isActivePlan(review, now)))
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(18),
@@ -127,22 +123,22 @@ class InsightsScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 8),
                     ...app.recoveryReviews
-                        .where((review) =>
-                            review['type'] == 'active_plan' &&
-                            DateTime.tryParse(
-                                        review['expiresAt'] as String? ?? '')
-                                    ?.isAfter(DateTime.now()) ==
-                                true)
-                        .map((review) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.spa_outlined),
-                              title: Text(review['proposedGoal'] as String? ??
-                                  'Smaller steps'),
-                              subtitle: Text(
-                                'Threshold ${review['threshold']} · '
-                                'active until ${review['expiresAt'].toString().substring(0, 10)}',
-                              ),
-                            )),
+                        .where((review) => _isActivePlan(review, now))
+                        .map((review) {
+                      final expiresAt = DateTime.tryParse(
+                        review['expiresAt'] as String? ?? '',
+                      );
+                      return ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(Icons.spa_outlined),
+                        title: Text(review['proposedGoal'] as String? ??
+                            'Smaller steps'),
+                        subtitle: Text(
+                          'Threshold ${review['threshold']} · '
+                          'active until ${expiresAt == null ? 'unknown' : _dateLabel(expiresAt)}',
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -259,6 +255,16 @@ class InsightsScreen extends StatelessWidget {
     );
   }
 
+  bool _isActivePlan(Map<String, dynamic> review, DateTime now) {
+    if (review['type'] != 'active_plan') return false;
+    final expiresAt = DateTime.tryParse(review['expiresAt'] as String? ?? '');
+    return expiresAt != null && expiresAt.isAfter(now);
+  }
+
+  String _dateLabel(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
+
   String _durationLabel(Duration duration) {
     if (duration.inMinutes < 60) return '${duration.inMinutes} minutes';
     final hours = duration.inHours;
@@ -295,6 +301,16 @@ class _DailySignalsDialogState extends State<_DailySignalsDialog> {
   late int waterMl;
   late bool deepWork;
   late bool intense;
+  late bool sleepLogged;
+  late bool socialLogged;
+  late bool screenLogged;
+  late bool mealLogged;
+  late bool meetingsLogged;
+  late bool focusLogged;
+  late bool workoutLogged;
+  late bool waterLogged;
+  late bool deepWorkLogged;
+  late bool intensityLogged;
 
   @override
   void initState() {
@@ -310,7 +326,29 @@ class _DailySignalsDialogState extends State<_DailySignalsDialog> {
     waterMl = day?.waterMl ?? 0;
     deepWork = day?.deepWorkCompleted ?? false;
     intense = day?.highIntensityWorkout ?? false;
+    sleepLogged = day?.sleepQuality != null;
+    socialLogged = day?.socialMinutesBefore10 != null;
+    screenLogged = day?.screenMinutes != null;
+    mealLogged = day?.mealHour != null;
+    meetingsLogged = day?.meetingHours != null;
+    focusLogged = day?.focusScore != null;
+    workoutLogged = day?.workoutMinutes != null;
+    waterLogged = day?.waterMl != null;
+    deepWorkLogged = day?.deepWorkCompleted != null;
+    intensityLogged = day?.highIntensityWorkout != null;
   }
+
+  bool get _hasLoggedSignal =>
+      sleepLogged ||
+      socialLogged ||
+      screenLogged ||
+      mealLogged ||
+      meetingsLogged ||
+      focusLogged ||
+      workoutLogged ||
+      waterLogged ||
+      deepWorkLogged ||
+      intensityLogged;
 
   @override
   Widget build(BuildContext context) => AlertDialog(
@@ -321,36 +359,92 @@ class _DailySignalsDialogState extends State<_DailySignalsDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                _slider('Sleep quality', sleep, 1, 5, (v) => sleep = v,
-                    suffix: '/5'),
-                _slider('Social media before 10 AM', social, 0, 180,
-                    (v) => social = v,
-                    suffix: ' min'),
-                _slider('Total screen time', screen, 0, 900, (v) => screen = v,
-                    suffix: ' min'),
-                _slider('First meal time', mealHour, 6, 18, (v) => mealHour = v,
-                    suffix: ':00'),
-                _slider('Meetings', meetings.round(), 0, 10,
-                    (v) => meetings = v.toDouble(),
-                    suffix: ' hrs'),
-                _slider('Focus score', focus, 0, 10, (v) => focus = v,
-                    suffix: '/10'),
-                _slider('Workout duration', workoutMinutes, 0, 180,
-                    (v) => workoutMinutes = v,
-                    suffix: ' min'),
-                _slider('Water intake', waterMl, 0, 4000, (v) => waterMl = v,
-                    suffix: ' ml', step: 100),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Completed deep work'),
-                  value: deepWork,
-                  onChanged: (value) => setState(() => deepWork = value),
+                Text(
+                  'Only turn on signals you know. Unlogged values stay unknown, not zero.',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('High-intensity workout'),
-                  value: intense,
-                  onChanged: (value) => setState(() => intense = value),
+                _optionalSignal(
+                  'Sleep quality',
+                  sleepLogged,
+                  (value) => sleepLogged = value,
+                  _slider('Sleep quality', sleep, 1, 5, (v) => sleep = v,
+                      suffix: '/5'),
+                ),
+                _optionalSignal(
+                  'Social media before 10 AM',
+                  socialLogged,
+                  (value) => socialLogged = value,
+                  _slider('Social media before 10 AM', social, 0, 180,
+                      (v) => social = v,
+                      suffix: ' min'),
+                ),
+                _optionalSignal(
+                  'Total screen time',
+                  screenLogged,
+                  (value) => screenLogged = value,
+                  _slider(
+                      'Total screen time', screen, 0, 900, (v) => screen = v,
+                      suffix: ' min'),
+                ),
+                _optionalSignal(
+                  'First meal time',
+                  mealLogged,
+                  (value) => mealLogged = value,
+                  _slider(
+                      'First meal time', mealHour, 6, 18, (v) => mealHour = v,
+                      suffix: ':00'),
+                ),
+                _optionalSignal(
+                  'Meeting load',
+                  meetingsLogged,
+                  (value) => meetingsLogged = value,
+                  _slider('Meetings', meetings.round(), 0, 10,
+                      (v) => meetings = v.toDouble(),
+                      suffix: ' hrs'),
+                ),
+                _optionalSignal(
+                  'Focus score',
+                  focusLogged,
+                  (value) => focusLogged = value,
+                  _slider('Focus score', focus, 0, 10, (v) => focus = v,
+                      suffix: '/10'),
+                ),
+                _optionalSignal(
+                  'Workout duration',
+                  workoutLogged,
+                  (value) => workoutLogged = value,
+                  _slider('Workout duration', workoutMinutes, 0, 180,
+                      (v) => workoutMinutes = v,
+                      suffix: ' min'),
+                ),
+                _optionalSignal(
+                  'Water intake',
+                  waterLogged,
+                  (value) => waterLogged = value,
+                  _slider('Water intake', waterMl, 0, 4000, (v) => waterMl = v,
+                      suffix: ' ml', step: 100),
+                ),
+                _optionalSignal(
+                  'Deep-work outcome',
+                  deepWorkLogged,
+                  (value) => deepWorkLogged = value,
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Completed deep work'),
+                    value: deepWork,
+                    onChanged: (value) => setState(() => deepWork = value),
+                  ),
+                ),
+                _optionalSignal(
+                  'Workout intensity',
+                  intensityLogged,
+                  (value) => intensityLogged = value,
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('High-intensity workout'),
+                    value: intense,
+                    onChanged: (value) => setState(() => intense = value),
+                  ),
                 ),
               ],
             ),
@@ -361,24 +455,44 @@ class _DailySignalsDialogState extends State<_DailySignalsDialog> {
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel')),
           FilledButton(
-            onPressed: () => Navigator.pop(
-              context,
-              DaySignals(
-                dateKey: daySignalsKey(DateTime.now()),
-                sleepQuality: sleep,
-                socialMinutesBefore10: social,
-                screenMinutes: screen,
-                mealHour: mealHour,
-                meetingHours: meetings,
-                focusScore: focus,
-                deepWorkCompleted: deepWork,
-                workoutMinutes: workoutMinutes,
-                highIntensityWorkout: intense,
-                waterMl: waterMl,
-              ),
-            ),
+            onPressed: _hasLoggedSignal
+                ? () => Navigator.pop(
+                      context,
+                      DaySignals(
+                        dateKey: daySignalsKey(DateTime.now()),
+                        sleepQuality: sleepLogged ? sleep : null,
+                        socialMinutesBefore10: socialLogged ? social : null,
+                        screenMinutes: screenLogged ? screen : null,
+                        mealHour: mealLogged ? mealHour : null,
+                        meetingHours: meetingsLogged ? meetings : null,
+                        focusScore: focusLogged ? focus : null,
+                        deepWorkCompleted: deepWorkLogged ? deepWork : null,
+                        workoutMinutes: workoutLogged ? workoutMinutes : null,
+                        highIntensityWorkout: intensityLogged ? intense : null,
+                        waterMl: waterLogged ? waterMl : null,
+                      ),
+                    )
+                : null,
             child: const Text('Save'),
           ),
+        ],
+      );
+
+  Widget _optionalSignal(
+    String title,
+    bool enabled,
+    ValueChanged<bool> onChanged,
+    Widget input,
+  ) =>
+      Column(
+        children: [
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(title),
+            value: enabled,
+            onChanged: (value) => setState(() => onChanged(value)),
+          ),
+          if (enabled) input,
         ],
       );
 
