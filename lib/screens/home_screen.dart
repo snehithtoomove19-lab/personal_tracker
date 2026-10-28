@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
 import '../services/app_state.dart';
+import '../services/focus_insights_service.dart';
 import '../models/mood_entry.dart';
 import '../utils/formatters.dart';
 import '../widgets/quick_add_sheet.dart';
 import 'tasks_screen.dart';
 import 'mood_screen.dart';
 import 'ai_chat_screen.dart';
+import 'insights_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -155,6 +157,10 @@ class HomeScreen extends StatelessWidget {
             context,
             app,
           ),
+
+          const SizedBox(height: 14),
+
+          _buildInsightsCard(context, app),
 
           const SizedBox(height: 14),
 
@@ -1074,6 +1080,67 @@ class HomeScreen extends StatelessWidget {
   // ================================================================
   // AI CARD
   // ================================================================
+
+  Widget _buildInsightsCard(BuildContext context, AppState app) {
+    final today = app.todaySignals;
+    final capacity = FocusInsightsService.energyCapacity(
+      today: today,
+      highPriorityTasksToday:
+          app.todayTasks.where((task) => task.priority.name == 'high').length,
+    );
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const InsightsScreen()),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 52,
+                height: 52,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: today == null ? 0 : capacity / 100,
+                      strokeWidth: 5,
+                      color: capacity <= 15 ? colors.error : colors.primary,
+                      backgroundColor: colors.surfaceContainerHighest,
+                    ),
+                    Text(today == null ? '—' : '$capacity%',
+                        style: const TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.w800)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Focus & Energy Insights',
+                        style: TextStyle(fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 3),
+                    Text(today == null
+                        ? 'Log today’s signals to estimate capacity'
+                        : capacity <= 15
+                            ? 'Your estimated capacity is running low'
+                            : 'Explore your daily capacity and focus patterns'),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildAiCard(BuildContext context) {
     final theme = Theme.of(context);

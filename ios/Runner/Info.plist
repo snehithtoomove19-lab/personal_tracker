@@ -24,6 +24,10 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Use the microphone to dictate entries you choose to add to your tracker.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Convert your spoken tracker entry into editable text before you save it.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>

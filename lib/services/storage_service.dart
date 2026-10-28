@@ -83,4 +83,7 @@ class StoreKeys {
   static const aiApiKey = 'aiApiKey';
   static const aiModel = 'aiModel';
   static const chatHistory = 'chatHistory';
+  static const daySignals = 'daySignals';
+  static const recoveryReviews = 'recoveryReviews';
+  static const voiceLogs = 'voiceLogs';
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/app_scope.dart';
 import '../models/task.dart';
 import '../utils/formatters.dart';
+import 'recovery_review_screen.dart';
 import 'add_task_screen.dart';
 
 // ============================================================================
@@ -1121,6 +1122,67 @@ class _TaskTile extends StatelessWidget {
                     ),
                   ],
                 ),
+
+                if (!completed &&
+                    task.dueDate != null &&
+                    task.dueDate!.isBefore(DateTime.now()))
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      icon:
+                          const Icon(Icons.favorite_outline_rounded, size: 17),
+                      label: const Text('Make a gentler plan'),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => RecoveryReviewScreen(
+                            task: task,
+                            onSaveReview: ({
+                              required task,
+                              required reason,
+                              required reasonDetails,
+                              required supportResponse,
+                              required proposedGoal,
+                              required threshold,
+                              required durationDays,
+                            }) =>
+                                app.saveRecoveryReview({
+                              'type': 'review',
+                              'taskId': task.id,
+                              'taskTitle': task.title,
+                              'reason': reason.name,
+                              'reasonDetails': reasonDetails,
+                              'supportResponse': supportResponse,
+                              'proposedGoal': proposedGoal,
+                              'threshold': threshold,
+                              'durationDays': durationDays,
+                              'createdAt': DateTime.now().toIso8601String(),
+                            }),
+                            onRecalibrateGoals: ({
+                              required task,
+                              required proposedGoal,
+                              required threshold,
+                              required durationDays,
+                            }) async {
+                              final start = DateTime.now();
+                              await app.saveRecoveryReview({
+                                'type': 'active_plan',
+                                'taskId': task.id,
+                                'taskTitle': task.title,
+                                'proposedGoal': proposedGoal,
+                                'threshold': threshold,
+                                'durationDays': durationDays,
+                                'startsAt': start.toIso8601String(),
+                                'expiresAt': start
+                                    .add(Duration(days: durationDays))
+                                    .toIso8601String(),
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                 // ============================================================
                 // DIVIDER

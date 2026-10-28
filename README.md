@@ -57,6 +57,7 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 - Tasks with due date + time, category, priority, checklists (sub-tasks), and repeat (daily/weekly/monthly)
 - Goals with a target date, progress slider, and a "days left / overdue" indicator
 - A Reminders screen that covers *every* task — overdue, upcoming, and even ones with no due date
+- A blameless review for overdue tasks, with a supportive blocker check-in and an optional two-day smaller-step plan that does not reset streaks
 
 ### Notes & Calendar
 - Quick notes with pinning and search
@@ -64,6 +65,13 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 ### Ask AI
 - A built-in chat assistant (bring your own OpenAI API key) for quick questions, right inside the app
+
+### Focus & Energy
+- Log sleep quality, screen/social time, meal timing, meetings, workout load, and focus to compare patterns across days
+- Show signal associations only when each comparison has enough observations; these are personal correlations, not causal or medical conclusions
+- Estimate a 0–100 daily capacity from the logged sleep, meeting, high-priority task, and workout load, with the calculation shown in the app
+- Use the microphone to dictate a natural-language entry and review the extracted water, exercise, expense, and mood items before saving; the lightweight parser does not save the transcript, and assumes 250 ml per glass/cup
+- Speech recognition is provided by the device/platform service; offline availability depends on the device and its speech service. The app does not save audio recordings.
 
 ### Extras
 - Dark mode, PIN app lock, global search, birthday/age tracking, daily streak, motivational quotes, a "Welcome-Back Summary" popup that surfaces anything needing attention when you open the app
@@ -74,8 +82,9 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 - **State management:** a lightweight custom `InheritedNotifier` (`AppScope`) — no external state package
 - **Storage:** `shared_preferences` (local JSON), fully offline
 - **AI:** OpenAI Chat Completions API via `http` (user-supplied API key)
+- **Voice input:** `speech_to_text` using the device's speech-recognition service
 
-No native platform permissions are required anywhere in this app.
+Microphone permission is requested only when starting voice input. The device's speech-recognition service may require network access; voice input is optional.
 
 ## Getting Started
 
@@ -109,13 +118,14 @@ flutter run
 lib/
   main.dart                  # App entry, navigation shell, startup logic
   theme.dart                 # Light/dark Material 3 themes
-  models/                    # Transaction, MoodEntry, Task, Note, Goal, ChatMessage
+  models/                    # Transaction, MoodEntry, Task, Note, Goal, daily signals, ChatMessage
   services/
     storage_service.dart     # SharedPreferences read/write helpers
     app_state.dart            # Single source of truth (ChangeNotifier)
     app_scope.dart            # InheritedNotifier so any screen can read state
     ai_service.dart           # OpenAI API integration
-  screens/                   # One file per screen (Home, Expenses, Reports, ...)
+    focus_insights_service.dart # Transparent capacity estimate and signal comparisons
+  screens/                   # One file per screen (Home, Expenses, Insights, Recovery, ...)
   widgets/                   # Reusable UI components
   utils/formatters.dart      # Date/money formatting helpers
 ```
@@ -129,6 +139,7 @@ lib/
 | `uuid` | Generating unique IDs for records |
 | `path_provider` | Locating a writable directory for CSV/backup export |
 | `http` | Calling the OpenAI API for the "Ask AI" chat feature |
+| `speech_to_text` | Optional microphone-based speech recognition for quick logs |
 
 That's the complete dependency list — deliberately small, to keep the app easy to build and maintain.
 

@@ -10,8 +10,11 @@ import '../screens/birthday_contacts_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/theme_picker_screen.dart';
 import '../models/transaction.dart';
+import '../models/mood_entry.dart';
+import '../models/voice_log_entry.dart';
 import '../services/app_scope.dart';
 import '../utils/app_navigation.dart';
+import 'voice_log_button.dart';
 
 // ============================================================================
 // QUICK ADD SHEET
@@ -161,6 +164,59 @@ void showQuickAddSheet(BuildContext context) {
                       ),
                     ],
                   ),
+                ),
+
+                const SizedBox(height: 24),
+
+                VoiceLogButton(
+                  onSave: (parsed) async {
+                    final now = DateTime.now();
+                    await app.saveVoiceLog(
+                      VoiceLogEntry(
+                        id: app.newId(),
+                        createdAt: now,
+                        waterMl: parsed.waterMl,
+                        workoutMinutes: parsed.workoutMinutes,
+                        workoutType: parsed.workoutType,
+                        expenseAmount: parsed.expenseAmount,
+                        expenseCategory: parsed.expenseCategory,
+                        mood: parsed.moodKey,
+                      ),
+                    );
+
+                    final signals = app.todaySignals;
+                    if (signals != null &&
+                        (parsed.waterMl > 0 || parsed.workoutMinutes > 0)) {
+                      await app.saveDaySignals(signals.copyWith(
+                        waterMl: signals.waterMl + parsed.waterMl,
+                        workoutMinutes:
+                            signals.workoutMinutes + parsed.workoutMinutes,
+                      ));
+                    }
+
+                    if (parsed.expenseAmount != null) {
+                      await app.addTransaction(
+                        AppTransaction(
+                          id: app.newId(),
+                          type: TxType.expense,
+                          amount: parsed.expenseAmount!,
+                          category: parsed.expenseCategory ?? 'Other',
+                          note: 'Added from voice log',
+                          date: now,
+                        ),
+                      );
+                    }
+                    if (parsed.moodKey != null) {
+                      await app.upsertMood(
+                        MoodEntry(
+                          id: app.newId(),
+                          date: DateTime(now.year, now.month, now.day),
+                          mood: parsed.moodKey!,
+                          note: 'Added from voice log',
+                        ),
+                      );
+                    }
+                  },
                 ),
 
                 const SizedBox(height: 24),

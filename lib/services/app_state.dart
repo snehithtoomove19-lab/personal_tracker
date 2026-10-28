@@ -11,6 +11,8 @@ import '../models/note.dart';
 import '../models/goal.dart';
 import '../models/birthday_contact.dart';
 import '../models/chat_message.dart';
+import '../models/day_signals.dart';
+import '../models/voice_log_entry.dart';
 import '../theme.dart';
 import 'storage_service.dart';
 import 'sms_transaction_parser.dart';
@@ -72,6 +74,9 @@ class AppState extends ChangeNotifier {
   String aiApiKey = '';
   String aiModel = 'gpt-4o-mini';
   final List<ChatMessage> chatMessages = [];
+  final List<DaySignals> daySignals = [];
+  final List<Map<String, dynamic>> recoveryReviews = [];
+  final List<VoiceLogEntry> voiceLogs = [];
 
   bool _loaded = false;
   bool get loaded => _loaded;
@@ -127,6 +132,42 @@ class AppState extends ChangeNotifier {
         } catch (_) {}
       }
       moods
+        ..clear()
+        ..addAll(loaded);
+    });
+
+    await safely('daily signals', () async {
+      final json = await s.readList(StoreKeys.daySignals);
+      final loaded = <DaySignals>[];
+      for (final item in json) {
+        try {
+          loaded.add(DaySignals.fromJson(item));
+        } catch (e) {
+          debugPrint('Skipping invalid daily signal: $e');
+        }
+      }
+      daySignals
+        ..clear()
+        ..addAll(loaded);
+    });
+
+    await safely('recovery reviews', () async {
+      recoveryReviews
+        ..clear()
+        ..addAll(await s.readList(StoreKeys.recoveryReviews));
+    });
+
+    await safely('voice logs', () async {
+      final json = await s.readList(StoreKeys.voiceLogs);
+      final loaded = <VoiceLogEntry>[];
+      for (final item in json) {
+        try {
+          loaded.add(VoiceLogEntry.fromJson(item));
+        } catch (e) {
+          debugPrint('Skipping invalid voice log: $e');
+        }
+      }
+      voiceLogs
         ..clear()
         ..addAll(loaded);
     });
@@ -296,6 +337,50 @@ class AppState extends ChangeNotifier {
     transactions.insert(0, t);
     await _saveTransactions();
     await _updateStreak();
+    notifyListeners();
+  }
+
+  DaySignals? get todaySignals {
+    final key = daySignalsKey(DateTime.now());
+    for (final item in daySignals) {
+      if (item.dateKey == key) return item;
+    }
+    return null;
+  }
+
+  Future<void> saveDaySignals(DaySignals signals) async {
+    final index =
+        daySignals.indexWhere((item) => item.dateKey == signals.dateKey);
+    if (index == -1) {
+      daySignals.insert(0, signals);
+    } else {
+      daySignals[index] = signals;
+    }
+    daySignals.sort((a, b) => b.dateKey.compareTo(a.dateKey));
+    if (daySignals.length > 180) daySignals.removeRange(180, daySignals.length);
+    await StorageService.instance.writeList(
+      StoreKeys.daySignals,
+      daySignals.map((item) => item.toJson()).toList(),
+    );
+    notifyListeners();
+  }
+
+  Future<void> saveRecoveryReview(Map<String, dynamic> review) async {
+    recoveryReviews.insert(0, review);
+    await StorageService.instance.writeList(
+      StoreKeys.recoveryReviews,
+      recoveryReviews,
+    );
+    notifyListeners();
+  }
+
+  Future<void> saveVoiceLog(VoiceLogEntry entry) async {
+    voiceLogs.insert(0, entry);
+    if (voiceLogs.length > 180) voiceLogs.removeRange(180, voiceLogs.length);
+    await StorageService.instance.writeList(
+      StoreKeys.voiceLogs,
+      voiceLogs.map((item) => item.toJson()).toList(),
+    );
     notifyListeners();
   }
 
@@ -948,6 +1033,9 @@ class AppState extends ChangeNotifier {
     tasks.clear();
     notes.clear();
     goals.clear();
+    daySignals.clear();
+    recoveryReviews.clear();
+    voiceLogs.clear();
     birthdayContacts.clear();
     customExpenseCategories.clear();
     customIncomeCategories.clear();
@@ -981,6 +1069,9 @@ class AppState extends ChangeNotifier {
       'exportedAt': DateTime.now().toIso8601String(),
       'transactions': transactions.map((e) => e.toJson()).toList(),
       'moods': moods.map((e) => e.toJson()).toList(),
+      'daySignals': daySignals.map((e) => e.toJson()).toList(),
+      'recoveryReviews': recoveryReviews,
+      'voiceLogs': voiceLogs.map((e) => e.toJson()).toList(),
       'tasks': tasks.map((e) => e.toJson()).toList(),
       'notes': notes.map((e) => e.toJson()).toList(),
       'goals': goals.map((e) => e.toJson()).toList(),
@@ -1021,6 +1112,14 @@ class AppState extends ChangeNotifier {
     final newMoods = (decoded['moods'] as List? ?? [])
         .map((e) => MoodEntry.fromJson(e as Map<String, dynamic>))
         .toList();
+    final newDaySignals = (decoded['daySignals'] as List? ?? [])
+        .map((e) => DaySignals.fromJson(e as Map<String, dynamic>))
+        .toList();
+    final newRecoveryReviews = (decoded['recoveryReviews'] as List? ?? [])
+        .cast<Map<String, dynamic>>();
+    final newVoiceLogs = (decoded['voiceLogs'] as List? ?? [])
+        .map((e) => VoiceLogEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
     final newTasks = (decoded['tasks'] as List? ?? [])
         .map((e) => AppTask.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -1037,6 +1136,15 @@ class AppState extends ChangeNotifier {
     moods
       ..clear()
       ..addAll(newMoods);
+    daySignals
+      ..clear()
+      ..addAll(newDaySignals);
+    recoveryReviews
+      ..clear()
+      ..addAll(newRecoveryReviews);
+    voiceLogs
+      ..clear()
+      ..addAll(newVoiceLogs);
     tasks
       ..clear()
       ..addAll(newTasks);
@@ -1073,6 +1181,18 @@ class AppState extends ChangeNotifier {
 
     await _saveTransactions();
     await _saveMoods();
+    await StorageService.instance.writeList(
+      StoreKeys.daySignals,
+      daySignals.map((e) => e.toJson()).toList(),
+    );
+    await StorageService.instance.writeList(
+      StoreKeys.recoveryReviews,
+      recoveryReviews,
+    );
+    await StorageService.instance.writeList(
+      StoreKeys.voiceLogs,
+      voiceLogs.map((e) => e.toJson()).toList(),
+    );
     await _saveTasks();
     await _saveNotes();
     await _saveGoals();
