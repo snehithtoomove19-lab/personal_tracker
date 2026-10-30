@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../screens/add_transaction_screen.dart';
 import '../screens/add_task_screen.dart';
 import '../screens/add_note_screen.dart';
 import '../screens/add_goal_screen.dart';
 import '../screens/birthday_contacts_screen.dart';
 import '../screens/settings_screen.dart';
 import '../screens/theme_picker_screen.dart';
-import '../models/transaction.dart';
 import '../models/mood_entry.dart';
 import '../models/voice_log_entry.dart';
 import '../models/day_signals.dart';
@@ -179,8 +177,6 @@ void showQuickAddSheet(BuildContext context) {
                         waterMl: parsed.waterMl,
                         workoutMinutes: parsed.workoutMinutes,
                         workoutType: parsed.workoutType,
-                        expenseAmount: parsed.expenseAmount,
-                        expenseCategory: parsed.expenseCategory,
                         mood: parsed.moodKey,
                       ),
                     );
@@ -209,18 +205,6 @@ void showQuickAddSheet(BuildContext context) {
                       );
                     }
 
-                    if (parsed.expenseAmount != null) {
-                      await app.addTransaction(
-                        AppTransaction(
-                          id: app.newId(),
-                          type: TxType.expense,
-                          amount: parsed.expenseAmount!,
-                          category: parsed.expenseCategory ?? 'Other',
-                          note: 'Added from voice log',
-                          date: now,
-                        ),
-                      );
-                    }
                     if (parsed.moodKey != null) {
                       await app.upsertMood(
                         MoodEntry(
@@ -232,55 +216,6 @@ void showQuickAddSheet(BuildContext context) {
                       );
                     }
                   },
-                ),
-
-                const SizedBox(height: 24),
-
-                // ============================================================
-                // MONEY
-                // ============================================================
-
-                _sectionTitle(
-                  context: ctx,
-                  title: 'Money',
-                  subtitle: 'Keep your finances up to date',
-                  icon: Icons.account_balance_wallet_rounded,
-                ),
-
-                const SizedBox(height: 11),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _quickCard(
-                        context: ctx,
-                        icon: Icons.arrow_downward_rounded,
-                        title: 'Expense',
-                        subtitle: 'Add spending',
-                        color: const Color(0xFFE2574C),
-                        onTap: () {
-                          dismissAndPush(
-                            const AddTransactionScreen(type: TxType.expense),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _quickCard(
-                        context: ctx,
-                        icon: Icons.arrow_upward_rounded,
-                        title: 'Income',
-                        subtitle: 'Add earnings',
-                        color: const Color(0xFF2FB380),
-                        onTap: () {
-                          dismissAndPush(
-                            const AddTransactionScreen(type: TxType.income),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
                 ),
 
                 const SizedBox(height: 24),

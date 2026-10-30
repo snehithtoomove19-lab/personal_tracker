@@ -75,11 +75,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
       final personalContext = app.aiPersonalContextEnabled
           ? PersonalInsightsService.buildAiContext(
-              transactions: app.transactions,
               moods: app.moods,
               tasks: app.tasks,
               signals: app.daySignals,
-              currency: app.currency,
             )
           : null;
       final reply = await AiService.instance.sendMessage(
@@ -191,7 +189,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       size: 48, color: Colors.grey.shade400),
                   const SizedBox(height: 12),
                   Text(
-                    'Ask anything - questions about your finances, general knowledge, advice, or just to chat.',
+                    'Ask about your tracked mood, movement, water, or tasks — or just chat.',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.grey.shade600),
                   ),

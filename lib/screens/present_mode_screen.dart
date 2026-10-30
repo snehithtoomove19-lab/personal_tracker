@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/mood_entry.dart';
 import '../services/app_scope.dart';
 import '../services/personal_insights_service.dart';
-import '../utils/formatters.dart';
 import 'day_signals_import_screen.dart';
 
 class PresentModeScreen extends StatefulWidget {
@@ -30,11 +29,9 @@ class _PresentModeScreenState extends State<PresentModeScreen> {
     setState(() {
       _answer = PersonalInsightsService.answerQuery(
         query: query,
-        transactions: app.transactions,
         moods: app.moods,
         tasks: app.tasks,
         signals: app.daySignals,
-        currency: app.currency,
       );
     });
   }
@@ -52,9 +49,6 @@ class _PresentModeScreenState extends State<PresentModeScreen> {
     final alerts = PersonalInsightsService.alerts(
       tasks: app.tasks,
       signals: app.daySignals,
-      overBudgetCategories: app.overBudgetCategories,
-      todayExpense: app.todayExpense,
-      transactions: app.transactions,
     );
     final moodLabel = forecast.likelyMood == null
         ? 'Not enough check-ins'
@@ -194,22 +188,12 @@ class _PresentModeScreenState extends State<PresentModeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Calendar, finance-provider, health-platform, and email '
-                  'connections are not configured in this offline build.',
+                  'Calendar, health-platform, and email connections are not '
+                  'configured in this offline build.',
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: colors.onSurfaceVariant),
                 ),
               ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          _sectionCard(
-            context,
-            title: 'Money today',
-            icon: Icons.account_balance_wallet_outlined,
-            child: Text(
-              'Tracked expenses: ${formatMoney(app.todayExpense, app.currency)}',
-              style: theme.textTheme.titleMedium,
             ),
           ),
         ],

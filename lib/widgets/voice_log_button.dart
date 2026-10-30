@@ -6,8 +6,6 @@ class ParsedVoiceLog {
   final int waterMl;
   final int workoutMinutes;
   final String workoutType;
-  final double? expenseAmount;
-  final String? expenseCategory;
   final String? moodKey;
 
   const ParsedVoiceLog({
@@ -15,16 +13,11 @@ class ParsedVoiceLog {
     this.waterMl = 0,
     this.workoutMinutes = 0,
     this.workoutType = '',
-    this.expenseAmount,
-    this.expenseCategory,
     this.moodKey,
   });
 
   bool get hasEntries =>
-      waterMl > 0 ||
-      workoutMinutes > 0 ||
-      expenseAmount != null ||
-      moodKey != null;
+      waterMl > 0 || workoutMinutes > 0 || moodKey != null;
 
   static ParsedVoiceLog parse(String text) {
     final normalized = text.trim();
@@ -58,32 +51,6 @@ class ParsedVoiceLog {
         : (workoutMatch.group(2) ?? workoutMatch.group(3) ?? 'workout')
             .toLowerCase();
 
-    final expenseMatch = RegExp(
-      r'(?:[$€£₹]\s*((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)|'
-      r'\b((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d{1,2})?)\s*(?:dollars?|bucks|rupees?|euros?|pounds?)\b)',
-      caseSensitive: false,
-    ).firstMatch(normalized);
-    final rawAmount = expenseMatch?.group(1) ?? expenseMatch?.group(2);
-    final expenseAmount = rawAmount == null
-        ? null
-        : double.tryParse(rawAmount.replaceAll(',', ''));
-    String? expenseCategory;
-    if (expenseAmount != null) {
-      if (RegExp(r'\b(lunch|breakfast|dinner|food|meal|coffee)\b')
-          .hasMatch(lower)) {
-        expenseCategory = 'Food';
-      } else if (RegExp(r'\b(uber|taxi|bus|train|fuel|transport)\b')
-          .hasMatch(lower)) {
-        expenseCategory = 'Transport';
-      } else if (RegExp(r'\b(shop|shopping|store)\b').hasMatch(lower)) {
-        expenseCategory = 'Shopping';
-      } else if (RegExp(r'\b(bill|rent|electricity)\b').hasMatch(lower)) {
-        expenseCategory = 'Bills';
-      } else {
-        expenseCategory = 'Other';
-      }
-    }
-
     String? moodKey;
     if (RegExp(r'\b(anxious|anxiety|stressed|stressful|overwhelmed)\b')
         .hasMatch(lower)) {
@@ -103,8 +70,6 @@ class ParsedVoiceLog {
       waterMl: waterMl,
       workoutMinutes: workoutMinutes,
       workoutType: workoutType,
-      expenseAmount: expenseAmount,
-      expenseCategory: expenseCategory,
       moodKey: moodKey,
     );
   }
@@ -314,9 +279,6 @@ class _VoiceLogDialogState extends State<_VoiceLogDialog> {
         if (parsed.workoutMinutes > 0)
           _preview(Icons.directions_run_rounded, 'Exercise',
               '${parsed.workoutMinutes} min ${parsed.workoutType}'),
-        if (parsed.expenseAmount != null)
-          _preview(Icons.payments_outlined, 'Expense',
-              '${parsed.expenseAmount!.toStringAsFixed(2)} · ${parsed.expenseCategory}'),
         if (parsed.moodKey != null)
           _preview(Icons.mood_outlined, 'Mood', parsed.moodKey!),
       ];

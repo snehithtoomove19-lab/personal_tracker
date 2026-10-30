@@ -1,8 +1,8 @@
 # Personal Tracker
 
-**An all-in-one personal expense, mood, task, and goal tracker — built with Flutter.**
+**A thoughtful, offline-first tracker for your mood, habits, tasks, and goals — built with Flutter.**
 
-Track your money, your mood, your to-dos, and your goals in one clean, offline-first app. No account, no backend, no ads — everything lives on your device, and an optional AI assistant is built right in for when you just need to ask something.
+Make space for your day: check in with your mood, build small habits, keep tasks moving, and see your progress without turning life into a scorecard. Your data stays on your device unless you choose optional AI or cloud backup features.
 
 <!--
   SCREENSHOTS: replace the placeholder paths below with your own images.
@@ -14,9 +14,9 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 ## Screenshots
 
-| Home | Expenses | Reports |
+| Today | Mood | Tasks |
 |---|---|---|
-| ![Home screen](screenshots/home.png) | ![Expenses screen](screenshots/expenses.png) | ![Reports screen](screenshots/report.png) |
+| ![Today screen](screenshots/home.png) | ![Mood tracker screen](screenshots/mood%20tracker%20screen.png) | ![Tasks screen](screenshots/tasks.png) |
 
 | Mood Tracker | Tasks | Goals |
 |---|---|---|
@@ -42,26 +42,25 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 ## Features
 
-### Money
-- Add income & expenses with custom categories, payment method (Cash/Card/UPI/Bank/Other), and notes
-- Recurring transactions (weekly/monthly) that auto-log themselves
-- Category budgets with over-budget warnings
-- Reports: income vs. expense, category breakdown, spending trend chart, weekly summary
-- CSV export and full JSON backup/restore (copy-paste based — works across devices, no cloud account needed)
-
 ### Mood
 - Daily mood check-in with a tappable calendar — log or edit *any* day, not just today
-- Monthly mood summary and a nudge banner for days you haven't logged
+- Monthly mood recap and a gentle nudge for days you haven't logged
 
 ### Tasks & Goals
 - Tasks with due date + time, category, priority, checklists (sub-tasks), and repeat (daily/weekly/monthly)
+- Opt-in task reminders with audible notifications, vibration, a reminder-sound test, and automatic rescheduling after app restarts
 - Goals with a target date, progress slider, and a "days left / overdue" indicator
 - A Reminders screen that covers *every* task — overdue, upcoming, and even ones with no due date
 - A blameless review for overdue tasks, with a supportive blocker check-in and an optional two-day smaller-step plan that does not reset streaks
 
 ### Notes & Calendar
 - Quick notes with pinning and search
-- A unified calendar view showing expenses, tasks, mood, goals, and notes for any day
+- A unified calendar view showing tasks, mood, goals, and notes for any day
+
+### Audible reminders
+- Enable notification and exact-alarm access from Settings, then turn on a reminder while creating or editing a task
+- Tasks without a chosen time use 9:00 AM; reminders already in the past are not scheduled
+- Android and iOS notification, sound, focus/Do Not Disturb, and battery settings can still silence or delay an alert
 
 ### Cloud backup
 - Optional Supabase email/password account with per-user Row Level Security
@@ -71,19 +70,21 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 ### Ask AI
 - A built-in chat assistant (bring your own OpenAI API key) for quick questions, right inside the app
-- Optional AI personalization adds only a rolling 30-day aggregate of tracker totals and counts to the prompt when explicitly enabled in Settings; raw notes, merchants, transaction descriptions, and task titles are excluded
+- Optional AI personalization adds only a rolling 30-day aggregate of mood, daily-signal, and task counts to the prompt when explicitly enabled in Settings; raw notes, task titles, and daily records are excluded
 - Personalization changes the prompt context; it does not train or fine-tune model weights. Personal tracker summaries are sent directly to OpenAI only when this opt-in is enabled
 
 ### Focus & Energy
 - Optionally log any known daily signal; unreported values remain unknown and are excluded from comparisons rather than treated as zero/default
 - Show signal associations only when each comparison has enough observations; these are personal correlations, not causal or medical conclusions
 - Estimate a 0–100 daily capacity from the logged sleep, meeting, high-priority task, and workout load, with the calculation shown in the app
-- Present mode summarizes today's tracked alerts, offers a cautious next-day planning estimate, and answers local questions about logged mood, exercise, water, tasks, and cash flow
+- Present mode summarizes today's tracked alerts, offers a cautious next-day planning estimate, and answers local questions about logged mood, exercise, water, and tasks
 - Review and import normalized daily-signal CSV or JSON records; imports merge only provided fields and preserve other saved values
-- Use the microphone to dictate a natural-language entry and review the extracted water, exercise, expense, and mood items before saving; the lightweight parser does not save the transcript, and assumes 250 ml per glass/cup
+- Use the microphone to dictate a natural-language entry and review the extracted water, exercise, and mood items before saving; the lightweight parser does not save the transcript, and assumes 250 ml per glass/cup
 - Speech recognition is provided by the device/platform service; offline availability depends on the device and its speech service. The app does not save audio recordings.
 
 Present mode currently uses only data already stored on the device. It does not read email or connect to Google Calendar, Plaid, Apple Health, or Health Connect. Live provider sync requires separate OAuth/provider configuration and explicit user authorization; no provider credentials are bundled in the app.
+
+Expense tracking and SMS detection/import have been removed. Older transaction records remain in local storage and backups for compatibility; they are not shown in the app.
 
 ### Extras
 - Dark mode, PIN app lock, global search, birthday/age tracking, daily streak, motivational quotes, a "Welcome-Back Summary" popup that surfaces anything needing attention when you open the app
@@ -141,7 +142,7 @@ The app stores one versioned JSON backup per authenticated user, not separate qu
 lib/
   main.dart                  # App entry, navigation shell, startup logic
   theme.dart                 # Light/dark Material 3 themes
-  models/                    # Transaction, MoodEntry, Task, Note, Goal, daily signals, ChatMessage
+  models/                    # MoodEntry, Task, Note, Goal, daily signals, ChatMessage
   services/
     storage_service.dart     # SharedPreferences read/write helpers
     app_state.dart            # Single source of truth (ChangeNotifier)
@@ -149,9 +150,10 @@ lib/
     app_scope.dart            # InheritedNotifier so any screen can read state
     ai_service.dart           # OpenAI API integration
     focus_insights_service.dart # Transparent capacity estimate and signal comparisons
-  screens/                   # One file per screen (Home, Expenses, Insights, Recovery, ...)
+    task_reminder_service.dart  # Local, sound-enabled task notifications
+  screens/                   # Today, mood, tasks, goals, reminders, settings, and more
   widgets/                   # Reusable UI components
-  utils/formatters.dart      # Date/money formatting helpers
+  utils/formatters.dart      # Date and number formatting helpers
 ```
 
 ## Key Packages
@@ -161,13 +163,15 @@ lib/
 | `shared_preferences` | Local JSON persistence for all data |
 | `intl` | Date/number formatting |
 | `uuid` | Generating unique IDs for records |
-| `path_provider` | Locating a writable directory for CSV/backup export |
+| `path_provider` | Locating a writable directory for local backup export |
 | `http` | Calling the OpenAI API for the "Ask AI" chat feature |
 | `speech_to_text` | Optional microphone-based speech recognition for quick logs |
 | `supabase_flutter` | Optional Supabase authentication and manual backup sync |
 | `flutter_secure_storage` | Secure persistence for Supabase auth sessions |
+| `flutter_local_notifications` | Scheduled task reminders with sound |
+| `flutter_timezone` / `timezone` | Schedule reminders in the device's local timezone |
 
-That's the complete dependency list — deliberately small, to keep the app easy to build and maintain.
+The app remains offline-first; AI, cloud backup, and notifications are optional.
 
 ## Troubleshooting
 
@@ -180,8 +184,7 @@ Ran into a build error? A few environment-specific issues (unrelated to the app'
 
 - Swap `shared_preferences` for `sqflite` for larger datasets
 - Richer charts via `fl_chart`
-- Real OS push notifications (`flutter_local_notifications`) as an opt-in
-- Automatic SMS reading (`flutter_sms_inbox`) as an opt-in, alongside the current paste-based flow
+- Optional connections to approved calendar and health providers, with explicit authorization and clear privacy controls
 - Biometric app lock (`local_auth`) alongside the PIN
 
 ---

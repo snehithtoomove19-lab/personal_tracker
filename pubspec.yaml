@@ -1,5 +1,5 @@
 name: personal_tracker
-description: A personal expense, mood, task, note & goal tracker built with Flutter.
+description: A personal mood, habits, tasks, notes & goals tracker built with Flutter.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -26,6 +26,9 @@ dependencies:
   speech_to_text: 7.5.0
   supabase_flutter: ^2.16.0
   flutter_secure_storage: ^11.2.0
+  flutter_local_notifications: ^20.1.0
+  flutter_timezone: ^5.1.1
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:

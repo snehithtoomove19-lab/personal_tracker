@@ -5,14 +5,15 @@ import 'services/app_state.dart';
 import 'services/app_scope.dart';
 import 'theme.dart';
 import 'screens/home_screen.dart';
-import 'screens/expenses_screen.dart';
 import 'screens/mood_screen.dart';
 import 'screens/tasks_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/present_mode_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/reminders_screen.dart';
 import 'screens/search_screen.dart';
 import 'services/supabase_sync_service.dart';
+import 'services/task_reminder_service.dart';
 import 'widgets/app_drawer.dart';
 import 'utils/app_navigation.dart';
 
@@ -96,12 +97,14 @@ class _AppRootState extends State<AppRoot> {
           appState.setSupabaseInitError(error.toString());
         }
       }
-      if (appState.smsDetectionEnabled) {
-        try {
-          await appState.scanSmsInbox();
-        } catch (e) {
-          debugPrint('SMS auto-scan skipped: $e');
-        }
+      try {
+        await TaskReminderService.initialize();
+        await appState.refreshTaskReminders();
+      } catch (error, stack) {
+        debugPrint('Task reminder initialization failed: $error\n$stack');
+        appState.setTaskReminderNotice(
+          'Could not initialize task reminders: $error',
+        );
       }
     } catch (e, st) {
       debugPrint('Failed to load app data: $e\n$st');
@@ -205,13 +208,13 @@ class _RootShellState extends State<RootShell> {
 
   final _screens = const [
     HomeScreen(),
-    ExpensesScreen(),
+    PresentModeScreen(),
     MoodScreen(),
     TasksScreen(),
     ProfileScreen(),
   ];
 
-  final _titles = const ['Home', 'Expenses', 'Mood', 'Tasks', 'Profile'];
+  final _titles = const ['Today', 'Pulse', 'Mood', 'Tasks', 'You'];
 
   @override
   void didChangeDependencies() {
@@ -222,6 +225,7 @@ class _RootShellState extends State<RootShell> {
         if (widget.startupError != null) {
           _showStartupErrorBanner();
         } else {
+          _showTaskReminderNotice();
           _maybeShowBirthdayCelebration();
         }
       });
@@ -237,6 +241,14 @@ class _RootShellState extends State<RootShell> {
         duration: const Duration(seconds: 6),
         backgroundColor: Colors.red,
       ),
+    );
+  }
+
+  void _showTaskReminderNotice() {
+    final notice = AppScope.of(context).taskReminderNotice;
+    if (notice == null || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(notice), duration: const Duration(seconds: 6)),
     );
   }
 
@@ -320,9 +332,6 @@ class _RootShellState extends State<RootShell> {
             if (!digest.moodLoggedToday)
               _digestRow(Icons.sentiment_neutral, Colors.orange,
                   "You haven't logged today's mood yet"),
-            if (digest.overBudgetCategoryCount > 0)
-              _digestRow(Icons.pie_chart_outline, Colors.red,
-                  '${digest.overBudgetCategoryCount} categor${digest.overBudgetCategoryCount == 1 ? 'y is' : 'ies are'} over budget'),
           ],
         ),
         actions: [
@@ -449,9 +458,9 @@ class _RootShellState extends State<RootShell> {
               selectedIcon: Icon(Icons.home),
               label: 'Home'),
           NavigationDestination(
-              icon: Icon(Icons.account_balance_wallet_outlined),
-              selectedIcon: Icon(Icons.account_balance_wallet),
-              label: 'Expenses'),
+              icon: Icon(Icons.insights_outlined),
+              selectedIcon: Icon(Icons.insights_rounded),
+              label: 'Pulse'),
           NavigationDestination(
               icon: Icon(Icons.emoji_emotions_outlined),
               selectedIcon: Icon(Icons.emoji_emotions),

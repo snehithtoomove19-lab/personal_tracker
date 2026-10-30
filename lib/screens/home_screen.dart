@@ -1,1219 +1,183 @@
 import 'package:flutter/material.dart';
 
-import '../services/app_scope.dart';
-import '../services/app_state.dart';
-import '../services/focus_insights_service.dart';
+import '../models/day_signals.dart';
 import '../models/mood_entry.dart';
+import '../models/task.dart';
+import '../services/app_scope.dart';
 import '../utils/formatters.dart';
 import '../widgets/quick_add_sheet.dart';
-import 'tasks_screen.dart';
+import 'calendar_screen.dart';
+import 'monthly_review_screen.dart';
 import 'mood_screen.dart';
-import 'ai_chat_screen.dart';
-import 'insights_screen.dart';
+import 'present_mode_screen.dart';
+import 'reminders_screen.dart';
+import 'tasks_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final app = AppScope.of(context);
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final app = AppScope.of(context);
-
     final now = DateTime.now();
-    final quote = kMotivationalQuotes[now.day % kMotivationalQuotes.length];
-
-    final bottomPadding = MediaQuery.of(context).padding.bottom + 90;
-
-    final hasBirthday =
-        app.isMyBirthdayToday || app.todayBirthdayContacts.isNotEmpty;
+    final tasks = app.tasks.where((task) => !task.completed).toList()
+      ..sort((a, b) {
+        if (a.dueDate == null) return 1;
+        if (b.dueDate == null) return -1;
+        final dateOrder = a.dueDate!.compareTo(b.dueDate!);
+        if (dateOrder != 0) return dateOrder;
+        return (a.dueTimeMinutes ?? 24 * 60)
+            .compareTo(b.dueTimeMinutes ?? 24 * 60);
+      });
+    final focusTasks = tasks.take(3).toList();
+    final todaySignals = app.todaySignals;
 
     return Scaffold(
-      backgroundColor: colors.surface,
-
-      // ============================================================
-      // QUICK ADD
-      // ============================================================
-
+      backgroundColor: colors.surfaceContainerLowest,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showQuickAddSheet(context),
-        elevation: 4,
         icon: const Icon(Icons.add_rounded),
-        label: const Text(
-          'Quick Add',
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
-        ),
+        label: const Text('Quick add'),
       ),
-
-      // ============================================================
-      // BODY
-      // ============================================================
-
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          bottomPadding,
-        ),
-        children: [
-          // HEADER
-          _buildHeader(
-            context,
-            app,
-            now,
-          ),
-
-          const SizedBox(height: 18),
-
-          // BIRTHDAY
-          if (hasBirthday) ...[
-            _buildBirthdayCard(
-              context,
-              app,
-              now,
-            ),
-            const SizedBox(height: 14),
-          ],
-
-          // BALANCE
-          _buildBalanceCard(
-            context,
-            app,
-          ),
-
-          const SizedBox(height: 12),
-
-          // EXPENSE STATS
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  context,
-                  label: "Today's Expense",
-                  value: formatMoney(
-                    app.todayExpense,
-                    app.currency,
-                  ),
-                  icon: Icons.today_rounded,
-                  color: kExpenseColorLocal,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  context,
-                  label: 'This Month',
-                  value: formatMoney(
-                    app.monthExpense,
-                    app.currency,
-                  ),
-                  icon: Icons.calendar_month_rounded,
-                  color: kExpenseColorLocal,
-                ),
-              ),
-            ],
-          ),
-
-          if (app.smsDetectedTransactions.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildSmsDetectedCard(context, app),
-          ],
-
-          // MONTH OVER MONTH
-          if (app.monthOverMonthChangePercent != null) ...[
-            const SizedBox(height: 12),
-            _buildMonthlyChangeCard(
-              context,
-              app.monthOverMonthChangePercent!,
-            ),
-          ],
-
-          // OVER BUDGET
-          if (app.overBudgetCategories.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            _buildBudgetWarningCard(
-              context,
-              app.overBudgetCategories.length,
-            ),
-          ],
-
-          const SizedBox(height: 14),
-
-          // TODAY'S MOOD
-          _buildMoodCard(
-            context,
-            app.todayMood,
-          ),
-
-          const SizedBox(height: 14),
-
-          // TASKS
-          _buildTasksCard(
-            context,
-            app,
-          ),
-
-          const SizedBox(height: 14),
-
-          _buildInsightsCard(context, app),
-
-          const SizedBox(height: 14),
-
-          // AI
-          _buildAiCard(context),
-
-          const SizedBox(height: 14),
-
-          // DAILY QUOTE
-          _buildQuoteCard(
-            context,
-            quote,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // HEADER
-  // ================================================================
-
-  Widget _buildHeader(
-    BuildContext context,
-    AppState app,
-    DateTime now,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Welcome back,',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                app.userName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.6,
-                ),
-              ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  Icon(
-                    Icons.calendar_today_rounded,
-                    size: 14,
-                    color: colors.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 5),
-                  Flexible(
-                    child: Text(
-                      formatDate(now),
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        // STREAK
-        if (app.streak > 0)
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 10,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.orange.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.orange.withValues(alpha: 0.18),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+      body: SafeArea(
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(18, 18, 18, 104),
+          children: [
+            Row(
               children: [
-                Icon(
-                  Icons.local_fire_department_rounded,
-                  size: 20,
-                  color: Colors.orange.shade600,
-                ),
-                const SizedBox(width: 5),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${app.streak}',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: Colors.orange.shade700,
-                      ),
-                    ),
-                    Text(
-                      'day streak',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
-  Widget _buildSmsDetectedCard(BuildContext context, AppState app) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final recent = app.smsDetectedTransactions.take(3).toList();
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.primary.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.primary.withValues(alpha: 0.15)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.sms_rounded, color: colors.primary, size: 19),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Detected from SMS',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              Text(
-                '${app.smsDetectedTransactions.length}',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: colors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ...recent.map(
-            (transaction) => Padding(
-              padding: const EdgeInsets.only(top: 7),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      transaction.merchant ??
-                          transaction.detectedLabel ??
-                          transaction.category,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    formatMoney(transaction.amount, app.currency),
-                    style: theme.textTheme.labelLarge,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // BIRTHDAY CARD
-  // ================================================================
-
-  Widget _buildBirthdayCard(
-    BuildContext context,
-    AppState app,
-    DateTime now,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(17),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.primary.withValues(alpha: 0.13),
-            colors.secondary.withValues(alpha: 0.07),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: colors.primary.withValues(alpha: 0.14),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.cake_rounded,
-                  color: colors.primary,
-                  size: 21,
-                ),
-              ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: Text(
-                  app.isMyBirthdayToday
-                      ? 'Happy Birthday! \u{1F389}'
-                      : "Today's Birthdays",
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 13),
-          if (app.isMyBirthdayToday) ...[
-            Text(
-              'Happy birthday, ${app.userName}! \u{1F389}',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            if (app.age != null) ...[
-              const SizedBox(height: 4),
-              Text(
-                'You are ${app.age} years young today.',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ],
-          if (app.todayBirthdayContacts.isNotEmpty) ...[
-            if (app.isMyBirthdayToday) const SizedBox(height: 14),
-            Text(
-              app.isMyBirthdayToday
-                  ? 'Also celebrating today'
-                  : 'People celebrating today',
-              style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            ...app.todayBirthdayContacts.map(
-              (contact) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 6),
-                  child: Row(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          color: colors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 9),
-                      Expanded(
-                        child: Text(
-                          '${contact.name} (${contact.relation})',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Text(
-                        'turns ${contact.ageOn(now)}',
-                        style: theme.textTheme.labelSmall?.copyWith(
+                        _greeting(now),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colors.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        app.userName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        formatDate(now),
+                        style: theme.textTheme.bodySmall?.copyWith(
                           color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
-                );
-              },
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // BALANCE CARD
-  // ================================================================
-
-  Widget _buildBalanceCard(
-    BuildContext context,
-    AppState app,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    final isPositive = app.totalBalance >= 0;
-
-    final balanceColor = isPositive ? kIncomeColorLocal : kExpenseColorLocal;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colors.primary.withValues(alpha: 0.12),
-            colors.secondary.withValues(alpha: 0.05),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(23),
-        border: Border.all(
-          color: colors.primary.withValues(alpha: 0.12),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: colors.primary.withValues(alpha: 0.04),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: balanceColor.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Icon(
-              Icons.account_balance_wallet_rounded,
-              color: balanceColor,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Total Balance',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
-                const SizedBox(height: 3),
-                Text(
-                  formatMoney(
-                    app.totalBalance,
-                    app.currency,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.5,
-                    color: balanceColor,
-                  ),
-                ),
+                if (app.streak > 0) _StreakBadge(streak: app.streak),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // STAT CARD
-  // ================================================================
-
-  Widget _buildStatCard(
-    BuildContext context, {
-    required String label,
-    required String value,
-    required IconData icon,
-    required Color color,
-  }) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Container(
-      height: 124,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.7),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.11),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 19,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // MONTHLY CHANGE
-  // ================================================================
-
-  Widget _buildMonthlyChangeCard(
-    BuildContext context,
-    double change,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    final increased = change > 0;
-
-    final accent = increased ? kExpenseColorLocal : kIncomeColorLocal;
-
-    final icon =
-        increased ? Icons.trending_up_rounded : Icons.trending_down_rounded;
-
-    final text = '${change.abs().toStringAsFixed(0)}% '
-        '${increased ? 'more' : 'less'} spending vs last month';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 13,
-      ),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.13),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.11),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              icon,
-              size: 18,
-              color: accent,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colors.onSurface,
+            const SizedBox(height: 20),
+            _TodayHero(
+              name: app.userName,
+              tasksLeft: tasks.length,
+              moodLogged: app.todayMood != null,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const PresentModeScreen(),
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // BUDGET WARNING
-  // ================================================================
-
-  Widget _buildBudgetWarningCard(
-    BuildContext context,
-    int count,
-  ) {
-    final theme = Theme.of(context);
-
-    const accent = Colors.red;
-
-    final categoryText = count == 1 ? 'category is' : 'categories are';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 13,
-      ),
-      decoration: BoxDecoration(
-        color: accent.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(17),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.13),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: accent.withValues(alpha: 0.10),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.warning_amber_rounded,
-              size: 19,
-              color: accent,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              '$count $categoryText over budget this month',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: accent,
-                fontWeight: FontWeight.w700,
+            const SizedBox(height: 22),
+            _SectionHeading(
+              title: 'Check in with yourself',
+              subtitle: 'No perfect streaks needed. Just notice.',
+              trailing: TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MoodScreen()),
+                ),
+                child: Text(app.todayMood == null ? 'Check in' : 'Edit'),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // MOOD CARD
-  // ================================================================
-
-  Widget _buildMoodCard(
-    BuildContext context,
-    MoodEntry? todayMood,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    // IMPORTANT:
-    // Keep the nullable MoodEntry and MoodOption properly promoted.
-    final mood = todayMood;
-
-    final moodOption = mood == null ? null : moodOptionFor(mood.mood);
-
-    final hasMood = mood != null && moodOption != null;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const MoodScreen(),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors.primary.withValues(alpha: 0.10),
-              colors.secondary.withValues(alpha: 0.045),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: colors.primary.withValues(alpha: 0.10),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(11),
-              decoration: BoxDecoration(
-                color: hasMood
-                    ? moodOption.color.withValues(alpha: 0.13)
-                    : colors.primary.withValues(alpha: 0.11),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Icon(
-                hasMood ? moodOption.icon : Icons.favorite_outline_rounded,
-                color: hasMood ? moodOption.color : colors.primary,
-                size: 25,
+            const SizedBox(height: 10),
+            _MoodCard(
+              mood: app.todayMood,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MoodScreen()),
               ),
             ),
-            const SizedBox(width: 13),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Today's Mood",
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+            const SizedBox(height: 22),
+            _SectionHeading(
+              title: 'Your focus, your pace',
+              subtitle: 'Only the signals you chose to log.',
+              trailing: IconButton(
+                tooltip: 'Open daily signals',
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PresentModeScreen(),
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    hasMood
-                        ? (mood.note.isEmpty ? moodOption.label : mood.note)
-                        : "Tap to log today's mood",
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color:
-                          hasMood ? moodOption.color : colors.onSurfaceVariant,
-                      fontWeight: hasMood ? FontWeight.w600 : FontWeight.w500,
-                    ),
-                  ),
-                ],
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded),
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: colors.onSurfaceVariant,
-              size: 22,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ================================================================
-  // TASKS CARD
-  // ================================================================
-
-  Widget _buildTasksCard(
-    BuildContext context,
-    AppState app,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    final pending = app.tasks.where((task) => !task.completed).take(4).toList();
-
-    return Container(
-      padding: const EdgeInsets.all(17),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.7),
-        ),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  color: colors.primary.withValues(alpha: 0.10),
-                  borderRadius: BorderRadius.circular(12),
+            const SizedBox(height: 10),
+            _DailySignalsCard(signals: todaySignals),
+            const SizedBox(height: 22),
+            _SectionHeading(
+              title: 'A few things to focus on',
+              subtitle: tasks.isEmpty
+                  ? 'You have room to choose what matters.'
+                  : '${tasks.length} open task${tasks.length == 1 ? '' : 's'}',
+              trailing: TextButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const TasksScreen()),
                 ),
-                child: Icon(
-                  Icons.check_circle_outline_rounded,
-                  color: colors.primary,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 11),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pending Tasks',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Text(
-                      pending.isEmpty
-                          ? 'You are all caught up'
-                          : '${pending.length} task${pending.length == 1 ? '' : 's'} waiting',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const TasksScreen(),
-                    ),
-                  );
-                },
                 child: const Text('See all'),
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          if (pending.isEmpty)
-            _buildEmptyTasks(context)
-          else
-            Column(
-              children: pending.map((task) {
-                return _buildTaskTile(
-                  context,
-                  app,
-                  task,
-                );
-              }).toList(),
             ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // TASK TILE
-  // ================================================================
-
-  Widget _buildTaskTile(
-    BuildContext context,
-    AppState app,
-    dynamic task,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 7),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () => app.toggleTask(task.id),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 8,
-          ),
-          child: Row(
-            children: [
-              Checkbox(
-                value: task.completed,
-                onChanged: (_) {
-                  app.toggleTask(task.id);
-                },
-                visualDensity: VisualDensity.compact,
-              ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (task.dueDate != null) ...[
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.schedule_rounded,
-                            size: 12,
-                            color: colors.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              formatDate(task.dueDate!),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colors.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ================================================================
-  // EMPTY TASKS
-  // ================================================================
-
-  Widget _buildEmptyTasks(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        vertical: 20,
-        horizontal: 15,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface.withValues(alpha: 0.35),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.task_alt_rounded,
-            size: 34,
-            color: colors.primary,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'No pending tasks',
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            'Nice work. You are all caught up.',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ================================================================
-  // AI CARD
-  // ================================================================
-
-  Widget _buildInsightsCard(BuildContext context, AppState app) {
-    final today = app.todaySignals;
-    final highPriorityTasks =
-        app.todayTasks.where((task) => task.priority.name == 'high').length;
-    final hasCapacityInputs = today != null || highPriorityTasks > 0;
-    final capacity = FocusInsightsService.energyCapacity(
-      today: today,
-      highPriorityTasksToday: highPriorityTasks,
-    );
-    final colors = Theme.of(context).colorScheme;
-    return Card(
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const InsightsScreen()),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 52,
-                height: 52,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: hasCapacityInputs ? capacity / 100 : 0,
-                      strokeWidth: 5,
-                      color: capacity <= 15 ? colors.error : colors.primary,
-                      backgroundColor: colors.surfaceContainerHighest,
-                    ),
-                    Text(hasCapacityInputs ? '$capacity%' : '—',
-                        style: const TextStyle(
-                            fontSize: 11, fontWeight: FontWeight.w800)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Focus & Energy Insights',
-                        style: TextStyle(fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 3),
-                    Text(!hasCapacityInputs
-                        ? 'Log today’s signals to estimate capacity'
-                        : capacity <= 15
-                            ? 'Your estimated capacity is running low'
-                            : 'Explore your daily capacity and focus patterns'),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAiCard(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AiChatScreen(),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(17),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              colors.primary.withValues(alpha: 0.11),
-              colors.tertiary.withValues(alpha: 0.06),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: colors.primary.withValues(alpha: 0.12),
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(11),
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.auto_awesome_rounded,
-                color: colors.primary,
-                size: 23,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Ask AI',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+            const SizedBox(height: 10),
+            if (focusTasks.isEmpty)
+              _EmptyFocusCard(
+                onAdd: () => showQuickAddSheet(context),
+              )
+            else
+              ...focusTasks.map(
+                (task) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: _TaskFocusCard(
+                    task: task,
+                    onToggle: () => app.toggleTask(task.id),
                   ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Got a question? Ask anything.',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                ),
               ),
+            const SizedBox(height: 16),
+            const _SectionHeading(
+              title: 'Make space for what matters',
+              subtitle: 'Your calendar, reminders, and monthly reset.',
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              color: colors.onSurfaceVariant,
+            const SizedBox(height: 10),
+            _Shortcuts(
+              onCalendar: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CalendarScreen()),
+              ),
+              onReminders: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RemindersScreen()),
+              ),
+              onReview: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MonthlyReviewScreen()),
+              ),
             ),
           ],
         ),
@@ -1221,62 +185,120 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // ================================================================
-  // DAILY QUOTE
-  // ================================================================
+  String _greeting(DateTime now) {
+    if (now.hour < 12) return 'Good morning';
+    if (now.hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+}
 
-  Widget _buildQuoteCard(
-    BuildContext context,
-    String quote,
-  ) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+class _TodayHero extends StatelessWidget {
+  const _TodayHero({
+    required this.name,
+    required this.tasksLeft,
+    required this.moodLogged,
+    required this.onTap,
+  });
 
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: colors.outlineVariant.withValues(alpha: 0.7),
+  final String name;
+  final int tasksLeft;
+  final bool moodLogged;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Material(
+      color: colors.primary,
+      borderRadius: BorderRadius.circular(28),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(28),
+        child: Padding(
+          padding: const EdgeInsets.all(21),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.bolt_rounded, color: Colors.white, size: 23),
+                  const SizedBox(width: 8),
+                  Text(
+                    'YOUR DAY, YOUR RULES',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Colors.white.withValues(alpha: .82),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.05,
+                        ),
+                  ),
+                  const Spacer(),
+                  const Icon(
+                    Icons.arrow_outward_rounded,
+                    color: Colors.white,
+                    size: 19,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 17),
+              Text(
+                _headline(),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -.7,
+                    ),
+              ),
+              const SizedBox(height: 7),
+              Text(
+                _subhead(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: .82),
+                      height: 1.35,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  String _headline() {
+    if (tasksLeft == 0 && moodLogged) return 'You showed up for yourself.';
+    if (tasksLeft == 0) return 'A little breathing room.';
+    if (tasksLeft == 1) return 'One thing at a time, $name.';
+    return 'Small steps still move you.';
+  }
+
+  String _subhead() {
+    if (tasksLeft == 0) return 'Check in, reset, or enjoy the open space.';
+    return '$tasksLeft open task${tasksLeft == 1 ? '' : 's'} — pick one and start there.';
+  }
+}
+
+class _StreakBadge extends StatelessWidget {
+  const _StreakBadge({required this.streak});
+
+  final int streak;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: colors.tertiaryContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.lightbulb_outline_rounded,
-              color: Colors.amber,
-              size: 21,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Daily thought',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  quote,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontStyle: FontStyle.italic,
-                    height: 1.4,
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
+          Icon(Icons.local_fire_department_rounded, color: colors.tertiary),
+          const SizedBox(width: 5),
+          Text(
+            '$streak',
+            style: TextStyle(
+              color: colors.onTertiaryContainer,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -1285,9 +307,368 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-// ==================================================================
-// LOCAL COLORS
-// ==================================================================
+class _SectionHeading extends StatelessWidget {
+  const _SectionHeading({
+    required this.title,
+    required this.subtitle,
+    this.trailing,
+  });
 
-const kIncomeColorLocal = Color(0xFF2FB380);
-const kExpenseColorLocal = Color(0xFFE2574C);
+  final String title;
+  final String subtitle;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -.25,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (trailing != null) trailing!,
+      ],
+    );
+  }
+}
+
+class _MoodCard extends StatelessWidget {
+  const _MoodCard({required this.mood, required this.onTap});
+
+  final MoodEntry? mood;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final option = mood == null ? null : moodOptionFor(mood!.mood);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color:
+                      (option?.color ?? colors.primary).withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  option?.icon ?? Icons.mood_rounded,
+                  color: option?.color ?? colors.primary,
+                ),
+              ),
+              const SizedBox(width: 13),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      option == null ? 'How are you feeling?' : option.label,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      mood?.note.isNotEmpty == true
+                          ? mood!.note
+                          : 'A private, no-pressure check-in.',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DailySignalsCard extends StatelessWidget {
+  const _DailySignalsCard({required this.signals});
+
+  final DaySignals? signals;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: _SignalMetric(
+                icon: Icons.water_drop_outlined,
+                label: 'Water',
+                value: signals?.waterMl == null
+                    ? 'Not logged'
+                    : '${signals?.waterMl} ml',
+                color: colors.tertiary,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: _SignalMetric(
+                icon: Icons.directions_run_rounded,
+                label: 'Movement',
+                value: signals?.workoutMinutes == null
+                    ? 'Not logged'
+                    : '${signals?.workoutMinutes} min',
+                color: colors.primary,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: _SignalMetric(
+                icon: Icons.bedtime_outlined,
+                label: 'Sleep',
+                value: signals?.sleepQuality == null
+                    ? 'Not logged'
+                    : '${signals?.sleepQuality}/5',
+                color: colors.secondary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SignalMetric extends StatelessWidget {
+  const _SignalMetric({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 19, color: color),
+        const SizedBox(height: 8),
+        Text(label, style: theme.textTheme.labelMedium),
+        const SizedBox(height: 3),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TaskFocusCard extends StatelessWidget {
+  const _TaskFocusCard({required this.task, required this.onToggle});
+
+  final AppTask task;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final isOverdue = task.dueDate != null &&
+        task.dueDate!.isBefore(DateTime.now()) &&
+        task.dueDate!.day != DateTime.now().day;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        onTap: onToggle,
+        leading: IconButton(
+          tooltip: 'Complete ${task.title}',
+          onPressed: onToggle,
+          icon: Icon(
+            Icons.circle_outlined,
+            color: colors.primary,
+          ),
+        ),
+        title: Text(
+          task.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Text(
+          task.dueDate == null
+              ? 'No due date'
+              : '${formatDate(task.dueDate!)}${task.dueTimeMinutes == null ? '' : ' · ${MaterialLocalizations.of(context).formatTimeOfDay(TimeOfDay(hour: task.dueTimeMinutes! ~/ 60, minute: task.dueTimeMinutes! % 60))}'}',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(color: isOverdue ? colors.error : null),
+        ),
+        trailing: task.reminderEnabled
+            ? Icon(
+                Icons.notifications_active_outlined,
+                size: 19,
+                color: colors.primary,
+              )
+            : null,
+      ),
+    );
+  }
+}
+
+class _EmptyFocusCard extends StatelessWidget {
+  const _EmptyFocusCard({required this.onAdd});
+
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Icon(Icons.spa_outlined, color: colors.primary, size: 28),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text('A clear list is a valid kind of progress.'),
+            ),
+            TextButton(onPressed: onAdd, child: const Text('Add one')),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Shortcuts extends StatelessWidget {
+  const _Shortcuts({
+    required this.onCalendar,
+    required this.onReminders,
+    required this.onReview,
+  });
+
+  final VoidCallback onCalendar;
+  final VoidCallback onReminders;
+  final VoidCallback onReview;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: _ShortcutTile(
+            icon: Icons.calendar_month_rounded,
+            label: 'Calendar',
+            color: colors.primary,
+            onTap: onCalendar,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: _ShortcutTile(
+            icon: Icons.notifications_active_outlined,
+            label: 'Reminders',
+            color: colors.secondary,
+            onTap: onReminders,
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: _ShortcutTile(
+            icon: Icons.auto_awesome_outlined,
+            label: 'Monthly',
+            color: colors.tertiary,
+            onTap: onReview,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ShortcutTile extends StatelessWidget {
+  const _ShortcutTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 5),
+          child: Column(
+            children: [
+              Icon(icon, color: color),
+              const SizedBox(height: 7),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

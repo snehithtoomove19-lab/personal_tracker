@@ -1,27 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../services/app_scope.dart';
+import '../services/task_reminder_service.dart';
 import '../utils/formatters.dart';
 
 class RemindersScreen extends StatelessWidget {
   const RemindersScreen({super.key});
-
-  Future<void> _openMessages(BuildContext context, String message) async {
-    final uri = Uri.parse('sms:?body=${Uri.encodeComponent(message)}');
-    final opened = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
-
-    if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Messages app is not available on this device.'),
-        ),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,45 +74,11 @@ class RemindersScreen extends StatelessWidget {
             ),
       );
 
-    // ============================================================
-    // BILLS
-    // ============================================================
-
-    final billCategoryTx = app.transactions
-        .where(
-          (t) => t.category == 'Bills',
-        )
-        .toList()
-      ..sort(
-        (a, b) => b.date.compareTo(a.date),
-      );
-
-    // ============================================================
-    // RECURRING TRANSACTIONS
-    // ============================================================
-
-    final recurringSeries = <String, dynamic>{};
-
-    for (final t in app.transactions.where(
-      (t) => t.repeat.name != 'none',
-    )) {
-      final key = '${t.type.name}|${t.category}|${t.amount}|${t.paymentMethod}';
-
-      if (!recurringSeries.containsKey(key) ||
-          (recurringSeries[key].date as DateTime).isBefore(t.date)) {
-        recurringSeries[key] = t;
-      }
-    }
-
-    final recurringList = recurringSeries.values.toList();
-
     final hasReminders = overdueTasks.isNotEmpty ||
         upcomingTasks.isNotEmpty ||
         upcomingGoals.isNotEmpty ||
         upcomingBirthdayContacts.isNotEmpty ||
-        noDateTasks.isNotEmpty ||
-        recurringList.isNotEmpty ||
-        billCategoryTx.isNotEmpty;
+        noDateTasks.isNotEmpty;
 
     // ============================================================
     // HELPERS
@@ -156,19 +106,6 @@ class RemindersScreen extends StatelessWidget {
         upcomingTasks.length +
         upcomingGoals.length +
         upcomingBirthdayContacts.length;
-
-    final messageLines = <String>[
-      'Personal Tracker reminders',
-      '',
-      if (overdueTasks.isNotEmpty) 'Overdue tasks: ${overdueTasks.length}',
-      if (upcomingTasks.isNotEmpty) 'Upcoming tasks: ${upcomingTasks.length}',
-      if (upcomingGoals.isNotEmpty) 'Goals due soon: ${upcomingGoals.length}',
-      if (upcomingBirthdayContacts.isNotEmpty)
-        'Birthdays soon: ${upcomingBirthdayContacts.length}',
-      if (noDateTasks.isNotEmpty) 'Tasks without a date: ${noDateTasks.length}',
-      if (!hasReminders) 'Nothing urgent right now.',
-    ];
-    final message = messageLines.join('\n');
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -200,9 +137,19 @@ class RemindersScreen extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.sms_outlined),
-            tooltip: 'Send reminders to Messages',
-            onPressed: () => _openMessages(context, message),
+            icon: const Icon(Icons.volume_up_rounded),
+            tooltip: 'Test reminder sound',
+            onPressed: () async {
+              try {
+                await TaskReminderService.showTestSound();
+              } catch (error) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(error.toString())),
+                  );
+                }
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -408,66 +355,6 @@ class RemindersScreen extends StatelessWidget {
                     subtitle: 'No due date set',
                     color: Colors.blueGrey,
                     badge: 'NO DATE',
-                  );
-                },
-              ).toList(),
-            ),
-            const SizedBox(height: 22),
-          ],
-
-          // ========================================================
-          // RECURRING
-          // ========================================================
-
-          if (recurringList.isNotEmpty) ...[
-            const _SectionHeader(
-              icon: Icons.autorenew_rounded,
-              title: 'Recurring Transactions',
-              subtitle: 'Your repeating money activity',
-              color: Colors.indigo,
-            ),
-            const SizedBox(height: 11),
-            _ReminderCard(
-              color: Colors.indigo,
-              children: recurringList.map(
-                (transaction) {
-                  return _ReminderTile(
-                    icon: Icons.autorenew_rounded,
-                    title:
-                        '${transaction.category} - ${transaction.repeat.name}',
-                    subtitle:
-                        'Last on ${formatDate(transaction.date)} - ${app.currency}${transaction.amount}',
-                    color: Colors.indigo,
-                    badge: 'REPEAT',
-                  );
-                },
-              ).toList(),
-            ),
-            const SizedBox(height: 22),
-          ],
-
-          // ========================================================
-          // BILLS
-          // ========================================================
-
-          if (billCategoryTx.isNotEmpty) ...[
-            const _SectionHeader(
-              icon: Icons.receipt_long_rounded,
-              title: 'Recent Bills',
-              subtitle: 'Your latest bill payments',
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 11),
-            _ReminderCard(
-              color: Colors.orange,
-              children: billCategoryTx.take(5).map(
-                (transaction) {
-                  return _ReminderTile(
-                    icon: Icons.receipt_long_rounded,
-                    title: transaction.category,
-                    subtitle: formatDate(transaction.date),
-                    color: Colors.orange,
-                    badge: 'BILL',
                   );
                 },
               ).toList(),
@@ -1044,7 +931,7 @@ class _InfoCard extends StatelessWidget {
           const SizedBox(width: 11),
           Expanded(
             child: Text(
-              'Reminders are automatically generated from your tasks, goals, birthdays, recurring transactions, and bills. Turn on "Welcome-Back Summary" in Settings for a quick overview when you open the app.',
+              'Task alarms use your device notification sound. Allow notifications and exact alarms when prompted; Focus, Do Not Disturb, mute, and battery settings can delay or silence them. Goals and birthdays appear here as in-app reminders.',
               style: TextStyle(
                 color: colors.onSurface.withValues(alpha: 0.52),
                 fontSize: 10,

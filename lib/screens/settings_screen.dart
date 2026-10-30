@@ -3,11 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import '../theme.dart';
-import '../services/sms_inbox_service.dart';
+import '../services/task_reminder_service.dart';
 import 'cloud_sync_screen.dart';
 import 'birthday_contacts_screen.dart';
-
-const List<String> kCurrencies = ['\u20b9', '\$', '\u20ac', '\u00a3', '\u00a5'];
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -42,45 +40,63 @@ class SettingsScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right_rounded),
               onTap: () => _showThemePicker(context, app),
             ),
-            SwitchListTile(
-              title: const Text('SMS Expense Detection'),
+            ListTile(
+              leading: const Icon(Icons.notifications_active_outlined),
+              title: const Text('Test reminder sound'),
               subtitle: const Text(
-                'Scan bank and payment alerts locally on this device. SMS text is never uploaded.',
+                'Play a sample using your device notification sound',
               ),
-              secondary: const Icon(Icons.sms_outlined),
-              value: app.smsDetectionEnabled,
-              onChanged: (enabled) => _toggleSmsDetection(
-                context,
-                app,
-                enabled,
-              ),
+              onTap: () async {
+                try {
+                  await TaskReminderService.showTestSound();
+                } catch (error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(error.toString())),
+                    );
+                  }
+                }
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.manage_search_rounded),
-              title: const Text('Scan SMS / Import Transactions'),
+              leading: const Icon(Icons.alarm_on_outlined),
+              title: const Text('Enable task alerts'),
               subtitle: const Text(
-                'Read existing messages and add new transactions safely',
+                'Allow notifications and exact alarms for scheduled tasks',
               ),
-              onTap: () => _scanSms(context, app),
+              onTap: () async {
+                String message;
+                try {
+                  final granted =
+                      await TaskReminderService.requestPermissions();
+                  await app.refreshTaskReminders();
+                  message = app.taskReminderNotice ??
+                      (!TaskReminderService.isSupported
+                          ? 'Scheduled task alarms are supported on Android and iOS.'
+                          : granted
+                              ? 'Task alarms are ready.'
+                              : 'Allow notifications in device settings to use task alarms.');
+                } catch (error) {
+                  message = 'Could not enable task alerts: $error';
+                }
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              },
             ),
-            ListTile(
-              leading: const Icon(Icons.currency_exchange),
-              title: const Text('Currency'),
-              trailing: DropdownButton<String>(
-                value: app.currency,
-                items: kCurrencies
-                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
-                onChanged: (v) {
-                  if (v != null) app.setCurrency(v);
-                },
-              ),
+            if (app.taskReminderNotice != null)
+              ListTile(
+                leading: const Icon(Icons.info_outline_rounded),
+                title: const Text('Reminder setup'),
+                subtitle: Text(app.taskReminderNotice!),
+                isThreeLine: true,
             ),
             const Divider(),
             SwitchListTile(
               title: const Text('Welcome-Back Summary'),
               subtitle: const Text(
-                  'Shows a quick popup when you open the app if anything needs attention (overdue tasks, unlogged mood, over-budget categories)'),
+                  'A small check-in when you open the app if tasks or mood logs need attention'),
               secondary: const Icon(Icons.notifications_active_outlined),
               value: app.showLaunchDigest,
               onChanged: (v) => app.setShowLaunchDigest(v),
@@ -159,9 +175,9 @@ class SettingsScreen extends StatelessWidget {
               secondary: const Icon(Icons.privacy_tip_outlined),
               title: const Text('Personalize AI with tracker summaries'),
               subtitle: const Text(
-                'Off by default. When on, recent 30-day totals and counts '
-                'are sent to OpenAI with your AI request. Notes, transaction '
-                'descriptions, merchants, and task titles are excluded. '
+                'Off by default. When on, recent 30-day wellness, mood, and '
+                'task counts are sent to OpenAI with your AI request. Notes '
+                'and task titles are excluded. '
                 'This adapts prompts; it does not train model weights.',
               ),
               value: app.aiPersonalContextEnabled,
@@ -179,24 +195,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.file_download_outlined),
-              title: const Text('Export Data (CSV)'),
-              subtitle: const Text(
-                  'Saves transactions to a CSV file in app documents'),
-              onTap: () async {
-                final file = await app.exportTransactionsCsv();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Exported to ${file.path}')),
-                  );
-                }
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.backup_outlined),
               title: const Text('Backup Data'),
               subtitle: const Text(
-                  'Full backup of everything (transactions, tasks, notes, goals, mood, budgets)'),
+                  'Keep a copy of your tracker data on this device'),
               onTap: () => _showBackup(context, app),
             ),
             ListTile(
@@ -246,56 +248,6 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _toggleSmsDetection(
-    BuildContext context,
-    dynamic app,
-    bool enabled,
-  ) async {
-    if (!enabled) {
-      await app.setSmsDetectionEnabled(false);
-      return;
-    }
-
-    final granted = await SmsInboxService().requestPermission();
-    if (!context.mounted) return;
-    if (!granted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('SMS permission is needed to detect bank alerts.'),
-        ),
-      );
-      return;
-    }
-    await app.setSmsDetectionEnabled(true);
-    final added = await app.scanSmsInbox();
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content:
-              Text('$added new transaction${added == 1 ? '' : 's'} detected.')),
-    );
-  }
-
-  Future<void> _scanSms(BuildContext context, dynamic app) async {
-    final granted = await SmsInboxService().requestPermission();
-    if (!context.mounted) return;
-    if (!granted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Allow SMS access to scan transaction messages.'),
-        ),
-      );
-      return;
-    }
-    final added = await app.scanSmsInbox();
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content:
-              Text('$added new transaction${added == 1 ? '' : 's'} imported.')),
     );
   }
 
@@ -556,7 +508,7 @@ class SettingsScreen extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Erase all data?'),
         content: const Text(
-            'This will permanently delete all transactions, tasks, notes, goals, and mood logs.'),
+            'This will permanently delete your saved tracker data from this device.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),

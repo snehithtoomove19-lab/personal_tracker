@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../services/app_scope.dart';
-import '../utils/formatters.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -15,14 +14,10 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
     final results = app.globalSearch(_query);
-    final txs = results['transactions'] ?? [];
     final tasks = results['tasks'] ?? [];
     final notes = results['notes'] ?? [];
     final goals = results['goals'] ?? [];
-    final hasResults = txs.isNotEmpty ||
-        tasks.isNotEmpty ||
-        notes.isNotEmpty ||
-        goals.isNotEmpty;
+    final hasResults = tasks.isNotEmpty || notes.isNotEmpty || goals.isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +30,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: _query.isEmpty
           ? Center(
-              child: Text('Search transactions, tasks, notes & goals',
+              child: Text('Search tasks, notes & goals',
                   style: TextStyle(color: Colors.grey.shade600)))
           : !hasResults
               ? Center(
@@ -44,17 +39,6 @@ class _SearchScreenState extends State<SearchScreen> {
               : ListView(
                   padding: const EdgeInsets.all(16),
                   children: [
-                    if (txs.isNotEmpty) ...[
-                      const Text('Transactions',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      ...txs.map((t) => ListTile(
-                            title: Text(t.category),
-                            subtitle: Text(
-                                t.note.isEmpty ? formatDate(t.date) : t.note),
-                            trailing: Text(formatMoney(t.amount, app.currency)),
-                          )),
-                      const Divider(),
-                    ],
                     if (tasks.isNotEmpty) ...[
                       const Text('Tasks',
                           style: TextStyle(fontWeight: FontWeight.bold)),

@@ -293,7 +293,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
     );
   }
 
-  void _saveTask() {
+  Future<void> _saveTask() async {
     FocusScope.of(context).unfocus();
 
     if (!_formKey.currentState!.validate()) {
@@ -322,7 +322,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         subtasks: List<SubTask>.from(_subtasks),
       );
 
-      app.updateTask(updated);
+      await app.updateTask(updated);
     } else {
       final task = AppTask(
         id: app.newId(),
@@ -338,9 +338,16 @@ class _AddTaskScreenState extends State<AddTaskScreen>
         subtasks: List<SubTask>.from(_subtasks),
       );
 
-      app.addTask(task);
+      await app.addTask(task);
     }
 
+    if (!mounted) return;
+    final reminderNotice = app.taskReminderNotice;
+    if (_reminderEnabled && reminderNotice != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(reminderNotice)),
+      );
+    }
     Navigator.pop(context);
   }
 
@@ -913,7 +920,7 @@ class _AddTaskScreenState extends State<AddTaskScreen>
               subtitle: Text(
                 _dueDate == null
                     ? 'Set a due date first'
-                    : 'Get a reminder when this task approaches',
+                    : 'Sound at the chosen time, or 9:00 AM if no time is set',
               ),
               value: _reminderEnabled,
               onChanged: _dueDate == null

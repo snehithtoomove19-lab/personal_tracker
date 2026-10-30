@@ -14,9 +14,8 @@ import '../models/chat_message.dart';
 import '../models/day_signals.dart';
 import '../models/voice_log_entry.dart';
 import '../theme.dart';
+import 'task_reminder_service.dart';
 import 'storage_service.dart';
-import 'sms_transaction_parser.dart';
-import 'sms_inbox_service.dart';
 
 const _uuid = Uuid();
 
@@ -40,13 +39,12 @@ const List<String> kDefaultIncomeCategories = [
 
 const List<String> kMotivationalQuotes = [
   "Small steps every day add up to big results.",
-  "Track it to master it.",
-  "A penny saved, tracked, and understood is a penny earned twice.",
+  "Show up for yourself in small ways.",
   "Progress, not perfection.",
   "Your future self will thank you for today's discipline.",
   "Consistency beats intensity.",
   "Every entry you log is a step toward clarity.",
-  "Mood, money, and tasks - small logs, big awareness.",
+  "Rest is part of the rhythm.",
 ];
 
 class AppState extends ChangeNotifier {
@@ -64,7 +62,6 @@ class AppState extends ChangeNotifier {
   String currency = '\u20b9';
   bool darkMode = false;
   AppThemePreset themePreset = AppThemePreset.pulse;
-  bool smsDetectionEnabled = false;
   bool pinEnabled = false;
   String? pin;
   int streak = 0;
@@ -225,8 +222,6 @@ class AppState extends ChangeNotifier {
       themePreset = AppThemePreset.fromId(
         await s.readString(StoreKeys.themePreset),
       );
-      smsDetectionEnabled =
-          await s.readBool(StoreKeys.smsDetectionEnabled) ?? false;
       pinEnabled = await s.readBool(StoreKeys.pinEnabled) ?? false;
       pin = await s.readString(StoreKeys.pin);
       final savingsStr = await s.readString(StoreKeys.savingsGoal);
@@ -447,70 +442,6 @@ class AppState extends ChangeNotifier {
       voiceLogs.map((item) => item.toJson()).toList(),
     );
     notifyListeners();
-  }
-
-  Future<void> setSmsDetectionEnabled(bool enabled) async {
-    smsDetectionEnabled = enabled;
-    await StorageService.instance.writeBool(
-      StoreKeys.smsDetectionEnabled,
-      enabled,
-    );
-    notifyListeners();
-  }
-
-  Future<int> scanSmsInbox() async {
-    final messages = await SmsInboxService().readMessages();
-    final candidates = messages
-        .map(
-          (message) => SmsTransactionParser.parse(
-            sourceId: message.id,
-            address: message.address,
-            body: message.body,
-            date: message.date,
-          ),
-        )
-        .whereType<SmsTransactionCandidate>();
-    return importSmsCandidates(candidates);
-  }
-
-  List<AppTransaction> get smsDetectedTransactions => transactions
-      .where((transaction) => transaction.sourceSmsHash != null)
-      .toList();
-
-  Future<int> importSmsCandidates(
-    Iterable<SmsTransactionCandidate> candidates,
-  ) async {
-    final knownHashes = transactions
-        .map((transaction) => transaction.sourceSmsHash)
-        .whereType<String>()
-        .toSet();
-    final added = <AppTransaction>[];
-
-    for (final candidate in candidates) {
-      if (!knownHashes.add(candidate.sourceHash)) continue;
-      added.add(
-        AppTransaction(
-          id: newId(),
-          type: candidate.type,
-          amount: candidate.amount,
-          category: candidate.category,
-          note:
-              'Detected from SMS${candidate.merchant == null ? '' : ' - ${candidate.merchant}'}',
-          date: candidate.date,
-          paymentMethod: candidate.paymentMethod,
-          sourceSmsHash: candidate.sourceHash,
-          merchant: candidate.merchant,
-          detectedLabel: candidate.detectedLabel,
-        ),
-      );
-    }
-
-    if (added.isEmpty) return 0;
-    transactions.insertAll(0, added.reversed);
-    await _saveTransactions();
-    await _updateStreak();
-    notifyListeners();
-    return added.length;
   }
 
   Future<void> updateTransaction(AppTransaction t) async {
@@ -907,7 +838,6 @@ class AppState extends ChangeNotifier {
         todayTaskCount: todayTasks.length,
         moodLoggedToday: todayMood != null,
         missedMoodDays: missedMoodDaysThisMonth.length,
-        overBudgetCategoryCount: overBudgetCategories.length,
       );
 
   /// Days so far this month (up to yesterday) that have no mood entry ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â
@@ -936,14 +866,14 @@ class AppState extends ChangeNotifier {
   Future<void> addTask(AppTask t) async {
     tasks.insert(0, t);
     await _saveTasks();
-    notifyListeners();
+    await refreshTaskReminders(requestPermissions: true);
   }
 
   Future<void> updateTask(AppTask t) async {
     final idx = tasks.indexWhere((e) => e.id == t.id);
     if (idx != -1) tasks[idx] = t;
     await _saveTasks();
-    notifyListeners();
+    await refreshTaskReminders(requestPermissions: true);
   }
 
   Future<void> toggleTask(String id) async {
@@ -974,7 +904,7 @@ class AppState extends ChangeNotifier {
       }
 
       await _saveTasks();
-      notifyListeners();
+      await refreshTaskReminders();
     }
   }
 
@@ -994,6 +924,37 @@ class AppState extends ChangeNotifier {
   Future<void> deleteTask(String id) async {
     tasks.removeWhere((e) => e.id == id);
     await _saveTasks();
+    await refreshTaskReminders();
+  }
+
+  String? taskReminderNotice;
+
+  void setTaskReminderNotice(String notice) {
+    taskReminderNotice = notice;
+    notifyListeners();
+  }
+
+  Future<void> refreshTaskReminders({bool requestPermissions = false}) async {
+    try {
+      final status = await TaskReminderService.syncTasks(
+        tasks,
+        requestPermissions: requestPermissions,
+      );
+      taskReminderNotice = switch (status) {
+        TaskReminderSyncStatus.ready => null,
+        TaskReminderSyncStatus.notificationsDenied =>
+          'Allow notifications to receive audible task reminders.',
+        TaskReminderSyncStatus.exactAlarmsDenied =>
+          'Exact alarm access is off. Task reminders are scheduled, but may arrive late.',
+        TaskReminderSyncStatus.unsupportedPlatform =>
+          'Scheduled task alarms are supported on Android and iOS.',
+        TaskReminderSyncStatus.notInitialized =>
+          'Task reminders are not initialized yet.',
+      };
+    } catch (error, stack) {
+      debugPrint('Task reminder scheduling failed: $error\n$stack');
+      taskReminderNotice = 'Could not schedule task reminders: $error';
+    }
     notifyListeners();
   }
 
@@ -1144,29 +1105,11 @@ class AppState extends ChangeNotifier {
     customExpenseCategories.clear();
     customIncomeCategories.clear();
     await StorageService.instance.clearAll();
-    notifyListeners();
+    await refreshTaskReminders();
   }
 
   // ---------------- Export ----------------
-  Future<File> exportTransactionsCsv() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/transactions_export.csv');
-    final buffer = StringBuffer();
-    buffer.writeln('Date,Type,Category,Amount,Payment Method,Note');
-    for (final t in transactions) {
-      final dateStr =
-          '${t.date.year}-${t.date.month.toString().padLeft(2, '0')}-${t.date.day.toString().padLeft(2, '0')}';
-      final noteEscaped = t.note.replaceAll(',', ';');
-      buffer.writeln(
-          '$dateStr,${t.type.name},${t.category},${t.amount},${t.paymentMethod},$noteEscaped');
-    }
-    await file.writeAsString(buffer.toString());
-    return file;
-  }
-
-  /// Full data backup as a JSON string (all transactions, moods, tasks,
-  /// notes, goals, budgets, and settings). Can be pasted back in via
-  /// [restoreFromBackup].
+  /// Full data backup, including preserved legacy records, for compatibility.
   String exportBackupJson() {
     final payload = {
       'version': 1,
@@ -1331,14 +1274,6 @@ class AppState extends ChangeNotifier {
   // ---------------- Monthly Review ----------------
   Map<String, dynamic> monthlyReview({DateTime? month}) {
     final m = month ?? DateTime.now();
-    final monthTx = transactions
-        .where((t) => t.date.year == m.year && t.date.month == m.month);
-    final totalSpent = monthTx
-        .where((t) => t.type == TxType.expense)
-        .fold(0.0, (p, e) => p + e.amount);
-    final totalIncome = monthTx
-        .where((t) => t.type == TxType.income)
-        .fold(0.0, (p, e) => p + e.amount);
     final moodSummary = monthMoodSummary(month: m);
     final tasksCompleted = tasks
         .where((t) =>
@@ -1354,52 +1289,55 @@ class AppState extends ChangeNotifier {
             g.targetDate!.year == m.year &&
             g.targetDate!.month == m.month)
         .length;
-
-    // Most productive day = day with most completed tasks + transactions logged
-    final dayCounts = <int, int>{};
-    for (final t in monthTx) {
-      dayCounts[t.date.day] = (dayCounts[t.date.day] ?? 0) + 1;
-    }
-    for (final t in tasks.where((t) =>
-        t.completed &&
-        t.dueDate != null &&
-        t.dueDate!.year == m.year &&
-        t.dueDate!.month == m.month)) {
-      dayCounts[t.dueDate!.day] = (dayCounts[t.dueDate!.day] ?? 0) + 1;
-    }
-    int? mostProductiveDay;
-    if (dayCounts.isNotEmpty) {
-      mostProductiveDay =
-          dayCounts.entries.reduce((a, b) => a.value >= b.value ? a : b).key;
-    }
+    final monthSignals = daySignals.where((signal) {
+      final date = DateTime.tryParse(signal.dateKey);
+      return date != null && date.year == m.year && date.month == m.month;
+    }).toList();
+    final activeDays = <String>{
+      ...monthSignals.map((signal) => signal.dateKey),
+      ...moods
+          .where((mood) => mood.date.year == m.year && mood.date.month == m.month)
+          .map((mood) => daySignalsKey(mood.date)),
+    }.length;
+    final sleepEntries = monthSignals
+        .where((signal) => signal.sleepQuality != null)
+        .map((signal) => signal.sleepQuality!)
+        .toList();
+    final focusEntries = monthSignals
+        .where((signal) => signal.focusScore != null)
+        .map((signal) => signal.focusScore!)
+        .toList();
 
     return {
-      'totalSpent': totalSpent,
-      'totalIncome': totalIncome,
       'moodSummary': moodSummary,
+      'moodCheckIns': moodSummary.values.fold<int>(0, (sum, count) => sum + count),
       'tasksCompleted': tasksCompleted,
       'goalsAchieved': goalsAchieved,
-      'mostProductiveDay': mostProductiveDay,
+      'activeDays': activeDays,
+      'workoutMinutes':
+          monthSignals.fold<int>(0, (sum, signal) => sum + (signal.workoutMinutes ?? 0)),
+      'waterMl':
+          monthSignals.fold<int>(0, (sum, signal) => sum + (signal.waterMl ?? 0)),
+      'averageSleepQuality': _averageSignal(sleepEntries),
+      'averageFocusScore': _averageSignal(focusEntries),
     };
   }
+
+  double? _averageSignal(List<int> values) => values.isEmpty
+      ? null
+      : values.reduce((total, value) => total + value) / values.length;
 
   // ---------------- Global search ----------------
   Map<String, List<dynamic>> globalSearch(String query) {
     final q = query.toLowerCase();
     if (q.isEmpty) {
       return {
-        'transactions': <AppTransaction>[],
         'tasks': <AppTask>[],
         'notes': <AppNote>[],
         'goals': <AppGoal>[],
       };
     }
     return {
-      'transactions': transactions
-          .where((t) =>
-              t.category.toLowerCase().contains(q) ||
-              t.note.toLowerCase().contains(q))
-          .toList(),
       'tasks': tasks.where((t) => t.title.toLowerCase().contains(q)).toList(),
       'notes': notes
           .where((n) =>
@@ -1436,19 +1374,16 @@ class LaunchDigest {
   final int todayTaskCount;
   final bool moodLoggedToday;
   final int missedMoodDays;
-  final int overBudgetCategoryCount;
 
   const LaunchDigest({
     required this.overdueTaskCount,
     required this.todayTaskCount,
     required this.moodLoggedToday,
     required this.missedMoodDays,
-    required this.overBudgetCategoryCount,
   });
 
   bool get hasAnything =>
       overdueTaskCount > 0 ||
       todayTaskCount > 0 ||
-      !moodLoggedToday ||
-      overBudgetCategoryCount > 0;
+      !moodLoggedToday;
 }

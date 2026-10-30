@@ -159,8 +159,6 @@ class InsightsScreen extends StatelessWidget {
                         if (entry.waterMl > 0) '${entry.waterMl} ml water',
                         if (entry.workoutMinutes > 0)
                           '${entry.workoutMinutes} min ${entry.workoutType}',
-                        if (entry.expenseAmount != null)
-                          '${app.currency}${entry.expenseAmount!.toStringAsFixed(2)} ${entry.expenseCategory ?? 'expense'}',
                         if (entry.mood != null) 'Mood: ${entry.mood}',
                       ];
                       return ListTile(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../services/app_scope.dart';
 import '../utils/formatters.dart';
-import '../models/transaction.dart';
 import '../models/mood_entry.dart';
 import '../widgets/section_card.dart';
 
@@ -79,15 +78,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     final leadingBlanks = firstDay.weekday % 7;
 
-    final dayTx = app.transactions
-        .where(
-          (t) => _sameDay(
-            t.date,
-            _selected,
-          ),
-        )
-        .toList();
-
     final dayTasks = app.tasks
         .where(
           (t) =>
@@ -123,8 +113,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
-    final totalItems = dayTx.length +
-        dayTasks.length +
+    final totalItems = dayTasks.length +
         dayGoals.length +
         dayNotes.length +
         (dayMood != null ? 1 : 0);
@@ -223,21 +212,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
               const SizedBox(height: 10),
             ],
-
-            // ==========================================================
-            // TRANSACTIONS
-            // ==========================================================
-
-            SectionCard(
-              title: 'Expenses & Income',
-              child: _buildTransactionsContent(
-                context,
-                app,
-                dayTx,
-              ),
-            ),
-
-            const SizedBox(height: 10),
 
             // ==========================================================
             // TASKS
@@ -557,10 +531,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     final isToday = _isToday(date);
 
-    final hasTx = app.transactions.any(
-      (t) => _sameDay(t.date, date),
-    );
-
     final hasTask = app.tasks.any(
       (t) => t.dueDate != null && _sameDay(t.dueDate!, date),
     );
@@ -632,7 +602,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
             else
               _buildEventDots(
                 context,
-                hasTx: hasTx,
                 hasTask: hasTask,
                 hasGoal: hasGoal,
                 hasNote: hasNote,
@@ -646,7 +615,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildEventDots(
     BuildContext context, {
-    required bool hasTx,
     required bool hasTask,
     required bool hasGoal,
     required bool hasNote,
@@ -655,12 +623,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final colors = Theme.of(context).colorScheme;
 
     final dotColors = <Color>[];
-
-    if (hasTx) {
-      dotColors.add(
-        selected ? colors.onPrimary : const Color(0xFFE2574C),
-      );
-    }
 
     if (hasTask) {
       dotColors.add(
@@ -855,110 +817,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  // ====================================================================
-  // TRANSACTIONS
-  // ====================================================================
-
-  Widget _buildTransactionsContent(
-    BuildContext context,
-    dynamic app,
-    List<dynamic> transactions,
-  ) {
-    final colors = Theme.of(context).colorScheme;
-
-    if (transactions.isEmpty) {
-      return _emptyMessage(
-        context,
-        Icons.account_balance_wallet_outlined,
-        'Nothing logged',
-        'No expenses or income were recorded on this day.',
-      );
-    }
-
-    return Column(
-      children: transactions.map<Widget>((t) {
-        final isIncome = t.type == TxType.income;
-
-        final accent =
-            isIncome ? const Color(0xFF2FB380) : const Color(0xFFE2574C);
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          padding: const EdgeInsets.all(11),
-          decoration: BoxDecoration(
-            color: accent.withValues(
-              alpha: 0.055,
-            ),
-            borderRadius: BorderRadius.circular(15),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: accent.withValues(
-                    alpha: 0.11,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isIncome
-                      ? Icons.arrow_downward_rounded
-                      : Icons.arrow_upward_rounded,
-                  color: accent,
-                  size: 18,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      t.category,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    if (t.note.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        t.note,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: colors.onSurfaceVariant,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  '${isIncome ? '+' : '-'}${formatMoney(t.amount, app.currency)}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: accent,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
     );
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../screens/ai_chat_screen.dart';
-import '../screens/budgets_screen.dart';
 import '../screens/calendar_screen.dart';
 import '../screens/cloud_sync_screen.dart';
 import '../screens/goals_screen.dart';
@@ -8,12 +7,11 @@ import '../screens/monthly_review_screen.dart';
 import '../screens/notes_screen.dart';
 import '../screens/present_mode_screen.dart';
 import '../screens/reminders_screen.dart';
-import '../screens/reports_screen.dart';
 import '../screens/search_screen.dart';
 import '../screens/settings_screen.dart';
-import '../screens/sms_import_screen.dart';
 import '../screens/theme_picker_screen.dart';
 import '../services/app_scope.dart';
+import '../theme.dart';
 import '../utils/app_navigation.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -456,39 +454,6 @@ class AppDrawer extends StatelessWidget {
                   ),
 
                   // --------------------------------------------------------
-                  // MONEY
-                  // --------------------------------------------------------
-                  sectionHeader(
-                    'Money',
-                    Icons.account_balance_wallet_rounded,
-                  ),
-
-                  menuItem(
-                    icon: Icons.bar_chart_rounded,
-                    title: 'Reports',
-                    subtitle: 'Understand your spending',
-                    accent: Colors.indigo,
-                    screen: const ReportsScreen(),
-                  ),
-
-                  menuItem(
-                    icon: Icons.pie_chart_outline_rounded,
-                    title: 'Budgets',
-                    subtitle: 'Plan and control your money',
-                    accent: Colors.teal,
-                    screen: const BudgetsScreen(),
-                    featured: true,
-                  ),
-
-                  menuItem(
-                    icon: Icons.sms_outlined,
-                    title: 'Add from SMS',
-                    subtitle: 'Import transactions quickly',
-                    accent: Colors.blue,
-                    screen: const SmsImportScreen(),
-                  ),
-
-                  // --------------------------------------------------------
                   // LIFE
                   // --------------------------------------------------------
                   sectionHeader(
@@ -567,7 +532,8 @@ class AppDrawer extends StatelessWidget {
                   menuItem(
                     icon: Icons.palette_outlined,
                     title: 'Themes',
-                    subtitle: 'Choose from 37 color styles',
+                    subtitle:
+                        'Choose from ${AppThemePreset.values.length} color styles',
                     accent: Colors.deepPurple,
                     screen: const ThemePickerScreen(),
                     featured: true,

@@ -1,7 +1,6 @@
 import '../models/day_signals.dart';
 import '../models/mood_entry.dart';
 import '../models/task.dart';
-import '../models/transaction.dart';
 import 'focus_insights_service.dart';
 
 class PersonalForecast {
@@ -37,11 +36,9 @@ class ReportPeriod {
 
 class PersonalInsightsService {
   static String buildAiContext({
-    required List<AppTransaction> transactions,
     required List<MoodEntry> moods,
     required List<AppTask> tasks,
     required List<DaySignals> signals,
-    required String currency,
     DateTime? now,
   }) {
     final today = _dateOnly(now ?? DateTime.now());
@@ -49,17 +46,6 @@ class PersonalInsightsService {
     bool inRecentWindow(DateTime date) {
       final day = _dateOnly(date);
       return !day.isBefore(start) && !day.isAfter(today);
-    }
-
-    var income = 0.0;
-    var expenses = 0.0;
-    for (final transaction
-        in transactions.where((item) => inRecentWindow(item.date))) {
-      if (transaction.type == TxType.income) {
-        income += transaction.amount;
-      } else {
-        expenses += transaction.amount;
-      }
     }
 
     final moodCounts = <String, int>{};
@@ -103,14 +89,13 @@ class PersonalInsightsService {
     return [
       'User-approved personal context; aggregated records from the last 30 days ending $today.',
       'Do not infer missing data. State when records are absent. Treat these as self-reported tracker data, not medical advice or causal evidence.',
-      'Cash flow: income $currency ${income.toStringAsFixed(2)}, expenses $currency ${expenses.toStringAsFixed(2)}, net $currency ${(income - expenses).toStringAsFixed(2)}.',
       'Mood check-ins: $moodSummary.',
       'Daily signals: ${recentSignals.length} days with records; '
           'exercise $workoutMinutes minutes logged; water $waterMl ml logged; '
           'sleep quality average ${_average(sleep)} from ${sleep.length} known entries; '
           'meeting hours average ${_averageDecimal(meetingHours)} from ${meetingHours.length} known entries.',
       'Tasks: $overdueTasks overdue and $upcomingTasks due in the next 7 days.',
-      'Privacy: no notes, transaction descriptions, merchant names, task titles, or raw daily records are included.',
+      'Privacy: no notes, task titles, or raw daily records are included.',
     ].join('\n');
   }
 
@@ -197,9 +182,6 @@ class PersonalInsightsService {
   static List<PresentAlert> alerts({
     required List<AppTask> tasks,
     required List<DaySignals> signals,
-    required Map<String, List<double>> overBudgetCategories,
-    required double todayExpense,
-    required List<AppTransaction> transactions,
     DateTime? now,
   }) {
     final today = _dateOnly(now ?? DateTime.now());
@@ -242,50 +224,14 @@ class PersonalInsightsService {
         'A short break between commitments may help protect focus.',
       ));
     }
-    for (final entry in overBudgetCategories.entries) {
-      if (entry.value.length >= 2) {
-        alerts.add(PresentAlert(
-          '${entry.key} is over budget',
-          'Tracked spending is ${entry.value[0].toStringAsFixed(2)} '
-              'against a ${entry.value[1].toStringAsFixed(2)} budget.',
-        ));
-      }
-    }
-
-    final priorDailyExpenses = <DateTime, double>{};
-    for (final transaction in transactions) {
-      if (transaction.type != TxType.expense) continue;
-      final day = _dateOnly(transaction.date);
-      if (day.isBefore(today) &&
-          !day.isBefore(today.subtract(const Duration(days: 30)))) {
-        priorDailyExpenses.update(
-          day,
-          (amount) => amount + transaction.amount,
-          ifAbsent: () => transaction.amount,
-        );
-      }
-    }
-    if (priorDailyExpenses.length >= 3 && todayExpense > 0) {
-      final average = priorDailyExpenses.values.reduce((a, b) => a + b) /
-          priorDailyExpenses.length;
-      if (average > 0 && todayExpense >= average * 2) {
-        alerts.add(PresentAlert(
-          'Today’s spending is above your recent pattern',
-          'Today: ${todayExpense.toStringAsFixed(2)}; recent logged-day '
-              'average: ${average.toStringAsFixed(2)}.',
-        ));
-      }
-    }
     return alerts;
   }
 
   static String answerQuery({
     required String query,
-    required List<AppTransaction> transactions,
     required List<MoodEntry> moods,
     required List<AppTask> tasks,
     required List<DaySignals> signals,
-    String currency = '',
     DateTime? now,
   }) {
     final normalized = query.toLowerCase();
@@ -344,30 +290,8 @@ class PersonalInsightsService {
           : '$prefix$matchingTasks incomplete ${matchingTasks == 1 ? 'task is' : 'tasks are'} due.';
     }
 
-    if (normalized.contains('cash flow') ||
-        normalized.contains('spent') ||
-        normalized.contains('expense') ||
-        normalized.contains('income') ||
-        normalized.contains('money')) {
-      var income = 0.0;
-      var expense = 0.0;
-      for (final transaction
-          in transactions.where((item) => inPeriod(item.date))) {
-        if (transaction.type == TxType.income) {
-          income += transaction.amount;
-        } else {
-          expense += transaction.amount;
-        }
-      }
-      final net = income - expense;
-      return '${prefix}Income $currency ${income.toStringAsFixed(2)}, '
-          'expenses $currency ${expense.toStringAsFixed(2)}, '
-          'net $currency ${net.toStringAsFixed(2)}.';
-    }
-
     return 'I can report tracked exercise minutes, water, mood, tasks, and '
-        'income/expenses. Try “exercise minutes last week” or “cash flow '
-        'this month”.';
+        'goals. Try “exercise minutes last week” or “tasks due this month”.';
   }
 
   static ReportPeriod _periodFor(String query, DateTime today) {
