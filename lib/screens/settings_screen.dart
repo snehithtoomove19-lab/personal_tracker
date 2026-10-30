@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/app_scope.dart';
 import '../theme.dart';
 import '../services/sms_inbox_service.dart';
+import 'cloud_sync_screen.dart';
 import 'birthday_contacts_screen.dart';
 
 const List<String> kCurrencies = ['\u20b9', '\$', '\u20ac', '\u00a3', '\u00a5'];
@@ -83,6 +84,20 @@ class SettingsScreen extends StatelessWidget {
               secondary: const Icon(Icons.notifications_active_outlined),
               value: app.showLaunchDigest,
               onChanged: (v) => app.setShowLaunchDigest(v),
+            ),
+            ListTile(
+              leading: const Icon(Icons.cloud_sync_outlined),
+              title: const Text('Cloud sync'),
+              subtitle: const Text(
+                'Connect a Supabase project for private, manual backups',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CloudSyncScreen(),
+                ),
+              ),
             ),
             const Divider(),
             const Padding(

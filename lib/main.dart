@@ -12,6 +12,7 @@ import 'screens/profile_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/reminders_screen.dart';
 import 'screens/search_screen.dart';
+import 'services/supabase_sync_service.dart';
 import 'widgets/app_drawer.dart';
 import 'utils/app_navigation.dart';
 
@@ -83,6 +84,18 @@ class _AppRootState extends State<AppRoot> {
     try {
       await appState.load();
       if (!mounted) return;
+      if (appState.supabaseProjectUrl.isNotEmpty &&
+          appState.supabasePublishableKey.isNotEmpty) {
+        try {
+          await SupabaseSyncService.initialize(
+            projectUrl: appState.supabaseProjectUrl,
+            publishableKey: appState.supabasePublishableKey,
+          );
+        } catch (error, stack) {
+          debugPrint('Cloud sync initialization failed: $error\n$stack');
+          appState.setSupabaseInitError(error.toString());
+        }
+      }
       if (appState.smsDetectionEnabled) {
         try {
           await appState.scanSmsInbox();
@@ -354,7 +367,7 @@ class _RootShellState extends State<RootShell> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'PERSONAL TRACKER',
+              'YOUR LIFE, IN SYNC',
               style: TextStyle(
                 color: colors.primary,
                 fontSize: 9,

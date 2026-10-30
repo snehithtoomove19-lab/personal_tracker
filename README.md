@@ -63,6 +63,12 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 - Quick notes with pinning and search
 - A unified calendar view showing expenses, tasks, mood, goals, and notes for any day
 
+### Cloud backup
+- Optional Supabase email/password account with per-user Row Level Security
+- Enter the Supabase project URL and public anon/publishable key in Cloud Sync; the app never needs a database password or service-role key
+- Explicit upload and restore actions keep local storage usable offline; restoring replaces local records and requires confirmation
+- Supabase auth sessions are stored using the platform's secure storage
+
 ### Ask AI
 - A built-in chat assistant (bring your own OpenAI API key) for quick questions, right inside the app
 - Optional AI personalization adds only a rolling 30-day aggregate of tracker totals and counts to the prompt when explicitly enabled in Settings; raw notes, merchants, transaction descriptions, and task titles are excluded
@@ -87,6 +93,7 @@ Present mode currently uses only data already stored on the device. It does not 
 - **Flutter** (Dart) — cross-platform UI
 - **State management:** a lightweight custom `InheritedNotifier` (`AppScope`) — no external state package
 - **Storage:** `shared_preferences` (local JSON), fully offline
+- **Optional cloud backup:** Supabase Auth + a private JSONB backup row, protected by PostgreSQL Row Level Security
 - **AI:** OpenAI Chat Completions API via `http` (user-supplied API key)
 - **Voice input:** `speech_to_text` using the device's speech-recognition service
 
@@ -118,6 +125,16 @@ flutter run
 
 `flutter create .` generates the platform folders (`android/`, `ios/`, `web/`, etc.) around the existing source — it won't touch anything in `lib/`.
 
+### Optional Supabase cloud backup
+
+1. Create a Supabase project and open its SQL Editor.
+2. Run [`supabase/migrations/20261030000000_user_backups.sql`](supabase/migrations/20261030000000_user_backups.sql) to create the owner-only backup table and RLS policy.
+3. In the app, open **Settings → Cloud sync** and paste the project's HTTPS URL and public anon/publishable key from **Project Settings → API**.
+4. Create an account or sign in with email/password. If email confirmation is enabled, confirm the account before signing in.
+5. Choose **Upload this device** or **Restore cloud backup**. Upload replaces that account's previous snapshot. Restore replaces local tracker records; export a local backup first if you need to preserve them.
+
+The app stores one versioned JSON backup per authenticated user, not separate queryable database rows for every record. Row Level Security checks `auth.uid()` on all operations. Sync is manual so the app never silently resolves conflicts or uploads newly logged records. The Supabase URL and public key are stored in this device's preferences; auth sessions use platform secure storage. Never use a database connection string, database password, service-role key, or other secret in the client. A public key alone does not grant access to another user's backup.
+
 ## Project Structure
 
 ```
@@ -128,6 +145,7 @@ lib/
   services/
     storage_service.dart     # SharedPreferences read/write helpers
     app_state.dart            # Single source of truth (ChangeNotifier)
+    supabase_sync_service.dart # Optional, explicit per-user cloud backups
     app_scope.dart            # InheritedNotifier so any screen can read state
     ai_service.dart           # OpenAI API integration
     focus_insights_service.dart # Transparent capacity estimate and signal comparisons
@@ -146,6 +164,8 @@ lib/
 | `path_provider` | Locating a writable directory for CSV/backup export |
 | `http` | Calling the OpenAI API for the "Ask AI" chat feature |
 | `speech_to_text` | Optional microphone-based speech recognition for quick logs |
+| `supabase_flutter` | Optional Supabase authentication and manual backup sync |
+| `flutter_secure_storage` | Secure persistence for Supabase auth sessions |
 
 That's the complete dependency list — deliberately small, to keep the app easy to build and maintain.
 

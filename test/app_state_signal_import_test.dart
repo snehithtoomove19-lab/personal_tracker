@@ -38,5 +38,29 @@ void main() {
     await app.setAiPersonalContextEnabled(true);
     expect(app.aiPersonalContextEnabled, isTrue);
     expect(preferences.getBool('aiPersonalContextEnabled'), isTrue);
+
+    await app.setSupabaseConfiguration(
+      projectUrl: 'https://example-project.supabase.co',
+      publishableKey: 'sb_publishable_public-key',
+    );
+    expect(
+      preferences.getString('supabaseProjectUrl'),
+      'https://example-project.supabase.co',
+    );
+    expect(
+      preferences.getString('supabasePublishableKey'),
+      'sb_publishable_public-key',
+    );
+
+    await app.addCustomCategory('Coffee', isExpense: true);
+    final restored = AppState();
+    await restored.load();
+    expect(restored.customExpenseCategories, contains('Coffee'));
+    expect(restored.supabaseProjectUrl, 'https://example-project.supabase.co');
+
+    await restored.setBirthday(DateTime(1995, 8, 12));
+    await restored.restoreFromBackup('{"version":1}');
+    expect(restored.birthday, isNull);
+    expect(preferences.getString('birthday'), isNull);
   });
 }

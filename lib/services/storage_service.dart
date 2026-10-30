@@ -80,9 +80,13 @@ class StoreKeys {
   static const showLaunchDigest = 'showLaunchDigest';
   static const birthday = 'birthday';
   static const birthdayContacts = 'birthdayContacts';
+  static const customExpenseCategories = 'customExpenseCategories';
+  static const customIncomeCategories = 'customIncomeCategories';
   static const aiApiKey = 'aiApiKey';
   static const aiModel = 'aiModel';
   static const aiPersonalContextEnabled = 'aiPersonalContextEnabled';
+  static const supabaseProjectUrl = 'supabaseProjectUrl';
+  static const supabasePublishableKey = 'supabasePublishableKey';
   static const chatHistory = 'chatHistory';
   static const daySignals = 'daySignals';
   static const recoveryReviews = 'recoveryReviews';

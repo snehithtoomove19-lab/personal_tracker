@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../screens/ai_chat_screen.dart';
 import '../screens/budgets_screen.dart';
 import '../screens/calendar_screen.dart';
+import '../screens/cloud_sync_screen.dart';
 import '../screens/goals_screen.dart';
 import '../screens/monthly_review_screen.dart';
 import '../screens/notes_screen.dart';
@@ -446,6 +447,13 @@ class AppDrawer extends StatelessWidget {
                     accent: Colors.blueGrey,
                     screen: const SearchScreen(),
                   ),
+                  menuItem(
+                    icon: Icons.cloud_sync_outlined,
+                    title: 'Cloud sync',
+                    subtitle: 'Connect your private Supabase backup',
+                    accent: Colors.indigo,
+                    screen: const CloudSyncScreen(),
+                  ),
 
                   // --------------------------------------------------------
                   // MONEY
@@ -559,7 +567,7 @@ class AppDrawer extends StatelessWidget {
                   menuItem(
                     icon: Icons.palette_outlined,
                     title: 'Themes',
-                    subtitle: 'Choose from 36 color styles',
+                    subtitle: 'Choose from 37 color styles',
                     accent: Colors.deepPurple,
                     screen: const ThemePickerScreen(),
                     featured: true,

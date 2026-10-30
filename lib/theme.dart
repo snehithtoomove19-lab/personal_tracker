@@ -22,6 +22,13 @@ enum AppThemePreset {
     seed: Color(0xFF0F766E),
     icon: Icons.water_drop_rounded,
   ),
+  pulse(
+    id: 'pulse',
+    label: 'Pulse',
+    description: 'Vibrant and creator-mode',
+    seed: Color(0xFF7457F5),
+    icon: Icons.bolt_rounded,
+  ),
   sunset(
     id: 'sunset',
     label: 'Sunset',
@@ -292,7 +299,7 @@ enum AppThemePreset {
   static AppThemePreset fromId(String? id) {
     return AppThemePreset.values.firstWhere(
       (preset) => preset.id == id,
-      orElse: () => AppThemePreset.ocean,
+      orElse: () => AppThemePreset.pulse,
     );
   }
 }
@@ -339,6 +346,10 @@ ThemeData buildAppTheme({
     ),
     cardTheme: base.cardTheme.copyWith(
       color: scheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
+      ),
     ),
     splashColor: scheme.primary.withValues(alpha: 0.12),
     focusColor: scheme.primary.withValues(alpha: 0.12),
@@ -483,7 +494,8 @@ ThemeData buildLightTheme() {
       margin: EdgeInsets.zero,
       shadowColor: Colors.black.withValues(alpha: 0.06),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
       ),
     ),
 
@@ -590,7 +602,7 @@ ThemeData buildLightTheme() {
           vertical: 13,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(17),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -609,7 +621,7 @@ ThemeData buildLightTheme() {
           vertical: 13,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(17),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -630,7 +642,7 @@ ThemeData buildLightTheme() {
           color: kPrimaryColor.withValues(alpha: 0.28),
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -665,7 +677,7 @@ ThemeData buildLightTheme() {
       hoverElevation: 7,
       highlightElevation: 3,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
       ),
     ),
 
@@ -681,7 +693,7 @@ ThemeData buildLightTheme() {
         vertical: 14,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
@@ -730,7 +742,7 @@ ThemeData buildLightTheme() {
       backgroundColor: kLightBackground,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      height: 72,
+      height: 78,
       indicatorColor: kPrimaryColor.withValues(alpha: 0.15),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
@@ -979,7 +991,8 @@ ThemeData buildDarkTheme() {
       margin: EdgeInsets.zero,
       shadowColor: Colors.black.withValues(alpha: 0.25),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
+        side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
       ),
     ),
 
@@ -1086,7 +1099,7 @@ ThemeData buildDarkTheme() {
           vertical: 13,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(17),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -1105,7 +1118,7 @@ ThemeData buildDarkTheme() {
           vertical: 13,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(17),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -1126,7 +1139,7 @@ ThemeData buildDarkTheme() {
           color: const Color(0xFF8992F2).withValues(alpha: 0.32),
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
         ),
         textStyle: const TextStyle(
           fontSize: 13,
@@ -1158,7 +1171,7 @@ ThemeData buildDarkTheme() {
       foregroundColor: const Color(0xFF171A48),
       elevation: 5,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(22),
       ),
     ),
 
@@ -1174,7 +1187,7 @@ ThemeData buildDarkTheme() {
         vertical: 14,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide.none,
       ),
       enabledBorder: OutlineInputBorder(
@@ -1224,7 +1237,7 @@ ThemeData buildDarkTheme() {
       backgroundColor: kDarkBackground,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      height: 72,
+      height: 78,
       indicatorColor: const Color(0xFF8992F2).withValues(alpha: 0.15),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(

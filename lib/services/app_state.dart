@@ -63,7 +63,7 @@ class AppState extends ChangeNotifier {
   double savingsGoal = 0;
   String currency = '\u20b9';
   bool darkMode = false;
-  AppThemePreset themePreset = AppThemePreset.ocean;
+  AppThemePreset themePreset = AppThemePreset.pulse;
   bool smsDetectionEnabled = false;
   bool pinEnabled = false;
   String? pin;
@@ -74,6 +74,9 @@ class AppState extends ChangeNotifier {
   String aiApiKey = '';
   String aiModel = 'gpt-4o-mini';
   bool aiPersonalContextEnabled = false;
+  String supabaseProjectUrl = '';
+  String supabasePublishableKey = '';
+  String? supabaseInitError;
   final List<ChatMessage> chatMessages = [];
   final List<DaySignals> daySignals = [];
   final List<Map<String, dynamic>> recoveryReviews = [];
@@ -239,6 +242,21 @@ class AppState extends ChangeNotifier {
       }
     });
 
+    await safely('custom transaction categories', () async {
+      final expense = await s.readString(StoreKeys.customExpenseCategories);
+      final income = await s.readString(StoreKeys.customIncomeCategories);
+      customExpenseCategories
+        ..clear()
+        ..addAll(expense == null
+            ? <String>[]
+            : (jsonDecode(expense) as List).cast<String>());
+      customIncomeCategories
+        ..clear()
+        ..addAll(income == null
+            ? <String>[]
+            : (jsonDecode(income) as List).cast<String>());
+    });
+
     await safely('launch digest setting', () async {
       showLaunchDigest = await s.readBool(StoreKeys.showLaunchDigest) ?? true;
     });
@@ -266,6 +284,13 @@ class AppState extends ChangeNotifier {
       aiModel = await s.readString(StoreKeys.aiModel) ?? 'gpt-4o-mini';
       aiPersonalContextEnabled =
           await s.readBool(StoreKeys.aiPersonalContextEnabled) ?? false;
+    });
+
+    await safely('cloud sync settings', () async {
+      supabaseProjectUrl =
+          await s.readString(StoreKeys.supabaseProjectUrl) ?? '';
+      supabasePublishableKey =
+          await s.readString(StoreKeys.supabasePublishableKey) ?? '';
     });
 
     await safely('chat history', () async {
@@ -837,6 +862,28 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setSupabaseConfiguration({
+    required String projectUrl,
+    required String publishableKey,
+  }) async {
+    supabaseProjectUrl = projectUrl.trim();
+    supabasePublishableKey = publishableKey.trim();
+    await StorageService.instance.writeString(
+      StoreKeys.supabaseProjectUrl,
+      supabaseProjectUrl,
+    );
+    await StorageService.instance.writeString(
+      StoreKeys.supabasePublishableKey,
+      supabasePublishableKey,
+    );
+    notifyListeners();
+  }
+
+  void setSupabaseInitError(String? error) {
+    supabaseInitError = error;
+    notifyListeners();
+  }
+
   bool get isMyBirthdayToday {
     if (birthday == null) return false;
     final now = DateTime.now();
@@ -1062,13 +1109,23 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> addCustomCategory(String name, {required bool isExpense}) async {
+    final normalized = name.trim();
+    if (normalized.isEmpty) return;
     if (isExpense) {
-      if (!customExpenseCategories.contains(name)) {
-        customExpenseCategories.add(name);
+      if (!customExpenseCategories.contains(normalized)) {
+        customExpenseCategories.add(normalized);
+        await StorageService.instance.writeString(
+          StoreKeys.customExpenseCategories,
+          jsonEncode(customExpenseCategories),
+        );
       }
     } else {
-      if (!customIncomeCategories.contains(name)) {
-        customIncomeCategories.add(name);
+      if (!customIncomeCategories.contains(normalized)) {
+        customIncomeCategories.add(normalized);
+        await StorageService.instance.writeString(
+          StoreKeys.customIncomeCategories,
+          jsonEncode(customIncomeCategories),
+        );
       }
     }
     notifyListeners();
@@ -1224,7 +1281,7 @@ class AppState extends ChangeNotifier {
     savingsGoal = (decoded['savingsGoal'] as num?)?.toDouble() ?? savingsGoal;
     currency = decoded['currency'] as String? ?? currency;
     final birthdayStr = decoded['birthday'] as String?;
-    if (birthdayStr != null) birthday = DateTime.tryParse(birthdayStr);
+    birthday = birthdayStr == null ? null : DateTime.tryParse(birthdayStr);
 
     await _saveTransactions();
     await _saveMoods();
@@ -1249,7 +1306,21 @@ class AppState extends ChangeNotifier {
     await StorageService.instance
         .writeString(StoreKeys.savingsGoal, savingsGoal.toString());
     await StorageService.instance.writeString(StoreKeys.currency, currency);
-    if (birthday != null) {
+    await StorageService.instance.writeList(
+      StoreKeys.birthdayContacts,
+      birthdayContacts.map((e) => e.toJson()).toList(),
+    );
+    await StorageService.instance.writeString(
+      StoreKeys.customExpenseCategories,
+      jsonEncode(customExpenseCategories),
+    );
+    await StorageService.instance.writeString(
+      StoreKeys.customIncomeCategories,
+      jsonEncode(customIncomeCategories),
+    );
+    if (birthday == null) {
+      await StorageService.instance.remove(StoreKeys.birthday);
+    } else {
       await StorageService.instance
           .writeString(StoreKeys.birthday, birthday!.toIso8601String());
     }
