@@ -36,6 +36,84 @@ class ReportPeriod {
 }
 
 class PersonalInsightsService {
+  static String buildAiContext({
+    required List<AppTransaction> transactions,
+    required List<MoodEntry> moods,
+    required List<AppTask> tasks,
+    required List<DaySignals> signals,
+    required String currency,
+    DateTime? now,
+  }) {
+    final today = _dateOnly(now ?? DateTime.now());
+    final start = today.subtract(const Duration(days: 29));
+    bool inRecentWindow(DateTime date) {
+      final day = _dateOnly(date);
+      return !day.isBefore(start) && !day.isAfter(today);
+    }
+
+    var income = 0.0;
+    var expenses = 0.0;
+    for (final transaction
+        in transactions.where((item) => inRecentWindow(item.date))) {
+      if (transaction.type == TxType.income) {
+        income += transaction.amount;
+      } else {
+        expenses += transaction.amount;
+      }
+    }
+
+    final moodCounts = <String, int>{};
+    for (final mood in moods.where((item) => inRecentWindow(item.date))) {
+      moodCounts.update(mood.mood, (count) => count + 1, ifAbsent: () => 1);
+    }
+
+    final recentSignals = signals.where((signal) {
+      final date = DateTime.tryParse(signal.dateKey);
+      return date != null && inRecentWindow(date);
+    }).toList();
+    final sleep = recentSignals
+        .where((signal) => signal.sleepQuality != null)
+        .map((signal) => signal.sleepQuality!)
+        .toList();
+    final meetingHours = recentSignals
+        .where((signal) => signal.meetingHours != null)
+        .map((signal) => signal.meetingHours!)
+        .toList();
+    final workoutMinutes = recentSignals.fold<int>(
+        0, (total, signal) => total + (signal.workoutMinutes ?? 0));
+    final waterMl = recentSignals.fold<int>(
+        0, (total, signal) => total + (signal.waterMl ?? 0));
+    final overdueTasks = tasks.where((task) {
+      final due = task.dueDate;
+      return !task.completed && due != null && _dateOnly(due).isBefore(today);
+    }).length;
+    final upcomingTasks = tasks.where((task) {
+      final due = task.dueDate;
+      return !task.completed &&
+          due != null &&
+          !_dateOnly(due).isBefore(today) &&
+          !_dateOnly(due).isAfter(today.add(const Duration(days: 6)));
+    }).length;
+    final moodSummary = moodCounts.isEmpty
+        ? 'No mood check-ins were logged.'
+        : moodCounts.entries
+            .map((entry) => '${moodOptionFor(entry.key).label}: ${entry.value}')
+            .join(', ');
+
+    return [
+      'User-approved personal context; aggregated records from the last 30 days ending $today.',
+      'Do not infer missing data. State when records are absent. Treat these as self-reported tracker data, not medical advice or causal evidence.',
+      'Cash flow: income $currency ${income.toStringAsFixed(2)}, expenses $currency ${expenses.toStringAsFixed(2)}, net $currency ${(income - expenses).toStringAsFixed(2)}.',
+      'Mood check-ins: $moodSummary.',
+      'Daily signals: ${recentSignals.length} days with records; '
+          'exercise $workoutMinutes minutes logged; water $waterMl ml logged; '
+          'sleep quality average ${_average(sleep)} from ${sleep.length} known entries; '
+          'meeting hours average ${_averageDecimal(meetingHours)} from ${meetingHours.length} known entries.',
+      'Tasks: $overdueTasks overdue and $upcomingTasks due in the next 7 days.',
+      'Privacy: no notes, transaction descriptions, merchant names, task titles, or raw daily records are included.',
+    ].join('\n');
+  }
+
   static PersonalForecast forecast({
     required List<MoodEntry> moods,
     required List<DaySignals> signals,
@@ -352,6 +430,14 @@ class PersonalInsightsService {
 
   static DateTime _dateOnly(DateTime date) =>
       DateTime(date.year, date.month, date.day);
+
+  static String _average(List<int> values) => values.isEmpty
+      ? 'not available'
+      : (values.reduce((a, b) => a + b) / values.length).toStringAsFixed(1);
+
+  static String _averageDecimal(List<double> values) => values.isEmpty
+      ? 'not available'
+      : (values.reduce((a, b) => a + b) / values.length).toStringAsFixed(1);
 
   static bool _sameDay(DateTime first, DateTime second) =>
       first.year == second.year &&

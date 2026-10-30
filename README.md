@@ -65,6 +65,8 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 
 ### Ask AI
 - A built-in chat assistant (bring your own OpenAI API key) for quick questions, right inside the app
+- Optional AI personalization adds only a rolling 30-day aggregate of tracker totals and counts to the prompt when explicitly enabled in Settings; raw notes, merchants, transaction descriptions, and task titles are excluded
+- Personalization changes the prompt context; it does not train or fine-tune model weights. Personal tracker summaries are sent directly to OpenAI only when this opt-in is enabled
 
 ### Focus & Energy
 - Optionally log any known daily signal; unreported values remain unknown and are excluded from comparisons rather than treated as zero/default

@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import '../services/app_scope.dart';
 import '../services/ai_service.dart';
+import '../services/personal_insights_service.dart';
 import '../models/chat_message.dart';
 import 'settings_screen.dart';
 
 const String _kSystemPrompt =
-    'You are a helpful assistant built into a personal expense, mood, task, '
-    'and goal tracking app. Answer the user\'s questions clearly and '
-    'concisely. You can discuss anything they ask, not just the app.';
+    'You are a clear, supportive assistant in a personal-tracking app. '
+    'Answer the user’s question directly. Use supplied tracker context only '
+    'as self-reported data, distinguish facts from suggestions, never invent '
+    'missing values or claim access to unconnected services, and do not give '
+    'medical diagnoses. You can also answer general questions.';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
@@ -70,11 +73,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ? app.chatMessages.sublist(app.chatMessages.length - 20)
           : app.chatMessages;
 
+      final personalContext = app.aiPersonalContextEnabled
+          ? PersonalInsightsService.buildAiContext(
+              transactions: app.transactions,
+              moods: app.moods,
+              tasks: app.tasks,
+              signals: app.daySignals,
+              currency: app.currency,
+            )
+          : null;
       final reply = await AiService.instance.sendMessage(
         apiKey: app.aiApiKey,
         model: app.aiModel,
         history: recent,
-        systemPrompt: _kSystemPrompt,
+        systemPrompt: personalContext == null
+            ? _kSystemPrompt
+            : '$_kSystemPrompt\n\n$personalContext',
       );
 
       await app.addChatMessage(ChatMessage(
@@ -146,6 +160,25 @@ class _AiChatScreenState extends State<AiChatScreen> {
                     child: const Text('Settings'),
                   ),
                 ],
+              ),
+            ),
+          if (app.aiPersonalContextEnabled)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .secondaryContainer
+                    .withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Text(
+                'Personalized context is on. This request includes a '
+                '30-day aggregate of your tracker data, without notes, '
+                'transaction descriptions, merchants, or task titles.',
+                style: TextStyle(fontSize: 12),
               ),
             ),
           if (app.chatMessages.isEmpty)

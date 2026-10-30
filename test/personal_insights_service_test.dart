@@ -106,4 +106,89 @@ void main() {
       'Food is over budget',
     ]);
   });
+
+  test('AI context uses recent aggregates and excludes raw personal details',
+      () {
+    final context = PersonalInsightsService.buildAiContext(
+      transactions: [
+        AppTransaction(
+          id: 'income',
+          type: TxType.income,
+          amount: 800,
+          category: 'Salary',
+          note: 'private income note',
+          merchant: 'private employer',
+          date: DateTime(2026, 3, 1),
+        ),
+        AppTransaction(
+          id: 'expense',
+          type: TxType.expense,
+          amount: 120,
+          category: 'Food',
+          note: 'private purchase note',
+          merchant: 'private cafe',
+          date: DateTime(2026, 3, 2),
+        ),
+        AppTransaction(
+          id: 'old',
+          type: TxType.expense,
+          amount: 900,
+          category: 'Other',
+          date: DateTime(2026, 2, 1),
+        ),
+      ],
+      moods: [
+        MoodEntry(
+          id: 'mood',
+          date: DateTime(2026, 3, 3),
+          mood: 'good',
+          note: 'private mood note',
+        ),
+      ],
+      tasks: [
+        AppTask(
+          id: 'late',
+          title: 'Private overdue task title',
+          dueDate: DateTime(2026, 3, 1),
+          createdAt: DateTime(2026, 2, 1),
+        ),
+        AppTask(
+          id: 'soon',
+          title: 'Private upcoming task title',
+          dueDate: DateTime(2026, 3, 13),
+          createdAt: DateTime(2026, 3, 1),
+        ),
+      ],
+      signals: const [
+        DaySignals(
+          dateKey: '2026-03-05',
+          sleepQuality: 4,
+          meetingHours: 2,
+          workoutMinutes: 20,
+          waterMl: 700,
+        ),
+        DaySignals(
+          dateKey: '2026-02-01',
+          sleepQuality: 1,
+          meetingHours: 8,
+          workoutMinutes: 500,
+          waterMl: 9000,
+        ),
+      ],
+      currency: '\$',
+      now: now,
+    );
+
+    expect(context, contains('income \$ 800.00'));
+    expect(context, contains('expenses \$ 120.00'));
+    expect(context, contains('net \$ 680.00'));
+    expect(context, contains('exercise 20 minutes'));
+    expect(context, contains('water 700 ml'));
+    expect(context, contains('sleep quality average 4.0 from 1'));
+    expect(context, contains('meeting hours average 2.0 from 1'));
+    expect(context, contains('Tasks: 1 overdue and 1 due'));
+    expect(context, isNot(contains('private')));
+    expect(context, isNot(contains('900.00')));
+    expect(context, isNot(contains('9000')));
+  });
 }

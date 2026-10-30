@@ -33,5 +33,10 @@ void main() {
     expect(stored.single['sleepQuality'], 4);
     expect(stored.single['workoutMinutes'], 20);
     expect(stored.single['waterMl'], 500);
+
+    expect(app.aiPersonalContextEnabled, isFalse);
+    await app.setAiPersonalContextEnabled(true);
+    expect(app.aiPersonalContextEnabled, isTrue);
+    expect(preferences.getBool('aiPersonalContextEnabled'), isTrue);
   });
 }

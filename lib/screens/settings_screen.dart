@@ -140,10 +140,25 @@ class SettingsScreen extends StatelessWidget {
               subtitle: Text(app.aiModel),
               onTap: () => _editAiModel(context, app),
             ),
+            SwitchListTile(
+              secondary: const Icon(Icons.privacy_tip_outlined),
+              title: const Text('Personalize AI with tracker summaries'),
+              subtitle: const Text(
+                'Off by default. When on, recent 30-day totals and counts '
+                'are sent to OpenAI with your AI request. Notes, transaction '
+                'descriptions, merchants, and task titles are excluded. '
+                'This adapts prompts; it does not train model weights.',
+              ),
+              value: app.aiPersonalContextEnabled,
+              onChanged: (enabled) => app.setAiPersonalContextEnabled(enabled),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
-                'Get a key at platform.openai.com - your key is stored only on this device and sent directly to OpenAI, never through any server of ours.',
+                'Get a key at platform.openai.com. Your key and AI requests '
+                'are sent directly to OpenAI, not through our server. The '
+                'key is stored in this app’s local preferences; do not use '
+                'a shared device if that is a concern.',
                 style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
               ),
             ),

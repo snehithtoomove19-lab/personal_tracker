@@ -82,6 +82,7 @@ class StoreKeys {
   static const birthdayContacts = 'birthdayContacts';
   static const aiApiKey = 'aiApiKey';
   static const aiModel = 'aiModel';
+  static const aiPersonalContextEnabled = 'aiPersonalContextEnabled';
   static const chatHistory = 'chatHistory';
   static const daySignals = 'daySignals';
   static const recoveryReviews = 'recoveryReviews';

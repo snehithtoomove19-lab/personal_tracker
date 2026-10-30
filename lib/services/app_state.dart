@@ -73,6 +73,7 @@ class AppState extends ChangeNotifier {
   final List<BirthdayContact> birthdayContacts = [];
   String aiApiKey = '';
   String aiModel = 'gpt-4o-mini';
+  bool aiPersonalContextEnabled = false;
   final List<ChatMessage> chatMessages = [];
   final List<DaySignals> daySignals = [];
   final List<Map<String, dynamic>> recoveryReviews = [];
@@ -263,6 +264,8 @@ class AppState extends ChangeNotifier {
     await safely('AI settings', () async {
       aiApiKey = await s.readString(StoreKeys.aiApiKey) ?? '';
       aiModel = await s.readString(StoreKeys.aiModel) ?? 'gpt-4o-mini';
+      aiPersonalContextEnabled =
+          await s.readBool(StoreKeys.aiPersonalContextEnabled) ?? false;
     });
 
     await safely('chat history', () async {
@@ -824,6 +827,13 @@ class AppState extends ChangeNotifier {
   Future<void> setAiModel(String model) async {
     aiModel = model;
     await StorageService.instance.writeString(StoreKeys.aiModel, model);
+    notifyListeners();
+  }
+
+  Future<void> setAiPersonalContextEnabled(bool enabled) async {
+    aiPersonalContextEnabled = enabled;
+    await StorageService.instance
+        .writeBool(StoreKeys.aiPersonalContextEnabled, enabled);
     notifyListeners();
   }
 
