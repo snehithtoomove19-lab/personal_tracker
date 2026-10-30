@@ -365,6 +365,43 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> importDaySignals(List<DaySignals> imported) async {
+    if (imported.isEmpty) return;
+    final byDate = {for (final signal in daySignals) signal.dateKey: signal};
+    for (final signal in imported) {
+      final previous = byDate[signal.dateKey];
+      byDate[signal.dateKey] = previous == null
+          ? signal
+          : DaySignals(
+              dateKey: signal.dateKey,
+              sleepQuality: signal.sleepQuality ?? previous.sleepQuality,
+              socialMinutesBefore10: signal.socialMinutesBefore10 ??
+                  previous.socialMinutesBefore10,
+              screenMinutes: signal.screenMinutes ?? previous.screenMinutes,
+              mealHour: signal.mealHour ?? previous.mealHour,
+              meetingHours: signal.meetingHours ?? previous.meetingHours,
+              focusScore: signal.focusScore ?? previous.focusScore,
+              deepWorkCompleted:
+                  signal.deepWorkCompleted ?? previous.deepWorkCompleted,
+              workoutMinutes: signal.workoutMinutes ?? previous.workoutMinutes,
+              highIntensityWorkout:
+                  signal.highIntensityWorkout ?? previous.highIntensityWorkout,
+              waterMl: signal.waterMl ?? previous.waterMl,
+            );
+    }
+    final merged = byDate.values.toList()
+      ..sort((a, b) => b.dateKey.compareTo(a.dateKey));
+    if (merged.length > 180) merged.removeRange(180, merged.length);
+    daySignals
+      ..clear()
+      ..addAll(merged);
+    await StorageService.instance.writeList(
+      StoreKeys.daySignals,
+      daySignals.map((signal) => signal.toJson()).toList(),
+    );
+    notifyListeners();
+  }
+
   Future<void> saveRecoveryReview(Map<String, dynamic> review) async {
     recoveryReviews.insert(0, review);
     await StorageService.instance.writeList(

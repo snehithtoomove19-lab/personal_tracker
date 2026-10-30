@@ -70,8 +70,12 @@ Track your money, your mood, your to-dos, and your goals in one clean, offline-f
 - Optionally log any known daily signal; unreported values remain unknown and are excluded from comparisons rather than treated as zero/default
 - Show signal associations only when each comparison has enough observations; these are personal correlations, not causal or medical conclusions
 - Estimate a 0–100 daily capacity from the logged sleep, meeting, high-priority task, and workout load, with the calculation shown in the app
+- Present mode summarizes today's tracked alerts, offers a cautious next-day planning estimate, and answers local questions about logged mood, exercise, water, tasks, and cash flow
+- Review and import normalized daily-signal CSV or JSON records; imports merge only provided fields and preserve other saved values
 - Use the microphone to dictate a natural-language entry and review the extracted water, exercise, expense, and mood items before saving; the lightweight parser does not save the transcript, and assumes 250 ml per glass/cup
 - Speech recognition is provided by the device/platform service; offline availability depends on the device and its speech service. The app does not save audio recordings.
+
+Present mode currently uses only data already stored on the device. It does not read email or connect to Google Calendar, Plaid, Apple Health, or Health Connect. Live provider sync requires separate OAuth/provider configuration and explicit user authorization; no provider credentials are bundled in the app.
 
 ### Extras
 - Dark mode, PIN app lock, global search, birthday/age tracking, daily streak, motivational quotes, a "Welcome-Back Summary" popup that surfaces anything needing attention when you open the app

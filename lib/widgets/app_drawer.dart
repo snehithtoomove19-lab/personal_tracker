@@ -5,6 +5,7 @@ import '../screens/calendar_screen.dart';
 import '../screens/goals_screen.dart';
 import '../screens/monthly_review_screen.dart';
 import '../screens/notes_screen.dart';
+import '../screens/present_mode_screen.dart';
 import '../screens/reminders_screen.dart';
 import '../screens/reports_screen.dart';
 import '../screens/search_screen.dart';
@@ -418,6 +419,15 @@ class AppDrawer extends StatelessWidget {
                   sectionHeader(
                     'Assistant',
                     Icons.auto_awesome_rounded,
+                  ),
+
+                  menuItem(
+                    icon: Icons.insights_outlined,
+                    title: 'Present mode',
+                    subtitle: 'Daily signals and local reports',
+                    accent: Colors.teal,
+                    screen: const PresentModeScreen(),
+                    featured: true,
                   ),
 
                   menuItem(
