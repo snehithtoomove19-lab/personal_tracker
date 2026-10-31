@@ -3,12 +3,16 @@ class BirthdayContact {
   final String name;
   final String relation;
   final DateTime date;
+  final String phoneNumber;
+  final String email;
 
   BirthdayContact({
     required this.id,
     required this.name,
     required this.relation,
     required this.date,
+    this.phoneNumber = '',
+    this.email = '',
   });
 
   String get initials {
@@ -52,6 +56,8 @@ class BirthdayContact {
         'name': name,
         'relation': relation,
         'date': date.toIso8601String(),
+        'phoneNumber': phoneNumber,
+        'email': email,
       };
 
   factory BirthdayContact.fromJson(Map<String, dynamic> json) {
@@ -61,6 +67,8 @@ class BirthdayContact {
       name: json['name'] as String? ?? '',
       relation: json['relation'] as String? ?? 'Friend',
       date: DateTime.parse(json['date'] as String),
+      phoneNumber: json['phoneNumber'] as String? ?? '',
+      email: json['email'] as String? ?? '',
     );
   }
 }

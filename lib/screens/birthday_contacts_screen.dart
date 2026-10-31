@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/birthday_contact.dart';
@@ -18,6 +19,8 @@ const _birthdayRelationOptions = [
   'Colleague',
   'Other',
 ];
+
+enum _BirthdayWishChannel { whatsapp, email, other }
 
 class BirthdayContactsScreen extends StatefulWidget {
   const BirthdayContactsScreen({super.key});
@@ -417,17 +420,23 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   // ADD / EDIT
   // ========================================================================
 
-  void _editContact(
+  Future<void> _editContact(
     BuildContext context,
     AppState app, {
     BirthdayContact? contact,
-  }) {
+  }) async {
     final nameCtrl = TextEditingController(
       text: contact?.name ?? '',
     );
 
     final relationCtrl = TextEditingController(
       text: contact?.relation ?? 'Friend',
+    );
+    final phoneCtrl = TextEditingController(
+      text: contact?.phoneNumber ?? '',
+    );
+    final emailCtrl = TextEditingController(
+      text: contact?.email ?? '',
     );
 
     var selectedRelation = contact == null
@@ -440,7 +449,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
 
     DateTime selectedDate = contact?.date ?? DateTime.now();
 
-    showModalBottomSheet(
+    final sheet = showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -605,6 +614,26 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                         ),
                       ],
                       const SizedBox(height: 12),
+                      _BirthdayInput(
+                        controller: phoneCtrl,
+                        label: 'Phone number for WhatsApp',
+                        hint: 'Include country code, e.g. +1 555 123 4567',
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone,
+                        textCapitalization: TextCapitalization.none,
+                        autocorrect: false,
+                      ),
+                      const SizedBox(height: 12),
+                      _BirthdayInput(
+                        controller: emailCtrl,
+                        label: 'Email address',
+                        hint: 'name@example.com',
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
+                        textCapitalization: TextCapitalization.none,
+                        autocorrect: false,
+                      ),
+                      const SizedBox(height: 12),
                       _DatePickerCard(
                         selectedDate: selectedDate,
                         onTap: () async {
@@ -644,6 +673,38 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                               return;
                             }
 
+                            final email = emailCtrl.text.trim();
+                            if (email.isNotEmpty &&
+                                !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                                    .hasMatch(email)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  behavior: SnackBarBehavior.floating,
+                                  content: Text(
+                                    'Please enter a valid email address',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final phoneNumber = phoneCtrl.text.trim();
+                            if (phoneNumber.isNotEmpty) {
+                              final digits =
+                                  phoneNumber.replaceAll(RegExp(r'\D'), '');
+                              if (digits.length < 7 || digits.length > 15) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    behavior: SnackBarBehavior.floating,
+                                    content: Text(
+                                      'Please enter a valid phone number with country code',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                            }
+
                             final edited = BirthdayContact(
                               id: contact?.id ?? _uuid.v4(),
                               name: nameCtrl.text.trim(),
@@ -655,6 +716,8 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
                                 selectedDate.month,
                                 selectedDate.day,
                               ),
+                              phoneNumber: phoneNumber,
+                              email: email,
                             );
 
                             if (contact == null) {
@@ -710,6 +773,14 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
         );
       },
     );
+    try {
+      await sheet;
+    } finally {
+      nameCtrl.dispose();
+      relationCtrl.dispose();
+      phoneCtrl.dispose();
+      emailCtrl.dispose();
+    }
   }
 
   // ========================================================================
@@ -798,20 +869,117 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     BuildContext context,
     BirthdayContact contact,
   ) async {
-    final messages = [
-      'Happy Birthday, ${contact.name}! 🎂🎉 Wishing you an amazing day filled with happiness, laughter and beautiful memories! ❤️',
-      'Happy Birthday ${contact.name}! 🥳🎂 Hope your special day is absolutely wonderful and the year ahead brings you lots of happiness! ✨',
-      'Wishing you the happiest birthday, ${contact.name}! 🎉 May your day be full of love, smiles and everything that makes you happy! 💖',
-      'Here’s to another amazing year, ${contact.name}! 🎂✨ Happy Birthday! May this year bring you new adventures and unforgettable memories! 🥳',
-    ];
+    final message =
+        'Happy Birthday, ${contact.name}! 🎂🎉 Wishing you a wonderful day '
+        'filled with happiness, laughter, and beautiful memories! ❤️';
+    final channel = await showModalBottomSheet<_BirthdayWishChannel>(
+      context: context,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      builder: (sheetContext) {
+        final colors = Theme.of(sheetContext).colorScheme;
+        final phoneDigits = contact.phoneNumber.replaceAll(RegExp(r'\D'), '');
+        final phoneAvailable =
+            phoneDigits.length >= 7 && phoneDigits.length <= 15;
+        final emailAvailable = contact.email.trim().isNotEmpty;
 
-    final message = messages[DateTime.now().millisecond % messages.length];
-
-    await SharePlus.instance.share(
-      ShareParams(
-        text: message,
-      ),
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.chat_rounded, color: Colors.green),
+                  title: const Text('WhatsApp'),
+                  subtitle: Text(
+                    phoneAvailable
+                        ? contact.phoneNumber
+                        : 'Add a valid phone number with country code',
+                  ),
+                  enabled: phoneAvailable,
+                  onTap: phoneAvailable
+                      ? () => Navigator.pop(
+                            sheetContext,
+                            _BirthdayWishChannel.whatsapp,
+                          )
+                      : null,
+                ),
+                ListTile(
+                  leading: Icon(Icons.email_rounded, color: colors.primary),
+                  title: const Text('Email'),
+                  subtitle: Text(
+                    emailAvailable
+                        ? contact.email
+                        : 'Add an email address to this birthday contact',
+                  ),
+                  enabled: emailAvailable,
+                  onTap: emailAvailable
+                      ? () => Navigator.pop(
+                            sheetContext,
+                            _BirthdayWishChannel.email,
+                          )
+                      : null,
+                ),
+                ListTile(
+                  leading: Icon(Icons.ios_share_rounded, color: colors.primary),
+                  title: const Text('Other apps'),
+                  subtitle: const Text('Choose another messaging app'),
+                  onTap: () => Navigator.pop(
+                    sheetContext,
+                    _BirthdayWishChannel.other,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
+
+    if (channel == null || !context.mounted) return;
+
+    if (channel == _BirthdayWishChannel.other) {
+      await SharePlus.instance.share(ShareParams(text: message));
+      return;
+    }
+
+    final Uri uri;
+    final channelName =
+        channel == _BirthdayWishChannel.whatsapp ? 'WhatsApp' : 'email app';
+    if (channel == _BirthdayWishChannel.whatsapp) {
+      final digits = contact.phoneNumber.replaceAll(RegExp(r'\D'), '');
+      uri = Uri.https('wa.me', '/$digits', {'text': message});
+    } else {
+      uri = Uri(
+        scheme: 'mailto',
+        path: contact.email.trim(),
+        queryParameters: {
+          'subject': 'Happy Birthday, ${contact.name}!',
+          'body': message,
+        },
+      );
+    }
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open $channelName')),
+        );
+      }
+    } catch (error, stackTrace) {
+      debugPrint(
+          'Could not open birthday wish in $channelName: $error\n$stackTrace');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open $channelName: $error')),
+        );
+      }
+    }
   }
 
   Future<void> _shareBirthdayList(
@@ -2255,12 +2423,18 @@ class _BirthdayInput extends StatelessWidget {
   final String label;
   final String hint;
   final IconData icon;
+  final TextInputType keyboardType;
+  final TextCapitalization textCapitalization;
+  final bool autocorrect;
 
   const _BirthdayInput({
     required this.controller,
     required this.label,
     required this.hint,
     required this.icon,
+    this.keyboardType = TextInputType.text,
+    this.textCapitalization = TextCapitalization.words,
+    this.autocorrect = true,
   });
 
   @override
@@ -2269,7 +2443,9 @@ class _BirthdayInput extends StatelessWidget {
 
     return TextField(
       controller: controller,
-      textCapitalization: TextCapitalization.words,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      autocorrect: autocorrect,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
