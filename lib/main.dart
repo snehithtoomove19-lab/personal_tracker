@@ -364,12 +364,13 @@ class _RootShellState extends State<RootShell> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colors.surfaceContainerLowest,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: colors.surfaceContainerLowest,
+        backgroundColor: theme.scaffoldBackgroundColor,
         titleSpacing: 18,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

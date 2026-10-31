@@ -166,7 +166,7 @@ class TasksScreen extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom + 110;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       // ======================================================================
       // FAB

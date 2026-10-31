@@ -56,7 +56,7 @@ class _AddGoalScreenState extends State<AddGoalScreen> {
     final bool completed = progress >= 100;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         title: Text(

@@ -20,5 +20,29 @@ void main() {
     expect(light.navigationBarTheme.height, 78);
     expect(dark.navigationBarTheme.height, 78);
     expect(light.cardTheme.shape, isA<RoundedRectangleBorder>());
+    expect(light.scaffoldBackgroundColor, kLightBackground);
+    expect(dark.scaffoldBackgroundColor, kDarkBackground);
+    expect(
+      light.colorScheme.surfaceContainerLowest,
+      buildLightTheme().colorScheme.surfaceContainerLowest,
+    );
+  });
+
+  test('theme presets keep the same neutral surfaces and app background', () {
+    for (final preset in AppThemePreset.values) {
+      final light = buildAppTheme(preset: preset, darkMode: false);
+      final dark = buildAppTheme(preset: preset, darkMode: true);
+
+      expect(light.scaffoldBackgroundColor, kLightBackground);
+      expect(dark.scaffoldBackgroundColor, kDarkBackground);
+      expect(
+        light.colorScheme.surface,
+        buildLightTheme().colorScheme.surface,
+      );
+      expect(
+        dark.colorScheme.surface,
+        buildDarkTheme().colorScheme.surface,
+      );
+    }
   });
 }

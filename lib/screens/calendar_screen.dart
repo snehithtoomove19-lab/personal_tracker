@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../models/birthday_contact.dart';
 import '../services/app_scope.dart';
 import '../utils/formatters.dart';
 import '../models/mood_entry.dart';
@@ -26,6 +27,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   bool _isToday(DateTime date) {
     return _sameDay(date, DateTime.now());
+  }
+
+  bool _birthdayOccursOn(DateTime date, DateTime birthday) {
+    final isLeapYear =
+        date.year % 4 == 0 && (date.year % 100 != 0 || date.year % 400 == 0);
+    final birthdayDay =
+        birthday.month == DateTime.february && birthday.day == 29 && !isLeapYear
+            ? 28
+            : birthday.day;
+
+    return date.month == birthday.month && date.day == birthdayDay;
   }
 
   void _previousMonth() {
@@ -91,6 +103,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     final dayMood = app.moodForDay(_selected);
 
+    final dayBirthdays = app.birthdayContacts
+        .where(
+          (contact) => _birthdayOccursOn(_selected, contact.date),
+        )
+        .toList();
+    final isMyBirthday =
+        app.birthday != null && _birthdayOccursOn(_selected, app.birthday!);
+
     final dayGoals = app.goals
         .where(
           (g) =>
@@ -116,10 +136,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final totalItems = dayTasks.length +
         dayGoals.length +
         dayNotes.length +
+        dayBirthdays.length +
+        (isMyBirthday ? 1 : 0) +
         (dayMood != null ? 1 : 0);
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
         child: ListView(
@@ -198,6 +220,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
             const SizedBox(height: 13),
 
+            if (isMyBirthday || dayBirthdays.isNotEmpty) ...[
+              SectionCard(
+                title: 'Birthdays',
+                child: _buildBirthdaysContent(
+                  context,
+                  dayBirthdays,
+                  isMyBirthday,
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+
             // ==========================================================
             // MOOD
             // ==========================================================
@@ -218,7 +252,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             // ==========================================================
 
             SectionCard(
-              title: 'Tasks',
+              title: 'Tasks & reminders',
               child: _buildTasksContent(
                 context,
                 dayTasks,
@@ -543,6 +577,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
       (n) => _sameDay(n.createdAt, date),
     );
 
+    final hasBirthday =
+        (app.birthday != null && _birthdayOccursOn(date, app.birthday!)) ||
+            app.birthdayContacts.any(
+              (contact) => _birthdayOccursOn(date, contact.date),
+            );
+
     final mood = app.moodForDay(date);
 
     return GestureDetector(
@@ -598,15 +638,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 color: isSelected
                     ? colors.onPrimary
                     : moodOptionFor(mood.mood).color,
-              )
-            else
-              _buildEventDots(
-                context,
-                hasTask: hasTask,
-                hasGoal: hasGoal,
-                hasNote: hasNote,
-                selected: isSelected,
               ),
+            _buildEventDots(
+              context,
+              hasTask: hasTask,
+              hasGoal: hasGoal,
+              hasNote: hasNote,
+              hasBirthday: hasBirthday,
+              selected: isSelected,
+            ),
           ],
         ),
       ),
@@ -618,11 +658,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
     required bool hasTask,
     required bool hasGoal,
     required bool hasNote,
+    required bool hasBirthday,
     required bool selected,
   }) {
     final colors = Theme.of(context).colorScheme;
 
     final dotColors = <Color>[];
+
+    if (hasBirthday) {
+      dotColors.add(selected ? colors.onPrimary : colors.tertiary);
+    }
 
     if (hasTask) {
       dotColors.add(
@@ -668,6 +713,46 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildBirthdaysContent(
+    BuildContext context,
+    List<BirthdayContact> contacts,
+    bool isMyBirthday,
+  ) {
+    final colors = Theme.of(context).colorScheme;
+    final children = <Widget>[];
+
+    if (isMyBirthday) {
+      children.add(
+        const ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 4),
+          leading: Icon(Icons.cake_rounded),
+          title: Text(
+            'Your birthday',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ),
+      );
+    }
+
+    children.addAll(
+      contacts.map(
+        (contact) => ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+          leading: Icon(Icons.cake_outlined, color: colors.tertiary),
+          title: Text(
+            contact.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          subtitle: Text(contact.relation),
+        ),
+      ),
+    );
+
+    return Column(children: children);
   }
 
   // ====================================================================
@@ -834,14 +919,28 @@ class _CalendarScreenState extends State<CalendarScreen> {
       return _emptyMessage(
         context,
         Icons.task_alt_rounded,
-        'No tasks due',
-        'You have no tasks scheduled for this day.',
+        'No tasks or reminders due',
+        'You have nothing scheduled for this day.',
       );
     }
 
     return Column(
       children: tasks.map<Widget>((t) {
         final completed = t.completed;
+        final dueTime = t.dueTimeMinutes;
+        final subtitleParts = <String>[];
+        if (dueTime != null) {
+          final hour = dueTime ~/ 60;
+          final minute = dueTime % 60;
+          final period = hour >= 12 ? 'PM' : 'AM';
+          final displayHour = hour % 12 == 0 ? 12 : hour % 12;
+          subtitleParts.add(
+            '$displayHour:${minute.toString().padLeft(2, '0')} $period',
+          );
+        }
+        if (t.reminderEnabled) {
+          subtitleParts.add('Reminder on');
+        }
 
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(
@@ -863,6 +962,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
               decoration: completed ? TextDecoration.lineThrough : null,
             ),
           ),
+          subtitle: subtitleParts.isEmpty
+              ? null
+              : Text(
+                  subtitleParts.join(' · '),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: colors.onSurfaceVariant,
+                      ),
+                ),
         );
       }).toList(),
     );

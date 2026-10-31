@@ -84,43 +84,48 @@ class _MoodScreenState extends State<MoodScreen> {
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
-    return ListView(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        14,
-        16,
-        20 + bottomInset,
-      ),
-      children: [
-        _buildHeader(
-          context,
-          todayMood,
-        ),
-        const SizedBox(height: 16),
-        if (missedDays.isNotEmpty)
-          _buildMissedDaysCard(
-            context,
-            missedDays.length,
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            16,
+            14,
+            16,
+            20 + bottomInset,
           ),
-        if (missedDays.isNotEmpty) const SizedBox(height: 14),
-        _buildTodayMoodCard(
-          context,
-          todayMood,
+          children: [
+            _buildHeader(
+              context,
+              todayMood,
+            ),
+            const SizedBox(height: 16),
+            if (missedDays.isNotEmpty)
+              _buildMissedDaysCard(
+                context,
+                missedDays.length,
+              ),
+            if (missedDays.isNotEmpty) const SizedBox(height: 14),
+            _buildTodayMoodCard(
+              context,
+              todayMood,
+            ),
+            const SizedBox(height: 14),
+            _buildCalendarCard(
+              context,
+              app,
+              isCurrentMonth,
+            ),
+            const SizedBox(height: 14),
+            _buildSummaryCard(
+              context,
+              summary,
+              totalLogged,
+              colors,
+            ),
+          ],
         ),
-        const SizedBox(height: 14),
-        _buildCalendarCard(
-          context,
-          app,
-          isCurrentMonth,
-        ),
-        const SizedBox(height: 14),
-        _buildSummaryCard(
-          context,
-          summary,
-          totalLogged,
-          colors,
-        ),
-      ],
+      ),
     );
   }
 

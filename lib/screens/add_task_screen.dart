@@ -354,10 +354,9 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: _buildAppBar(context),
       body: SafeArea(
         child: Form(
@@ -396,12 +395,13 @@ class _AddTaskScreenState extends State<AddTaskScreen>
   }
 
   PreferredSizeWidget _buildAppBar(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
 
     return AppBar(
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       titleSpacing: 20,
       leading: IconButton(

@@ -36,8 +36,6 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   String _selectedFilter = 'All';
   String _sortMode = 'Soonest';
 
-  bool _darkMode = false;
-
   final List<String> _filters = [
     'All',
     'Today',
@@ -123,18 +121,7 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
-
-    final baseTheme = Theme.of(context);
-
-    final theme = _darkMode
-        ? ThemeData(
-            brightness: Brightness.dark,
-            useMaterial3: true,
-            colorSchemeSeed: const Color(0xFFE85D75),
-            scaffoldBackgroundColor: const Color(0xFF0B0B10),
-          )
-        : baseTheme;
-
+    final theme = Theme.of(context);
     final colors = theme.colorScheme;
 
     final now = DateTime.now();
@@ -180,10 +167,11 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
     return Theme(
       data: theme,
       child: Scaffold(
-        backgroundColor: colors.surface,
+        backgroundColor: theme.scaffoldBackgroundColor,
         appBar: _buildAppBar(
           context,
           colors,
+          app,
         ),
         floatingActionButton: _buildFab(
           context,
@@ -351,11 +339,12 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
   PreferredSizeWidget _buildAppBar(
     BuildContext context,
     ColorScheme colors,
+    AppState app,
   ) {
     return AppBar(
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: colors.surface.withValues(alpha: .94),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       titleSpacing: 18,
       title: Column(
@@ -383,13 +372,11 @@ class _BirthdayContactsScreenState extends State<BirthdayContactsScreen>
       ),
       actions: [
         _AppBarButton(
-          icon: _darkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-          tooltip: _darkMode ? 'Switch to light mode' : 'Switch to dark mode',
-          onPressed: () {
-            setState(() {
-              _darkMode = !_darkMode;
-            });
-          },
+          icon:
+              app.darkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+          tooltip:
+              app.darkMode ? 'Switch to light mode' : 'Switch to dark mode',
+          onPressed: () => app.setDarkMode(!app.darkMode),
         ),
         const SizedBox(width: 4),
         _AppBarButton(

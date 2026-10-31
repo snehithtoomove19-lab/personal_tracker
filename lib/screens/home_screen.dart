@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
     final todaySignals = app.todaySignals;
 
     return Scaffold(
-      backgroundColor: colors.surfaceContainerLowest,
+      backgroundColor: theme.scaffoldBackgroundColor,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => showQuickAddSheet(context),
         icon: const Icon(Icons.add_rounded),

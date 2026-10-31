@@ -108,11 +108,11 @@ class RemindersScreen extends StatelessWidget {
         upcomingBirthdayContacts.length;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: colors.surface,
+        backgroundColor: theme.scaffoldBackgroundColor,
         titleSpacing: 20,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,

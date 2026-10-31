@@ -34,8 +34,6 @@ class _NotesScreenState extends State<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final app = AppScope.of(context);
     final query = _query.trim().toLowerCase();
 
@@ -62,7 +60,7 @@ class _NotesScreenState extends State<NotesScreen> {
     final bottomInset = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       floatingActionButton: _buildFloatingActionButton(context),
       body: SafeArea(
         bottom: false,

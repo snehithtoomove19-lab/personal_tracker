@@ -85,11 +85,10 @@ class _LockScreenState extends State<LockScreen>
     }
 
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final app = AppScope.of(context);
 
     return Scaffold(
-      backgroundColor: colors.surface,
+      backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: GestureDetector(
