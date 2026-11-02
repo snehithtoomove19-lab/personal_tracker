@@ -126,17 +126,28 @@ class _AppRootState extends State<AppRoot> {
 
   @override
   Widget build(BuildContext context) {
-    return AppScope(
-      appState: appState,
-      child: MaterialApp(
-        title: 'Personal Tracker',
-        debugShowCheckedModeBanner: false,
-        navigatorKey: appNavigatorKey,
-        scaffoldMessengerKey: appMessengerKey,
-        theme: buildLightTheme(),
-        home: _AppHome(
-          appState: appState,
-          startupError: _startupError,
+    return AnimatedBuilder(
+      animation: appState,
+      builder: (context, _) => AppScope(
+        appState: appState,
+        child: MaterialApp(
+          title: 'Personal Tracker',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: appNavigatorKey,
+          scaffoldMessengerKey: appMessengerKey,
+          theme: buildAppTheme(
+            preset: appState.themePreset,
+            darkMode: false,
+          ),
+          darkTheme: buildAppTheme(
+            preset: appState.themePreset,
+            darkMode: true,
+          ),
+          themeMode: appState.darkMode ? ThemeMode.dark : ThemeMode.light,
+          home: _AppHome(
+            appState: appState,
+            startupError: _startupError,
+          ),
         ),
       ),
     );
@@ -181,13 +192,7 @@ class _AppHome extends StatelessWidget {
                   statusBarColor: Colors.transparent,
                   statusBarIconBrightness: Brightness.dark,
                 ),
-          child: Theme(
-            data: buildAppTheme(
-              preset: appState.themePreset,
-              darkMode: appState.darkMode,
-            ),
-            child: content,
-          ),
+          child: content,
         );
       },
     );
