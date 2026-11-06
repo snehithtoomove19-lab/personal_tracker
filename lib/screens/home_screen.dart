@@ -11,6 +11,7 @@ import 'monthly_review_screen.dart';
 import 'mood_screen.dart';
 import 'present_mode_screen.dart';
 import 'reminders_screen.dart';
+import 'insights_screen.dart';
 import 'tasks_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -122,14 +123,22 @@ class HomeScreen extends StatelessWidget {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const PresentModeScreen(),
+                    builder: (_) => const InsightsScreen(),
                   ),
                 ),
                 icon: const Icon(Icons.arrow_forward_rounded),
               ),
             ),
             const SizedBox(height: 10),
-            _DailySignalsCard(signals: todaySignals),
+            _DailySignalsCard(
+              signals: todaySignals,
+              onOpenInsights: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const InsightsScreen(),
+                ),
+              ),
+            ),
             const SizedBox(height: 22),
             _SectionHeading(
               title: 'A few things to focus on',
@@ -418,53 +427,176 @@ class _MoodCard extends StatelessWidget {
   }
 }
 
-class _DailySignalsCard extends StatelessWidget {
-  const _DailySignalsCard({required this.signals});
+class _DailySignalsCard extends StatefulWidget {
+  const _DailySignalsCard({
+    required this.signals,
+    required this.onOpenInsights,
+  });
 
   final DaySignals? signals;
+  final VoidCallback onOpenInsights;
+
+  @override
+  State<_DailySignalsCard> createState() => _DailySignalsCardState();
+}
+
+class _DailySignalsCardState extends State<_DailySignalsCard> {
+  bool _savingWater = false;
+
+  Future<void> _addWater(int amountMl) async {
+    if (_savingWater) return;
+    final app = AppScope.of(context);
+    final current = app.todaySignals;
+    final now = DateTime.now();
+
+    setState(() => _savingWater = true);
+    try {
+      await app.saveDaySignals(
+        current == null
+            ? DaySignals(
+                dateKey: daySignalsKey(now),
+                waterMl: amountMl,
+              )
+            : current.copyWith(
+                waterMl: (current.waterMl ?? 0) + amountMl,
+              ),
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Could not save water intake: $error\n$stackTrace');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save water intake: $error')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _savingWater = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Card(
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: _SignalMetric(
-                icon: Icons.water_drop_outlined,
-                label: 'Water',
-                value: signals?.waterMl == null
-                    ? 'Not logged'
-                    : '${signals?.waterMl} ml',
-                color: colors.tertiary,
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: widget.onOpenInsights,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final metricWidth = (constraints.maxWidth - 14) / 2;
+                  return Wrap(
+                    spacing: 14,
+                    runSpacing: 18,
+                    children: [
+                      SizedBox(
+                        width: metricWidth,
+                        child: _SignalMetric(
+                          icon: Icons.water_drop_outlined,
+                          label: 'Water',
+                          value: widget.signals?.waterMl == null
+                              ? 'Not logged'
+                              : '${widget.signals!.waterMl} ml',
+                          color: colors.tertiary,
+                        ),
+                      ),
+                      SizedBox(
+                        width: metricWidth,
+                        child: _SignalMetric(
+                          icon: Icons.directions_run_rounded,
+                          label: 'Movement',
+                          value: widget.signals?.workoutMinutes == null
+                              ? 'Not logged'
+                              : '${widget.signals!.workoutMinutes} min',
+                          color: colors.primary,
+                        ),
+                      ),
+                      SizedBox(
+                        width: metricWidth,
+                        child: _SignalMetric(
+                          icon: Icons.bedtime_outlined,
+                          label: 'Sleep quality',
+                          value: widget.signals?.sleepQuality == null
+                              ? 'Not logged'
+                              : '${widget.signals!.sleepQuality}/5',
+                          color: colors.secondary,
+                        ),
+                      ),
+                      SizedBox(
+                        width: metricWidth,
+                        child: _SignalMetric(
+                          icon: Icons.center_focus_strong_rounded,
+                          label: 'Focus score',
+                          value: widget.signals?.focusScore == null
+                              ? 'Not logged'
+                              : '${widget.signals!.focusScore}/10',
+                          color: colors.primary,
+                        ),
+                      ),
+                      SizedBox(
+                        width: metricWidth,
+                        child: _SignalMetric(
+                          icon: Icons.work_outline_rounded,
+                          label: 'Deep work',
+                          value: widget.signals?.deepWorkCompleted == null
+                              ? 'Not logged'
+                              : widget.signals!.deepWorkCompleted!
+                                  ? 'Completed'
+                                  : 'Not completed',
+                          color: colors.tertiary,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              child: _SignalMetric(
-                icon: Icons.directions_run_rounded,
-                label: 'Movement',
-                value: signals?.workoutMinutes == null
-                    ? 'Not logged'
-                    : '${signals?.workoutMinutes} min',
-                color: colors.primary,
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ActionChip(
+                    avatar: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('250 ml water'),
+                    onPressed: _savingWater ? null : () => _addWater(250),
+                  ),
+                  ActionChip(
+                    avatar: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('500 ml water'),
+                    onPressed: _savingWater ? null : () => _addWater(500),
+                  ),
+                  ActionChip(
+                    avatar: const Icon(Icons.edit_note_rounded, size: 18),
+                    label: const Text('Log more'),
+                    onPressed: widget.onOpenInsights,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 6),
-            Expanded(
-              child: _SignalMetric(
-                icon: Icons.bedtime_outlined,
-                label: 'Sleep',
-                value: signals?.sleepQuality == null
-                    ? 'Not logged'
-                    : '${signals?.sleepQuality}/5',
-                color: colors.secondary,
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'View focus & energy insights',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: colors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 15,
+                    color: colors.primary,
+                  ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

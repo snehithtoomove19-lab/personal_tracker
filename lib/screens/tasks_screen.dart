@@ -44,19 +44,11 @@ IconData priorityIcon(TaskPriority priority) {
 }
 
 List<AppTask> _sortByPriority(List<AppTask> tasks) {
-  final order = <TaskPriority, int>{
-    TaskPriority.high: 0,
-    TaskPriority.medium: 1,
-    TaskPriority.low: 2,
-  };
-
   final copy = [...tasks];
 
   copy.sort((a, b) {
-    final priorityA = order[a.priority] ?? 99;
-    final priorityB = order[b.priority] ?? 99;
-
-    final priorityComparison = priorityA.compareTo(priorityB);
+    final priorityComparison =
+        _priorityRank(a.priority).compareTo(_priorityRank(b.priority));
 
     if (priorityComparison != 0) {
       return priorityComparison;
@@ -92,6 +84,17 @@ String _formatMinutes(int minutes) {
 
 bool _sameDay(DateTime a, DateTime b) {
   return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+int _priorityRank(TaskPriority priority) {
+  switch (priority) {
+    case TaskPriority.high:
+      return 0;
+    case TaskPriority.medium:
+      return 1;
+    case TaskPriority.low:
+      return 2;
+  }
 }
 
 // ============================================================================
@@ -144,9 +147,7 @@ class TasksScreen extends StatelessWidget {
         return dateComparison;
       }
 
-      return priorityColor(a.priority)
-          .toARGB32()
-          .compareTo(priorityColor(b.priority).toARGB32());
+      return _priorityRank(a.priority).compareTo(_priorityRank(b.priority));
     });
 
     final noDate = _sortByPriority(

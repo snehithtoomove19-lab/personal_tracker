@@ -895,10 +895,19 @@ class AppState extends ChangeNotifier {
           dueDate: nextDue,
           dueTimeMinutes: task.dueTimeMinutes,
           createdAt: DateTime.now(),
+          pinned: task.pinned,
           priority: task.priority,
           category: task.category,
           repeat: task.repeat,
           reminderEnabled: task.reminderEnabled,
+          subtasks: task.subtasks
+              .map(
+                (subtask) => SubTask(
+                  id: newId(),
+                  title: subtask.title,
+                ),
+              )
+              .toList(),
         );
         tasks.insert(idx, nextTask);
       }
@@ -915,7 +924,15 @@ class AppState extends ChangeNotifier {
       case TaskRepeat.weekly:
         return from.add(const Duration(days: 7));
       case TaskRepeat.monthly:
-        return DateTime(from.year, from.month + 1, from.day);
+        final nextMonth = DateTime(from.year, from.month + 1);
+        final lastDayOfNextMonth =
+            DateTime(nextMonth.year, nextMonth.month + 1, 0).day;
+        final lastDayOfCurrentMonth =
+            DateTime(from.year, from.month + 1, 0).day;
+        final day = from.day == lastDayOfCurrentMonth
+            ? lastDayOfNextMonth
+            : from.day.clamp(1, lastDayOfNextMonth).toInt();
+        return DateTime(nextMonth.year, nextMonth.month, day);
       case TaskRepeat.none:
         return from;
     }
@@ -1296,7 +1313,8 @@ class AppState extends ChangeNotifier {
     final activeDays = <String>{
       ...monthSignals.map((signal) => signal.dateKey),
       ...moods
-          .where((mood) => mood.date.year == m.year && mood.date.month == m.month)
+          .where(
+              (mood) => mood.date.year == m.year && mood.date.month == m.month)
           .map((mood) => daySignalsKey(mood.date)),
     }.length;
     final sleepEntries = monthSignals
@@ -1310,14 +1328,15 @@ class AppState extends ChangeNotifier {
 
     return {
       'moodSummary': moodSummary,
-      'moodCheckIns': moodSummary.values.fold<int>(0, (sum, count) => sum + count),
+      'moodCheckIns':
+          moodSummary.values.fold<int>(0, (sum, count) => sum + count),
       'tasksCompleted': tasksCompleted,
       'goalsAchieved': goalsAchieved,
       'activeDays': activeDays,
-      'workoutMinutes':
-          monthSignals.fold<int>(0, (sum, signal) => sum + (signal.workoutMinutes ?? 0)),
-      'waterMl':
-          monthSignals.fold<int>(0, (sum, signal) => sum + (signal.waterMl ?? 0)),
+      'workoutMinutes': monthSignals.fold<int>(
+          0, (sum, signal) => sum + (signal.workoutMinutes ?? 0)),
+      'waterMl': monthSignals.fold<int>(
+          0, (sum, signal) => sum + (signal.waterMl ?? 0)),
       'averageSleepQuality': _averageSignal(sleepEntries),
       'averageFocusScore': _averageSignal(focusEntries),
     };
@@ -1383,7 +1402,5 @@ class LaunchDigest {
   });
 
   bool get hasAnything =>
-      overdueTaskCount > 0 ||
-      todayTaskCount > 0 ||
-      !moodLoggedToday;
+      overdueTaskCount > 0 || todayTaskCount > 0 || !moodLoggedToday;
 }
