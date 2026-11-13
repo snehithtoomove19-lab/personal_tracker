@@ -376,27 +376,46 @@ class _RootShellState extends State<RootShell> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: theme.scaffoldBackgroundColor,
-        titleSpacing: 18,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
+        titleSpacing: 14,
+        title: Row(
           children: [
-            Text(
-              'YOUR LIFE, IN SYNC',
-              style: TextStyle(
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: colors.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.spa_rounded,
                 color: colors.primary,
-                fontSize: 9,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.2,
+                size: 20,
               ),
             ),
-            const SizedBox(height: 2),
-            Text(
-              _titles[_index],
-              style: const TextStyle(
-                fontSize: 21,
-                fontWeight: FontWeight.w900,
-              ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'PERSONAL TRACKER',
+                  style: TextStyle(
+                    color: colors.primary,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  _titles[_index],
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -462,7 +481,7 @@ class _RootShellState extends State<RootShell> {
           NavigationDestination(
               icon: Icon(Icons.home_outlined),
               selectedIcon: Icon(Icons.home),
-              label: 'Home'),
+              label: 'Today'),
           NavigationDestination(
               icon: Icon(Icons.insights_outlined),
               selectedIcon: Icon(Icons.insights_rounded),
@@ -478,7 +497,7 @@ class _RootShellState extends State<RootShell> {
           NavigationDestination(
               icon: Icon(Icons.person_outline),
               selectedIcon: Icon(Icons.person),
-              label: 'Profile'),
+              label: 'You'),
         ],
       ),
     );

@@ -16,8 +16,7 @@ class ParsedVoiceLog {
     this.moodKey,
   });
 
-  bool get hasEntries =>
-      waterMl > 0 || workoutMinutes > 0 || moodKey != null;
+  bool get hasEntries => waterMl > 0 || workoutMinutes > 0 || moodKey != null;
 
   static ParsedVoiceLog parse(String text) {
     final normalized = text.trim();

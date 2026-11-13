@@ -392,7 +392,6 @@ class ProfileScreen extends StatelessWidget {
       app.setBirthday(picked);
     }
   }
-
 }
 
 // =================================================================

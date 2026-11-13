@@ -5,7 +5,24 @@
   Mood check-ins, tasks, goals, notes, and personal insights in one private, offline-first Flutter app.
 </p>
 
+<p align="center">
+  <a href="https://github.com/snehithtoomove19-lab/personal_tracker/actions/workflows/flutter.yml"><img src="https://github.com/snehithtoomove19-lab/personal_tracker/actions/workflows/flutter.yml/badge.svg" alt="Flutter CI"></a>
+  <img src="https://img.shields.io/badge/Flutter-stable-02569B?logo=flutter&logoColor=white" alt="Flutter stable">
+  <img src="https://img.shields.io/badge/Language-Dart-0175C2?logo=dart&logoColor=white" alt="Dart">
+  <img src="https://img.shields.io/badge/License-not%20specified-lightgrey" alt="License not specified">
+</p>
+
 Personal Tracker helps you notice how you feel, choose what matters, and keep moving at your own pace. Your records stay on your device by default; cloud backup and AI features are optional and require your own account or API key.
+
+## Contents
+
+- [Features](#features)
+- [Privacy](#privacy-by-default)
+- [Get started](#get-started)
+- [Cloud backup setup](#optional-supabase-cloud-backup)
+- [Tech stack](#tech-stack)
+- [Contributing](#contributing)
+- [Tests and analysis](#tests-and-analysis)
 
 ## What you can do
 
@@ -53,8 +70,6 @@ On a fresh checkout that needs platform scaffolding regenerated, the one-time se
 5. Choose **Upload this device** or **Restore cloud backup**. Upload replaces that account's previous snapshot; restore replaces local tracker records.
 
 Sync stores one versioned JSON backup per authenticated user. It is manual, and restore requires confirmation. Export a local backup before restoring if you need to keep the current local records. Never put a database password, service-role key, or other secret in the client.
-
-The app does not connect to email, Google Calendar, financial accounts, or health providers. Present mode works with records already stored in the app; it does not provide medical advice.
 
 ## Features
 
@@ -116,28 +131,43 @@ Expense tracking and SMS detection/import have been removed. Older transaction r
 
 Microphone permission is requested only when starting voice input. The device's speech-recognition service may require network access; voice input is optional.
 
+## Contributing
+
+Contributions and bug reports are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Use the repository's issue forms for reproducible bug reports or feature ideas, and remove personal data from logs and screenshots.
+
+## Tests and analysis
+
+Run the same checks used by GitHub Actions before submitting a change:
+
+```bash
+flutter pub get
+dart format --set-exit-if-changed lib test
+flutter analyze
+flutter test
+```
+
+GitHub Actions runs formatting, static analysis, and tests for pushes and pull requests to `main`.
+
 ## Project Structure
 
 ```
 lib/
   main.dart                  # App entry, navigation shell, startup logic
-  theme.dart                 # Light/dark Material 3 themes
+  theme.dart                 # Shared light/dark Material 3 design system
   models/                    # MoodEntry, Task, Note, Goal, daily signals, ChatMessage
   services/
-    storage_service.dart     # SharedPreferences read/write helpers
     app_state.dart            # Single source of truth (ChangeNotifier)
-    supabase_sync_service.dart # Optional, explicit per-user cloud backups
-    app_scope.dart            # InheritedNotifier so any screen can read state
-    ai_service.dart           # OpenAI API integration
-    focus_insights_service.dart # Transparent capacity estimate and signal comparisons
-    task_reminder_service.dart  # Local, sound-enabled task notifications
-  screens/                   # Today, mood, tasks, goals, reminders, settings, and more
-  widgets/                   # Reusable UI components
-  utils/formatters.dart      # Date and number formatting helpers
+    app_scope.dart            # Shared state access for screens and widgets
+    storage_service.dart      # Local persistence
+    ai_service.dart           # Optional AI integration
+    focus_insights_service.dart # Capacity estimate and signal comparisons
+    supabase_sync_service.dart # Optional, manual per-user backups
+    task_reminder_service.dart  # Local task notifications
+  screens/                    # App pages and flows
+  widgets/                    # Shared UI components
+  utils/                      # Navigation and formatting helpers
+supabase/migrations/          # Database schema and row-level security
+test/                         # Unit and widget tests
 ```
 
-## Run tests
-
-```bash
-flutter test
-```
+This repository does not currently declare a software license. Ask the maintainer before reusing or redistributing the code.

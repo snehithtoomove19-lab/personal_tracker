@@ -19,7 +19,10 @@ void main() {
     expect(dark.brightness, Brightness.dark);
     expect(light.navigationBarTheme.height, 78);
     expect(dark.navigationBarTheme.height, 78);
+    expect(light.appBarTheme.toolbarHeight, 68);
+    expect(dark.appBarTheme.toolbarHeight, 68);
     expect(light.cardTheme.shape, isA<RoundedRectangleBorder>());
+    expect(light.navigationBarTheme.indicatorShape, isA<StadiumBorder>());
     expect(light.scaffoldBackgroundColor, kLightBackground);
     expect(dark.scaffoldBackgroundColor, kDarkBackground);
     expect(
@@ -42,6 +45,26 @@ void main() {
       expect(
         dark.colorScheme.surface,
         buildDarkTheme().colorScheme.surface,
+      );
+      expect(light.tabBarTheme.indicatorColor, light.colorScheme.primary);
+      expect(dark.tabBarTheme.indicatorColor, dark.colorScheme.primary);
+      expect(
+        light.datePickerTheme.headerBackgroundColor,
+        light.colorScheme.primaryContainer,
+      );
+      expect(
+        dark.datePickerTheme.headerForegroundColor,
+        dark.colorScheme.onPrimaryContainer,
+      );
+      expect(light.sliderTheme.activeTrackColor, light.colorScheme.primary);
+      expect(dark.sliderTheme.activeTrackColor, dark.colorScheme.primary);
+      expect(
+        light.inputDecorationTheme.focusedBorder?.borderSide.color,
+        light.colorScheme.primary,
+      );
+      expect(
+        dark.inputDecorationTheme.focusedBorder?.borderSide.color,
+        dark.colorScheme.primary,
       );
     }
   });

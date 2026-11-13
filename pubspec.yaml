@@ -1,5 +1,5 @@
 name: personal_tracker
-description: A personal mood, habits, tasks, notes & goals tracker built with Flutter.
+description: A private, offline-first mood, tasks, notes, goals, and daily insights tracker built with Flutter.
 publish_to: 'none'
 version: 1.0.0+1
 

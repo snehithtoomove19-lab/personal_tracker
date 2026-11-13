@@ -351,6 +351,49 @@ ThemeData buildAppTheme({
         side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
       ),
     ),
+    listTileTheme: base.listTileTheme.copyWith(iconColor: scheme.primary),
+    tabBarTheme: base.tabBarTheme.copyWith(
+      indicatorColor: scheme.primary,
+      labelColor: scheme.primary,
+      unselectedLabelColor: scheme.onSurfaceVariant,
+    ),
+    sliderTheme: base.sliderTheme.copyWith(
+      activeTrackColor: scheme.primary,
+      thumbColor: scheme.primary,
+      overlayColor: scheme.primary.withValues(alpha: 0.14),
+    ),
+    inputDecorationTheme: base.inputDecorationTheme.copyWith(
+      fillColor: scheme.surfaceContainerLow,
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: scheme.primary, width: 1.6),
+      ),
+    ),
+    chipTheme: base.chipTheme.copyWith(
+      selectedColor: scheme.primaryContainer,
+    ),
+    datePickerTheme: base.datePickerTheme.copyWith(
+      headerBackgroundColor: scheme.primaryContainer,
+      headerForegroundColor: scheme.onPrimaryContainer,
+    ),
+    checkboxTheme: base.checkboxTheme.copyWith(
+      fillColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? scheme.primary
+            : Colors.transparent,
+      ),
+      checkColor: WidgetStatePropertyAll(scheme.onPrimary),
+    ),
+    switchTheme: base.switchTheme.copyWith(
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? scheme.onPrimary : null,
+      ),
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? scheme.primary : null,
+      ),
+    ),
     splashColor: scheme.primary.withValues(alpha: 0.12),
     focusColor: scheme.primary.withValues(alpha: 0.12),
     hoverColor: scheme.primary.withValues(alpha: 0.08),
@@ -389,6 +432,7 @@ ThemeData buildAppTheme({
       elevation: base.navigationBarTheme.elevation,
       height: base.navigationBarTheme.height,
       labelBehavior: base.navigationBarTheme.labelBehavior,
+      indicatorShape: base.navigationBarTheme.indicatorShape,
       indicatorColor: scheme.primary.withValues(alpha: 0.15),
       iconTheme: WidgetStateProperty.resolveWith(
         (states) => IconThemeData(
@@ -424,6 +468,28 @@ ThemeData buildLightTheme() {
   final scheme = ColorScheme.fromSeed(
     seedColor: kPrimaryColor,
     brightness: Brightness.light,
+  ).copyWith(
+    primary: kPrimaryColor,
+    onPrimary: Colors.white,
+    primaryContainer: const Color(0xFFD8F1EC),
+    onPrimaryContainer: const Color(0xFF063D39),
+    secondary: const Color(0xFFE08A2E),
+    onSecondary: Colors.white,
+    secondaryContainer: const Color(0xFFFFE8C7),
+    onSecondaryContainer: const Color(0xFF4C2A00),
+    tertiary: const Color(0xFFE85D75),
+    onTertiary: Colors.white,
+    surface: kLightSurface,
+    onSurface: const Color(0xFF181A20),
+    surfaceContainerLowest: Colors.white,
+    surfaceContainerLow: const Color(0xFFF8FBFA),
+    surfaceContainer: const Color(0xFFF0F5F4),
+    surfaceContainerHigh: const Color(0xFFE7EFED),
+    surfaceContainerHighest: const Color(0xFFDDE9E6),
+    outline: const Color(0xFFC7D6D2),
+    outlineVariant: const Color(0xFFDCE7E4),
+    error: kExpenseColor,
+    onError: Colors.white,
   );
 
   return ThemeData(
@@ -434,29 +500,7 @@ ThemeData buildLightTheme() {
     // COLOR SCHEME
     // --------------------------------------------------------------
 
-    colorScheme: scheme.copyWith(
-      primary: kPrimaryColor,
-      onPrimary: Colors.white,
-      primaryContainer: const Color(0xFFD8F1EC),
-      onPrimaryContainer: const Color(0xFF063D39),
-      secondary: const Color(0xFFE08A2E),
-      onSecondary: Colors.white,
-      secondaryContainer: const Color(0xFFFFE8C7),
-      onSecondaryContainer: const Color(0xFF4C2A00),
-      tertiary: const Color(0xFFE85D75),
-      onTertiary: Colors.white,
-      surface: kLightSurface,
-      onSurface: const Color(0xFF181A20),
-      surfaceContainerLowest: Colors.white,
-      surfaceContainerLow: const Color(0xFFF8FBFA),
-      surfaceContainer: const Color(0xFFF0F5F4),
-      surfaceContainerHigh: const Color(0xFFE7EFED),
-      surfaceContainerHighest: const Color(0xFFDDE9E6),
-      outline: const Color(0xFFC7D6D2),
-      outlineVariant: const Color(0xFFDCE7E4),
-      error: kExpenseColor,
-      onError: Colors.white,
-    ),
+    colorScheme: scheme,
 
     // --------------------------------------------------------------
     // SCAFFOLD
@@ -474,6 +518,8 @@ ThemeData buildLightTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
+      toolbarHeight: 68,
+      titleSpacing: 20,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: TextStyle(
         fontSize: 21,
@@ -496,6 +542,70 @@ ThemeData buildLightTheme() {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
         side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
+      ),
+    ),
+    listTileTheme: ListTileThemeData(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      minLeadingWidth: 24,
+      minVerticalPadding: 10,
+      iconColor: scheme.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+    ),
+    tabBarTheme: TabBarThemeData(
+      indicatorColor: scheme.primary,
+      dividerColor: Colors.transparent,
+      labelColor: scheme.primary,
+      unselectedLabelColor: scheme.onSurfaceVariant,
+      labelStyle: const TextStyle(fontWeight: FontWeight.w800),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+    ),
+    sliderTheme: SliderThemeData(
+      activeTrackColor: scheme.primary,
+      inactiveTrackColor: scheme.surfaceContainerHighest,
+      thumbColor: scheme.primary,
+      overlayColor: scheme.primary.withValues(alpha: 0.14),
+      trackHeight: 4,
+      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
+      overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+    ),
+    tooltipTheme: TooltipThemeData(
+      waitDuration: const Duration(milliseconds: 600),
+      showDuration: const Duration(seconds: 3),
+      decoration: BoxDecoration(
+        color: scheme.inverseSurface,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      textStyle: TextStyle(color: scheme.onInverseSurface, fontSize: 12),
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: scheme.surface,
+      headerBackgroundColor: scheme.primaryContainer,
+      headerForegroundColor: scheme.onPrimaryContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+    ),
+    timePickerTheme: TimePickerThemeData(
+      backgroundColor: scheme.surface,
+      dialBackgroundColor: scheme.surfaceContainer,
+      hourMinuteColor: scheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: scheme.surfaceContainerLow,
+      surfaceTintColor: Colors.transparent,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      textStyle: TextStyle(
+        color: scheme.onSurface,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
       ),
     ),
 
@@ -744,6 +854,7 @@ ThemeData buildLightTheme() {
       elevation: 0,
       height: 78,
       indicatorColor: kPrimaryColor.withValues(alpha: 0.15),
+      indicatorShape: const StadiumBorder(),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) {
@@ -923,6 +1034,26 @@ ThemeData buildDarkTheme() {
   final scheme = ColorScheme.fromSeed(
     seedColor: kPrimaryColor,
     brightness: Brightness.dark,
+  ).copyWith(
+    primary: const Color(0xFF8992F2),
+    onPrimary: const Color(0xFF171A48),
+    primaryContainer: const Color(0xFF3D458D),
+    onPrimaryContainer: const Color(0xFFE4E6FF),
+    secondary: const Color(0xFF9CA4F5),
+    onSecondary: const Color(0xFF171A48),
+    tertiary: const Color(0xFFC19BEA),
+    onTertiary: const Color(0xFF26183A),
+    surface: kDarkSurface,
+    onSurface: const Color(0xFFF0F0F5),
+    surfaceContainerLowest: const Color(0xFF101116),
+    surfaceContainerLow: const Color(0xFF17181E),
+    surfaceContainer: const Color(0xFF1B1D24),
+    surfaceContainerHigh: const Color(0xFF22242C),
+    surfaceContainerHighest: const Color(0xFF292B34),
+    outline: const Color(0xFF444650),
+    outlineVariant: const Color(0xFF30323A),
+    error: const Color(0xFFFF8075),
+    onError: const Color(0xFF3B0805),
   );
 
   return ThemeData(
@@ -933,27 +1064,7 @@ ThemeData buildDarkTheme() {
     // COLOR SCHEME
     // --------------------------------------------------------------
 
-    colorScheme: scheme.copyWith(
-      primary: const Color(0xFF8992F2),
-      onPrimary: const Color(0xFF171A48),
-      primaryContainer: const Color(0xFF3D458D),
-      onPrimaryContainer: const Color(0xFFE4E6FF),
-      secondary: const Color(0xFF9CA4F5),
-      onSecondary: const Color(0xFF171A48),
-      tertiary: const Color(0xFFC19BEA),
-      onTertiary: const Color(0xFF26183A),
-      surface: kDarkSurface,
-      onSurface: const Color(0xFFF0F0F5),
-      surfaceContainerLowest: const Color(0xFF101116),
-      surfaceContainerLow: const Color(0xFF17181E),
-      surfaceContainer: const Color(0xFF1B1D24),
-      surfaceContainerHigh: const Color(0xFF22242C),
-      surfaceContainerHighest: const Color(0xFF292B34),
-      outline: const Color(0xFF444650),
-      outlineVariant: const Color(0xFF30323A),
-      error: const Color(0xFFFF8075),
-      onError: const Color(0xFF3B0805),
-    ),
+    colorScheme: scheme,
 
     // --------------------------------------------------------------
     // SCAFFOLD
@@ -971,6 +1082,8 @@ ThemeData buildDarkTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
+      toolbarHeight: 68,
+      titleSpacing: 20,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: TextStyle(
         fontSize: 21,
@@ -993,6 +1106,70 @@ ThemeData buildDarkTheme() {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
         side: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.4)),
+      ),
+    ),
+    listTileTheme: ListTileThemeData(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+      minLeadingWidth: 24,
+      minVerticalPadding: 10,
+      iconColor: scheme.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+    ),
+    tabBarTheme: TabBarThemeData(
+      indicatorColor: scheme.primary,
+      dividerColor: Colors.transparent,
+      labelColor: scheme.primary,
+      unselectedLabelColor: scheme.onSurfaceVariant,
+      labelStyle: const TextStyle(fontWeight: FontWeight.w800),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+    ),
+    sliderTheme: SliderThemeData(
+      activeTrackColor: scheme.primary,
+      inactiveTrackColor: scheme.surfaceContainerHighest,
+      thumbColor: scheme.primary,
+      overlayColor: scheme.primary.withValues(alpha: 0.14),
+      trackHeight: 4,
+      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
+      overlayShape: const RoundSliderOverlayShape(overlayRadius: 18),
+    ),
+    tooltipTheme: TooltipThemeData(
+      waitDuration: const Duration(milliseconds: 600),
+      showDuration: const Duration(seconds: 3),
+      decoration: BoxDecoration(
+        color: scheme.inverseSurface,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      textStyle: TextStyle(color: scheme.onInverseSurface, fontSize: 12),
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: scheme.surface,
+      headerBackgroundColor: scheme.primaryContainer,
+      headerForegroundColor: scheme.onPrimaryContainer,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+    ),
+    timePickerTheme: TimePickerThemeData(
+      backgroundColor: scheme.surface,
+      dialBackgroundColor: scheme.surfaceContainer,
+      hourMinuteColor: scheme.surfaceContainerHigh,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: scheme.surfaceContainerLow,
+      surfaceTintColor: Colors.transparent,
+      elevation: 8,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      textStyle: TextStyle(
+        color: scheme.onSurface,
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
       ),
     ),
 
@@ -1181,7 +1358,7 @@ ThemeData buildDarkTheme() {
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: kDarkSurface,
+      fillColor: scheme.surfaceContainerLow,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 14,
@@ -1239,6 +1416,7 @@ ThemeData buildDarkTheme() {
       elevation: 0,
       height: 78,
       indicatorColor: const Color(0xFF8992F2).withValues(alpha: 0.15),
+      indicatorShape: const StadiumBorder(),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       iconTheme: WidgetStateProperty.resolveWith(
         (states) {
@@ -1278,12 +1456,12 @@ ThemeData buildDarkTheme() {
     // BOTTOM SHEETS
     // --------------------------------------------------------------
 
-    bottomSheetTheme: const BottomSheetThemeData(
-      backgroundColor: Color(0xFF1B1D24),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: scheme.surfaceContainer,
       surfaceTintColor: Colors.transparent,
       elevation: 12,
       modalElevation: 14,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(28),
         ),
@@ -1319,7 +1497,7 @@ ThemeData buildDarkTheme() {
 
     chipTheme: ChipThemeData(
       backgroundColor: const Color(0xFF24262E),
-      selectedColor: const Color(0xFF8992F2).withValues(alpha: 0.16),
+      selectedColor: scheme.primaryContainer,
       disabledColor: const Color(0xFF22242A),
       padding: const EdgeInsets.symmetric(
         horizontal: 10,

@@ -91,7 +91,7 @@ class SettingsScreen extends StatelessWidget {
                 title: const Text('Reminder setup'),
                 subtitle: Text(app.taskReminderNotice!),
                 isThreeLine: true,
-            ),
+              ),
             const Divider(),
             SwitchListTile(
               title: const Text('Welcome-Back Summary'),
@@ -197,8 +197,8 @@ class SettingsScreen extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.backup_outlined),
               title: const Text('Backup Data'),
-              subtitle: const Text(
-                  'Keep a copy of your tracker data on this device'),
+              subtitle:
+                  const Text('Keep a copy of your tracker data on this device'),
               onTap: () => _showBackup(context, app),
             ),
             ListTile(
