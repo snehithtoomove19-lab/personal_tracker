@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:uuid/uuid.dart';
+import 'models/note.dart';
 import 'services/app_state.dart';
 import 'services/app_scope.dart';
 import 'theme.dart';
@@ -207,9 +210,13 @@ class RootShell extends StatefulWidget {
 }
 
 class _RootShellState extends State<RootShell> {
+  static const _shareChannel = MethodChannel('personal_tracker/share');
+
   int _index = 0;
   bool _digestShown = false;
   bool _birthdayShown = false;
+  bool _processingSharedText = false;
+  final List<String> _sharedTextQueue = [];
 
   final _screens = const [
     HomeScreen(),
@@ -220,6 +227,137 @@ class _RootShellState extends State<RootShell> {
   ];
 
   final _titles = const ['Today', 'Pulse', 'Mood', 'Tasks', 'You'];
+
+  @override
+  void initState() {
+    super.initState();
+    if (defaultTargetPlatform != TargetPlatform.android) return;
+
+    _shareChannel.setMethodCallHandler((call) async {
+      if (call.method == 'sharedTexts' && call.arguments is List) {
+        _enqueueSharedTexts((call.arguments as List).whereType<String>());
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadSharedTexts());
+  }
+
+  Future<void> _loadSharedTexts() async {
+    try {
+      final sharedTexts = await _shareChannel
+          .invokeListMethod<String>('takePendingSharedTexts');
+      if (mounted) _enqueueSharedTexts(sharedTexts ?? const []);
+    } on PlatformException catch (error, stack) {
+      debugPrint('Could not receive shared text: $error\n$stack');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open the shared text.')),
+        );
+      }
+    }
+  }
+
+  void _enqueueSharedTexts(Iterable<String> texts) {
+    _sharedTextQueue.addAll(
+      texts.map((text) => text.trim()).where((text) => text.isNotEmpty),
+    );
+    _processSharedTexts();
+  }
+
+  Future<void> _processSharedTexts() async {
+    if (_processingSharedText || !mounted) return;
+    _processingSharedText = true;
+
+    while (mounted && _sharedTextQueue.isNotEmpty) {
+      final text = _sharedTextQueue.removeAt(0);
+      if (!mounted) break;
+      final shouldSave = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Save as a note?'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Shared text is only saved if you choose Save.'),
+              const SizedBox(height: 12),
+              SelectableText(
+                text.length > 400 ? '${text.substring(0, 400)}…' : text,
+                maxLines: 8,
+              ),
+              if (text.length > 10000) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'The note will be trimmed to 10,000 characters.',
+                  style: Theme.of(dialogContext).textTheme.bodySmall,
+                ),
+              ],
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Save note'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldSave == true && mounted) {
+        await _saveSharedText(text);
+      }
+    }
+
+    _processingSharedText = false;
+  }
+
+  Future<void> _saveSharedText(String sharedText) async {
+    final content =
+        sharedText.length > 10000 ? sharedText.substring(0, 10000) : sharedText;
+    final firstLine = content.split('\n').first.trim();
+    final title = firstLine.isEmpty
+        ? 'Shared note'
+        : firstLine.length > 60
+            ? '${firstLine.substring(0, 60)}…'
+            : firstLine;
+    final now = DateTime.now();
+    final app = AppScope.of(context);
+
+    try {
+      await app.addNote(
+        AppNote(
+          id: const Uuid().v4(),
+          title: title,
+          content: content,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Shared text saved as a note.')),
+        );
+      }
+    } catch (error, stack) {
+      debugPrint('Could not save shared text as a note: $error\n$stack');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save the shared note: $error')),
+        );
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      _shareChannel.setMethodCallHandler(null);
+    }
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {

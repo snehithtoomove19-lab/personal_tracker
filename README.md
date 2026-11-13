@@ -34,11 +34,13 @@ Personal Tracker helps you notice how you feel, choose what matters, and keep mo
 - **Flexible planning** with repeating tasks, subtasks, priorities, reminders, and goal progress.
 - **A personal record** with searchable notes, a unified calendar, monthly reviews, and daily mood history.
 - **Optional tools** including voice logging, AI chat, and manual Supabase backup.
+- **Android quick capture** — share plain text from another app to Personal Tracker and confirm before saving it as a note.
 - **Your pace, your privacy** with dark mode, theme choices, and an optional PIN lock.
 
 ## Privacy by default
 
 - Tracker data is stored locally on the device.
+- Shared text is saved only after you confirm the Android save prompt.
 - Cloud sync is optional and manual; it uploads or restores a per-user backup only when you choose.
 - AI chat uses an API key you provide. Personalization is opt-in and sends a limited rolling summary, not raw notes or task titles.
 - Voice recognition is optional, uses the device's speech service, and does not save audio recordings.
@@ -122,7 +124,8 @@ Expense tracking and SMS detection/import have been removed. Older transaction r
 
 ## Tech Stack
 
-- **Flutter** (Dart) — cross-platform UI
+- **Flutter** (Dart) — cross-platform UI and app logic
+- **Kotlin** — Android share-intent integration for quick capture into notes
 - **State management:** a lightweight custom `InheritedNotifier` (`AppScope`) — no external state package
 - **Storage:** `shared_preferences` (local JSON), fully offline
 - **Optional cloud backup:** Supabase Auth + a private JSONB backup row, protected by PostgreSQL Row Level Security
@@ -146,7 +149,7 @@ flutter analyze
 flutter test
 ```
 
-GitHub Actions runs formatting, static analysis, and tests for pushes and pull requests to `main`.
+GitHub Actions runs formatting, static analysis, tests, and an Android debug build for pushes and pull requests to `main`.
 
 ## Project Structure
 

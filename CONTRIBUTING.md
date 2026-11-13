@@ -19,6 +19,7 @@ Thanks for helping improve Personal Tracker. Changes should preserve the app's o
    dart format --set-exit-if-changed lib test
    flutter analyze
    flutter test
+   flutter build apk --debug
    ```
 
 5. Describe the user-visible change and the checks you ran. Redact personal data from screenshots and logs.
