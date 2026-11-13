@@ -55,25 +55,48 @@ class HomeScreen extends StatelessWidget {
                     children: [
                       Text(
                         _greeting(now),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: colors.primary,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 5),
                       Text(
                         app.userName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.w900,
-                          letterSpacing: -1,
+                          letterSpacing: -1.2,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        formatDate(now),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 13,
+                              color: colors.primary,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              formatDate(now),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colors.onSurfaceVariant,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -216,56 +239,154 @@ class _TodayHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return Material(
-      color: colors.primary,
-      borderRadius: BorderRadius.circular(28),
-      child: InkWell(
-        onTap: onTap,
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final darkerPrimary =
+        Color.lerp(colors.primary, Colors.black, .16) ?? colors.primary;
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
-        child: Padding(
-          padding: const EdgeInsets.all(21),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.bolt_rounded, color: Colors.white, size: 23),
-                  const SizedBox(width: 8),
-                  Text(
-                    'YOUR DAY, YOUR RULES',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Colors.white.withValues(alpha: .82),
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.05,
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: .22),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(28),
+        clipBehavior: Clip.antiAlias,
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [colors.primary, darkerPrimary],
+            ),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -54,
+                  right: -34,
+                  child: IgnorePointer(
+                    child: Container(
+                      width: 170,
+                      height: 170,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: .08),
+                          width: 26,
                         ),
-                  ),
-                  const Spacer(),
-                  const Icon(
-                    Icons.arrow_outward_rounded,
-                    color: Colors.white,
-                    size: 19,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 17),
-              Text(
-                _headline(),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -.7,
+                      ),
                     ),
-              ),
-              const SizedBox(height: 7),
-              Text(
-                _subhead(),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: .82),
-                      height: 1.35,
-                    ),
-              ),
-            ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(21),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: .15),
+                              borderRadius: BorderRadius.circular(13),
+                            ),
+                            child: const Icon(
+                              Icons.bolt_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'A MOMENT FOR YOU',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: Colors.white.withValues(alpha: .82),
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 1.15,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.arrow_outward_rounded,
+                            color: Colors.white.withValues(alpha: .9),
+                            size: 19,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 19),
+                      Text(
+                        _headline(),
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -.7,
+                          height: 1.12,
+                        ),
+                      ),
+                      const SizedBox(height: 7),
+                      Text(
+                        _subhead(),
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withValues(alpha: .82),
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 19),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(17),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: .12),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _HeroDetail(
+                                label: 'OPEN TASKS',
+                                value: '$tasksLeft',
+                                icon: Icons.check_circle_outline_rounded,
+                              ),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 34,
+                              color: Colors.white.withValues(alpha: .2),
+                            ),
+                            Expanded(
+                              child: _HeroDetail(
+                                label: 'TODAY’S MOOD',
+                                value: moodLogged ? 'Checked in' : 'Not yet',
+                                icon: moodLogged
+                                    ? Icons.favorite_rounded
+                                    : Icons.spa_rounded,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -282,6 +403,60 @@ class _TodayHero extends StatelessWidget {
   String _subhead() {
     if (tasksLeft == 0) return 'Check in, reset, or enjoy the open space.';
     return '$tasksLeft open task${tasksLeft == 1 ? '' : 's'} — pick one and start there.';
+  }
+}
+
+class _HeroDetail extends StatelessWidget {
+  const _HeroDetail({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.white.withValues(alpha: .9)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: Colors.white.withValues(alpha: .7),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: .45,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

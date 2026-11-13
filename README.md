@@ -1,44 +1,60 @@
 # Personal Tracker
 
-**A thoughtful, offline-first tracker for your mood, habits, tasks, and goals — built with Flutter.**
-
-Make space for your day: check in with your mood, build small habits, keep tasks moving, and see your progress without turning life into a scorecard. Your data stays on your device unless you choose optional AI or cloud backup features.
-
-<!--
-  SCREENSHOTS: replace the placeholder paths below with your own images.
-  1. Create a `screenshots/` folder in the project root.
-  2. Add your PNG/JPG files there (e.g. screenshots/home.png).
-  3. Keep the same filenames used below, or update the paths to match yours.
-  Recommended: portrait phone screenshots, ~1080x2400, PNG.
--->
-
-## Screenshots
-
-| Today | Mood | Tasks |
-|---|---|---|
-| ![Today screen](screenshots/home.png) | ![Mood tracker screen](screenshots/mood%20tracker%20screen.png) | ![Tasks screen](screenshots/tasks.png) |
-
-| Mood Tracker | Tasks | Goals |
-|---|---|---|
-| ![Mood tracker screen](screenshots/mood%20tracker%20screen.png) | ![Tasks screen](screenshots/tasks.png) | ![Goals screen](screenshots/goals.png) |
-
-| Calendar | Ask AI | Settings |
-|---|---|---|
-| ![Calendar screen](screenshots/calendar.png) | ![Ask AI chat screen](screenshots/ask_ai.png) | ![Settings screen](screenshots/settings.png) |
-
 <p align="center">
-  <img src="screenshots/app_banner.png" alt="App banner / cover image" width="600">
+  <strong>A calmer way to keep up with your day.</strong><br>
+  Mood check-ins, tasks, goals, notes, and personal insights in one private, offline-first Flutter app.
 </p>
 
-## Table of Contents
+Personal Tracker helps you notice how you feel, choose what matters, and keep moving at your own pace. Your records stay on your device by default; cloud backup and AI features are optional and require your own account or API key.
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Key Packages](#key-packages)
-- [Troubleshooting](#troubleshooting)
-- [Roadmap Ideas](#roadmap-ideas)
+## What you can do
+
+| Make space to reflect | Keep the day moving | Understand your patterns |
+|---|---|---|
+| Log your mood and daily signals without streak pressure. | Organize tasks, reminders, notes, goals, and birthdays. | Review mood and focus insights based only on what you choose to log. |
+
+- **A useful daily view** with a gentle check-in, focus signals, upcoming tasks, and shortcuts.
+- **Flexible planning** with repeating tasks, subtasks, priorities, reminders, and goal progress.
+- **A personal record** with searchable notes, a unified calendar, monthly reviews, and daily mood history.
+- **Optional tools** including voice logging, AI chat, and manual Supabase backup.
+- **Your pace, your privacy** with dark mode, theme choices, and an optional PIN lock.
+
+## Privacy by default
+
+- Tracker data is stored locally on the device.
+- Cloud sync is optional and manual; it uploads or restores a per-user backup only when you choose.
+- AI chat uses an API key you provide. Personalization is opt-in and sends a limited rolling summary, not raw notes or task titles.
+- Voice recognition is optional, uses the device's speech service, and does not save audio recordings.
+
+See [Optional Supabase cloud backup](#optional-supabase-cloud-backup) for setup and data-handling details.
+
+## Get started
+
+### Requirements
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel)
+- A connected device, emulator, or supported desktop/web target
+
+### Run the app
+
+```bash
+flutter pub get
+flutter run
+```
+
+On a fresh checkout that needs platform scaffolding regenerated, the one-time setup scripts are also available: `.\setup.ps1` on Windows or `chmod +x setup.sh && ./setup.sh` on macOS/Linux. They clean build artifacts and refresh dependency resolution before preparing the platform folders.
+
+## Optional Supabase cloud backup
+
+1. Create a Supabase project and open its SQL Editor.
+2. Run [`supabase/migrations/20261030000000_user_backups.sql`](supabase/migrations/20261030000000_user_backups.sql) to create the owner-only backup table and RLS policy.
+3. In the app, open **Settings → Cloud sync** and enter the project's HTTPS URL and public anon/publishable key from **Project Settings → API**.
+4. Create an account or sign in with email/password. If email confirmation is enabled, confirm the account before signing in.
+5. Choose **Upload this device** or **Restore cloud backup**. Upload replaces that account's previous snapshot; restore replaces local tracker records.
+
+Sync stores one versioned JSON backup per authenticated user. It is manual, and restore requires confirmation. Export a local backup before restoring if you need to keep the current local records. Never put a database password, service-role key, or other secret in the client.
+
+The app does not connect to email, Google Calendar, financial accounts, or health providers. Present mode works with records already stored in the app; it does not provide medical advice.
 
 ## Features
 
@@ -100,42 +116,6 @@ Expense tracking and SMS detection/import have been removed. Older transaction r
 
 Microphone permission is requested only when starting voice input. The device's speech-recognition service may require network access; voice input is optional.
 
-## Getting Started
-
-### Prerequisites
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel)
-- A connected device, emulator, or desktop/web target
-
-### Installation
-
-```bash
-# macOS/Linux
-chmod +x setup.sh && ./setup.sh
-
-# Windows (PowerShell)
-.\setup.ps1
-```
-
-Or manually:
-
-```bash
-flutter create .
-flutter pub get
-flutter run
-```
-
-`flutter create .` generates the platform folders (`android/`, `ios/`, `web/`, etc.) around the existing source — it won't touch anything in `lib/`.
-
-### Optional Supabase cloud backup
-
-1. Create a Supabase project and open its SQL Editor.
-2. Run [`supabase/migrations/20261030000000_user_backups.sql`](supabase/migrations/20261030000000_user_backups.sql) to create the owner-only backup table and RLS policy.
-3. In the app, open **Settings → Cloud sync** and paste the project's HTTPS URL and public anon/publishable key from **Project Settings → API**.
-4. Create an account or sign in with email/password. If email confirmation is enabled, confirm the account before signing in.
-5. Choose **Upload this device** or **Restore cloud backup**. Upload replaces that account's previous snapshot. Restore replaces local tracker records; export a local backup first if you need to preserve them.
-
-The app stores one versioned JSON backup per authenticated user, not separate queryable database rows for every record. Row Level Security checks `auth.uid()` on all operations. Sync is manual so the app never silently resolves conflicts or uploads newly logged records. The Supabase URL and public key are stored in this device's preferences; auth sessions use platform secure storage. Never use a database connection string, database password, service-role key, or other secret in the client. A public key alone does not grant access to another user's backup.
-
 ## Project Structure
 
 ```
@@ -156,37 +136,8 @@ lib/
   utils/formatters.dart      # Date and number formatting helpers
 ```
 
-## Key Packages
+## Run tests
 
-| Package | Purpose |
-|---|---|
-| `shared_preferences` | Local JSON persistence for all data |
-| `intl` | Date/number formatting |
-| `uuid` | Generating unique IDs for records |
-| `path_provider` | Locating a writable directory for local backup export |
-| `http` | Calling the OpenAI API for the "Ask AI" chat feature |
-| `speech_to_text` | Optional microphone-based speech recognition for quick logs |
-| `supabase_flutter` | Optional Supabase authentication and manual backup sync |
-| `flutter_secure_storage` | Secure persistence for Supabase auth sessions |
-| `flutter_local_notifications` | Scheduled task reminders with sound |
-| `flutter_timezone` / `timezone` | Schedule reminders in the device's local timezone |
-
-The app remains offline-first; AI, cloud backup, and notifications are optional.
-
-## Troubleshooting
-
-Ran into a build error? A few environment-specific issues (unrelated to the app's code) have come up before — see [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) for solutions to:
-- Kotlin/Gradle errors after changing package versions (stale lockfile)
-- A Kotlin compiler crash on Windows when the project and Flutter SDK are on different drive letters
-- Where to find and share the exact error output if something new comes up
-
-## Roadmap Ideas
-
-- Swap `shared_preferences` for `sqflite` for larger datasets
-- Richer charts via `fl_chart`
-- Optional connections to approved calendar and health providers, with explicit authorization and clear privacy controls
-- Biometric app lock (`local_auth`) alongside the PIN
-
----
-
-Built with Flutter.
+```bash
+flutter test
+```
